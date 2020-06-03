@@ -1,0 +1,145 @@
+<% layout('/layouts/default.html', {title: '生涯模板管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('生涯模板管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('push:templet:syMb:edit')){ %>
+					<a href="${ctx}/push/templet/syMb/form" class="btn btn-default btnTool" title="${text('新增生涯模板')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${syMb}" action="${ctx}/push/templet/syMb/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('模板名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbmc" maxlength="50" class="form-control width-120"/>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('1|生活类、2|学习类1|生活类、2|学习类模板类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="mblx" maxlength="2" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('适用对象')}：</label>
+					<div class="control-inline">
+						<#form:input path="sydx" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline">
+						<#form:input path="zt" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('是否需要拥有生涯任务权限 1 是 2 否')}：</label>
+					<div class="control-inline">
+						<#form:input path="authority" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('关联商品')}：</label>
+					<div class="control-inline">
+						<#form:input path="spid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分价格')}：</label>
+					<div class="control-inline">
+						<#form:input path="jfjg" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('图片')}：</label>
+					<div class="control-inline">
+						<#form:input path="img" maxlength="50" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('版本号')}：</label>
+					<div class="control-inline">
+						<#form:input path="bbh" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('设计者ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="dezId" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('删除标记')}：</label>
+					<div class="control-inline">
+						<#form:input path="delFlag" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("模板名称")}', name:'mbmc', index:'a.mbmc', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/push/templet/syMb/form?id='+row.id+'" class="btnList" data-title="${text("编辑生涯模板")}">'+(val||row.id)+'</a>';
+		}},
+        {header:'${text("任务数量")}', name:'sl',  width:150, align:"left",
+            formatter: function(val, obj, row, act){
+                return row.syMbmxList.length;
+            }},
+		/*{header:'${text("模板类型")}', name:'mblx', index:'a.mblx', width:150, align:"left"},
+		{header:'${text("适用对象")}', name:'sydx', index:'a.sydx', width:150, align:"left"},
+		{header:'${text("状态")}', name:'zt', index:'a.zt', width:150, align:"left"},
+		{header:'${text("是否需要拥有生涯任务权限 1 是 2 否")}', name:'authority', index:'a.authority', width:150, align:"left"},
+		{header:'${text("关联商品")}', name:'spid', index:'a.spid', width:150, align:"left"},
+		{header:'${text("积分价格")}', name:'jfjg', index:'a.jfjg', width:150, align:"center"},
+		{header:'${text("图片")}', name:'img', index:'a.img', width:150, align:"left"},
+		{header:'${text("版本号")}', name:'bbh', index:'a.bbh', width:150, align:"left"},
+		{header:'${text("设计者ID")}', name:'dezId', index:'a.dez_id', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("删除标记")}', name:'delFlag', index:'a.del_flag', width:150, align:"left"},*/
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('push:templet:syMb:edit')){ %>
+				actions.push('<a href="${ctx}/push/templet/syMb/form?id='+row.id+'" class="btnList" title="${text("编辑生涯模板")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/push/templet/syMb/disable?id='+row.id+'" class="btnList" title="${text("停用生涯模板")}" data-confirm="${text("确认要停用该生涯模板吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/push/templet/syMb/enable?id='+row.id+'" class="btnList" title="${text("启用生涯模板")}" data-confirm="${text("确认要启用该生涯模板吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/push/templet/syMb/delete?id='+row.id+'" class="btnList" title="${text("删除生涯模板")}" data-confirm="${text("确认要删除该生涯模板吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

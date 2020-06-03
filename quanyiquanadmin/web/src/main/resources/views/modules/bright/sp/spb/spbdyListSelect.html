@@ -1,0 +1,190 @@
+<% layout('/layouts/default.html', {title: '用户选择', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-body">
+			<#form:form id="searchForm" action="${ctx}/sys/empUser/listData" method="post" class="form-inline "
+			data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<div class="form-group">
+				<label class="control-label">${text('账号')}：</label>
+				<div class="control-inline">
+					<#form:input path="loginCode" maxlength="100" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('昵称')}：</label>
+				<div class="control-inline">
+					<#form:input path="userName" maxlength="100" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('邮箱')}：</label>
+				<div class="control-inline">
+					<#form:input path="email" maxlength="300" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('手机')}：</label>
+				<div class="control-inline">
+					<#form:input path="mobile" maxlength="100" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-row"></div>
+			<div class="form-group">
+				<label class="control-label">${text('姓名')}：</label>
+				<div class="control-inline">
+					<#form:input path="refName" maxlength="100" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('机构')}：</label>
+				<div class="control-inline width-90">
+					<#form:treeselect id="office" title="${text('机构选择')}"
+					path="employee.office.officeCode" labelPath="employee.office.officeName"
+					url="${ctx}/sys/office/treeData" btnClass="btn-sm" allowClear="true" canSelectParent="true"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('公司')}：</label>
+				<div class="control-inline width-90">
+					<#form:treeselect id="company" title="${text('公司选择')}"
+					path="employee.company.companyCode" labelPath="employee.company.companyName"
+					url="${ctx}/sys/company/treeData" btnClass="btn-sm" allowClear="true" canSelectParent="true"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="control-label">${text('电话')}：</label>
+				<div class="control-inline">
+					<#form:input path="phone" maxlength="100" class="form-control width-90"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary btn-sm">查询</button>
+				<button type="reset" class="btn btn-default btn-sm">重置</button>
+			</div>
+		</#form:form>
+		<div class="row">
+			<div class="col-xs-10 pr10">
+				<table id="dataGrid"></table>
+				<div id="dataGridPage"></div>
+			</div>
+			<div class="col-xs-2 pl0">
+				<div id="selectData" class="tags-input"></div>
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+<% } %>
+<script>
+    var selectData = ${isNotBlank(selectData!) ? selectData! : "{\}"},
+    selectNum = 0, dataGrid = $('#dataGrid').dataGrid({
+        searchForm: $("#searchForm"),
+        columnModel: [
+            {header:'${text("商品包名称")}', name:'spbmc', index:'a.spbmc', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+                    return '<a href="${ctx}/sp/spb/spbdy/form?id='+row.id+'" class="btnList" data-title="${text("编辑商品包定义")}">'+(val||row.id)+'</a>';
+                }},
+            {header:'${text("状态")}', name:'sxj', index:'a.sxj', width:150, align:"center", formatter: function(val, obj, row, act){
+                    return js.getDictLabel(${@DictUtils.getDictListJson('status')}, val, '${text("未知")}', true);
+                }},
+            {header:'${text("商品包图片")}', name:'spbpic', index:'a.spbpic', width:150, align:"left", formatter: function(val, obj, row, act){
+                    return '<img style="width: 60px" src='+row.spbpic+'>';
+                }},
+            {header:'${text("是否是会员权益商品包")}', name:'ishyqy', index:'a.ishyqy', width:150, align:"left", formatter: function(val, obj, row, act){
+                    return js.getDictLabel(${@DictUtils.getDictListJson('is_vip_spb')}, val, '${text("未知")}', true);
+                }},
+            {header:'${text("非会员价")}', name:'fhyj', index:'a.fhyj', width:150, align:"right", formatter: function(val, obj, row, act){
+                    return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+                }},
+            {header:'${text("会员价")}', name:'hyj', index:'a.hyj', width:150, align:"right", formatter: function(val, obj, row, act){
+                    return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+                }},
+           /* {header:'${text("商品明细")}', name:'spbmxList', index:'', width:150, align:"left", formatter: function(val, obj, row, act){
+                    var spmx = '';
+                    for (var i=0; i < val.length; i++){
+                        spmx += val[i].spXx.spmc + '(' + val[i].sl + ')<br>'
+
+                    }
+                    return spmx;
+                }
+            },*/
+           /* {header:'${text("赠送优惠券")}', name:'spbYhqList', index:'', width:150, align:"left", formatter: function(val, obj, row, act){
+                    var spmx = '';
+                    for (var i=0; i < val.length; i++){
+                        spmx += val[i].spYhq.yhName + '(' + val[i].sl + ')<br>'
+
+                    }
+                    return spmx;
+                }
+            },*/
+            {header:'${text("二维码地址")}', name:'qrcode', index:'a.qrcode', width:150, align:"left", formatter: function(val, obj, row, act){
+                    return '<img style="width: 60px" src='+row.qrcode+'>';
+                }
+            }
+        ],
+        autoGridHeight: function(){
+            var height = $(window).height() - $('#searchForm').height() - $('#dataGridPage').height() - 75;
+            $('.tags-input').height($('.ui-jqgrid').height() - 10);
+            return height;
+        },
+        showCheckbox: '${parameter.checkbox}' == 'true',
+        multiboxonly: false, // 单击复选框时再多选
+        ajaxSuccess: function(data){
+            $.each(selectData, function(key, value){
+                dataGrid.dataGrid('setSelectRow', key);
+            });
+            initSelectTag();
+        },
+        onSelectRow: function(id, isSelect, event){
+            if ('${parameter.checkbox}' == 'true'){
+                if(isSelect){
+                    selectData[id] = JSON.parse(dataGrid.dataGrid('getRowData', id).rowData);
+                }else{
+                    delete selectData[id];
+                }
+            }else{
+                selectData = {};
+                selectData[id] = JSON.parse(dataGrid.dataGrid('getRowData', id).rowData);
+            }
+            initSelectTag();
+        },
+        onSelectAll: function(ids, isSelect){
+            if ('${parameter.checkbox}' == 'true'){
+                for (var i=0; i<ids.length; i++){
+                    if(isSelect){
+                        selectData[ids[i]] = JSON.parse(dataGrid.dataGrid('getRowData', ids[i]).rowData);
+                    }else{
+                        delete selectData[ids[i]];
+                    }
+                }
+            }
+            initSelectTag();
+        },
+        ondblClickRow: function(id, rownum, colnum, event){
+            if ('${parameter.checkbox}' != 'true'){
+                js.layer.$('#' + window.name).closest('.layui-layer')
+                    .find(".layui-layer-btn0").trigger("click");
+            }
+            initSelectTag();
+        }
+    });
+    function initSelectTag(){
+        selectNum = 0;
+        var html = [];
+        $.each(selectData, function(key, value){
+            selectNum ++;
+            html.push('<span class="tag" id="'+key+'_tags-input"><span>'+value.userName+' </span>'
+                + '<a href="#" onclick="removeSelectTag(\''+key+'\');" title="取消选择">x</a></span>');
+        });
+        html.unshift('<div class="title">当前已选择<span id="selectNum">'+selectNum+'</span>项：</div>');
+        $('#selectData').empty().append(html.join(''));
+    }
+    function removeSelectTag(key){
+        delete selectData[key];
+        dataGrid.dataGrid('resetSelection', key);
+        $('#selectNum').html(--selectNum);
+        $('#'+key+'_tags-input').remove();
+    }
+    function getSelectData(){
+        return selectData;
+    }
+</script>

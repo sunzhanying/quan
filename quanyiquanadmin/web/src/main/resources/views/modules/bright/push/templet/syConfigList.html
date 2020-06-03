@@ -1,0 +1,284 @@
+<% layout('/layouts/default.html', {title: '适用对象表，将模板配置给客户（学生）、群组。管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('适用对象')}
+			</div>
+			<div class="box-tools pull-right">
+				<!--<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				--><% if(hasPermi('push:templet:syConfig:edit')){ %>
+					<a href="${ctx}/push/templet/syConfig/form" class="btn btn-default btnTool" title="${text('新增适用对象')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${syConfig}" action="${ctx}/push/templet/syConfig/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<!--<div class="form-group">
+					<label class="control-label">${text('群组ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="groupid" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('客户ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="khid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('学生ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="xsid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="lx" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('生涯模板ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbid" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline">
+						<#form:input path="zt" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('是否需要生涯权限')}：</label>
+					<div class="control-inline">
+						<#form:input path="syqx" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('status')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('删除标记')}：</label>
+					<div class="control-inline">
+						<#form:input path="delFlag" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline">
+						<#form:input path="pushZt" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推送时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="pushSj" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推送次数')}：</label>
+					<div class="control-inline">
+						<#form:input path="pushCs" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('是否配置给学生 1|是0|否')}：</label>
+					<div class="control-inline">
+						<#form:radio path="xsBz" dictType="sys_yes_no" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>-->
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+	<div id="rwlist" style="height: 100px;display: none">
+		<table class="table table-striped table-bordered table-condensed">
+			<thead>
+			<tr>
+				<th>任务名称</th>
+			</tr>
+			</thead>
+			<tbody id="tableRw">
+
+			</tbody>
+		</table>
+	</div>
+</div>
+<% } %>
+<script>
+
+    //显示组内会员
+    function groupMember(groupId) {
+        //iframe层-父子操作
+        layer.open({
+            type: 2,
+            title: ['组内会员列表', 'font-size:18px;'],
+            area: ['800px', '500px'],
+            fixed: false, //不固定
+            maxmin: true,
+            content: '${ctx}/t/groupkh/groupKh/groupkhList?groupId.id='+groupId
+        });
+    }
+
+    //任务列表
+    function rwList(mbid){
+        $.get("${ctx}/push/templet/syMb/mbmx",{"id": mbid},
+            function (data) {
+                var content = "";
+                $.each(data, function (i, s) {
+                    var cont = '<tr><td>' + s.syrwmc
+                        + '</td></tr>';
+                    content += cont;
+                });
+                $("#tableRw").html(content);
+            });
+
+        layer.open({
+            type: 1,
+            area: ['400px', '300px'],
+            content: $('#rwlist') //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+        });
+    }
+
+    function push(configid,mbid,groupid,mbmc,grouptype,xsbz) {
+        $("#id").val(configid);
+        $("#xsbz").val(xsbz);
+        $("#mc").html(mbmc);
+
+
+        if (grouptype == 1){//静态
+            $("input[name='groupdz']").attr("checked",false);
+            $("input[name='groupdz']").attr("disabled",true);
+        } else{
+            //alert(type);
+            $("input[name='groupdz']").attr("disabled",false);
+        }
+
+
+
+
+        //任务明细
+        $.get("${ctx}/push/templet/syMb/mbmx", {"id": mbid},
+            function (data) {
+                var content = "";
+                $.each(data, function (i, s) {
+                    var cont = '<tr><td>' + s.spXx.spdm
+                        + '</td></tr>';
+                    content += cont;
+                });
+                $("#symbmx").html(content);
+            });
+        //客户列表
+        $.get("${ctx}/t/groupkh/groupKh/groupkhList", {"groupId.id": groupid},
+            function (data) {
+                var content = "";
+                $.each(data, function (i, s) {
+                    var mc = "";
+                    if (s.khXx.wxnc == null){
+                        mc = "未授权";
+                    } else{
+                        mc = s.khXx.wxnc;
+
+                    }
+                    var cont = '<p>'+mc+'----'+s.khXx.sj+'</p>';
+                    content += cont;
+                });
+                $("#khlist").html(content);
+            });
+    }
+
+
+    //提交推送
+    function yts(grouptype,xsbz,configid) {
+
+        var groupdz = 0;
+        //动态
+        if (grouptype == 2){
+            groupdz = $("#select"+configid).val();
+        }
+        return js.confirm('确认设置推送？', "${ctx}/push/templet/syConfig/pushlist?id="+configid+"&xsbz="+xsbz+"&groupdz="+groupdz,null,function(data){
+            js.showMessage(data.message);
+		});
+    }
+
+
+
+    // 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		/*{header:'${text("群组ID")}', name:'groupid', index:'a.groupid', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/push/templet/syConfig/form?id='+row.id+'" class="btnList" data-title="${text("编辑适用对象表，将模板配置给客户（学生）、群组。")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("客户ID")}', name:'khid', index:'a.khid', width:150, align:"left"},
+		{header:'${text("学生ID")}', name:'xsid', index:'a.xsid', width:150, align:"left"},*/
+        /*{header:'${text("是否需要生涯权限")}', name:'syqx', index:'a.syqx', width:150, align:"center"},
+        {header:'${text("status")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("类型")}', name:'lx', index:'a.lx', width:150, align:"center"},
+        {header:'${text("生涯模板ID")}', name:'mbid', index:'a.mbid', width:150, align:"center"},
+        	{header:'${text("推送时间")}', name:'pushSj', index:'a.push_sj', width:150, align:"center"},
+            {header:'${text("推送次数")}', name:'pushCs', index:'a.push_cs', width:150, align:"center"},
+            {header:'${text("是否配置给学生 1|是0|否")}', name:'xsBz', index:'a.xs_bz', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_yes_no')}, val, '${text("未知")}', true);
+            }},
+        {header:'${text("删除标记")}', name:'delFlag', index:'a.del_flag', width:150, align:"left"},*/
+        {header:'${text("模板名称")}', name:'syMb.mbmc', index:'a.syMb.mbmc', width:150, align:"center"},
+        {header:'${text("群组名称")}', name:'group.name', index:'a.group.name', width:150, align:"left"},
+        {header:'${text("状态")}', name:'group.type', index:'a.group.type', width:150, align:"center",formatter: function(val, obj, row, act){
+
+            return val == 1?"已推送":"未推送";
+        }},
+        {header:'${text("是否重新计算组内成员")}', name:'pushZt', index:'a.push_zt', width:150, align:"center",formatter: function(val, obj, row, act){
+
+            return  '<select class="form-control" id="select'+row.id+'" '+(row.group.type == 1?"disabled":"")+'>' +
+                '<option class="form-control" value="0" '+(row.group.type == 1?"selected":"")+'>否</option>' +
+                '<option class="form-control" value="1">是</option>' +
+                '</select>';
+        }},
+        {header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('push:templet:syConfig:edit')){ %>
+				actions.push('<a href="${ctx}/push/templet/syConfig/form?id='+row.id+'" class="btnList" title="${text("编辑")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/push/templet/syConfig/disable?id='+row.id+'" class="btnList" title="${text("停用")}" data-confirm="${text("确认要停用该适用对象吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/push/templet/syConfig/enable?id='+row.id+'" class="btnList" title="${text("启用")}" data-confirm="${text("确认要启用该适用对象吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/push/templet/syConfig/delete?id='+row.id+'" class="btnList" title="${text("删除")}" data-confirm="${text("确认要删除该适用对象吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+            actions.push('<a href="#"   onclick="yts('+row.group.type+','+row.xsBz+',\''+row.id+'\')"  title="${text("推送")}" data-confirm="${text("确认要推送吗？")}"><i class="glyphicon glyphicon-send"></i></a>&nbsp;');
+            actions.push('<a href="#" onclick="groupMember('+row.group.id+')"  title="${text("查看组内会员")}"><i class="glyphicon glyphicon-user"></i></a>&nbsp;');
+            actions.push('<a href="#" onclick="rwList('+row.mbid+')"  title="${text("查看任务明细")}" ><i class="glyphicon glyphicon-align-justify"></i></a>&nbsp;');
+
+
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

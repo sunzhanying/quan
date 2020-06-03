@@ -1,0 +1,271 @@
+<% layout('/layouts/default.html', {title: '生涯模板管理', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(syMb.isNewRecord ? '新增生涯模板' : '编辑生涯模板')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${syMb}" action="${ctx}/push/templet/syMb/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('模板名称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="mbmc" maxlength="50" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<!--<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('1|生活类、2|学习类1|生活类、2|学习类模板类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="mblx" maxlength="2" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('适用对象')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="sydx" maxlength="64" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="zt" maxlength="1" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('是否需要拥有生涯任务权限 1 是 2 否')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="authority" maxlength="1" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('关联商品')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spid" maxlength="64" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('积分价格')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="jfjg" maxlength="255" class="form-control digits"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('图片')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="img" maxlength="50" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('版本号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="bbh" maxlength="64" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('设计者ID')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="dezId" maxlength="64" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>-->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('备注信息')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="remarks" rows="4" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<h4 class="form-unit">${text('生涯模板明细')}</h4>
+				<div class="ml10 mr10">
+					<table id="syMbmxDataGrid"></table>
+					<% if (hasPermi('push:templet:syMb:edit')){ %>
+						<a href="#" id="syMbmxDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i class="fa fa-plus"></i> ${text('增行')}</a>
+					<% } %>
+				</div>
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('push:templet:syMb:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+//初始化生涯模板明细DataGrid对象
+$("#syMbmxDataGrid").dataGrid({
+
+	data: ${toJson(syMb.syMbmxList)},
+	datatype: "local", // 设置本地数据
+	autoGridHeight: function(){return 'auto'}, // 设置自动高度
+
+	// 设置数据表格列
+	columnModel: [
+		{header:'状态', name:'status', editable:true, hidden:true},
+		{header:'主键', name:'id', editable:true, hidden:true},
+		{header:'${text("对应模板ID")}', name:'mbid.id', editable:true, hidden:true},
+		/*{header:'${text("生涯任务编码")}', name:'syrwbm', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'50', 'class':'form-control'}},*/
+		{header:'${text("生涯任务名称")}', name:'syrwmc', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'255', 'class':'form-control'}},
+		{header:'${text("任务类型")}', name:'type', width:100,
+			editable:true, edittype:'select', editoptions:{'class':'form-control',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('pr_rw_type')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},
+		{header:'${text("完成项目可获积分")}', name:'jfjg', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits'}},
+		{header:'${text("任务启动日期")}', name:'qdrq', width:150,
+			formatter:'date', formatoptions:{srcformat:'Y-m-d H:i:s',newformat:'Y-m-d H:i:s'},
+			editable:true, edittype:'text', editoptions:{'class':'form-control Wdate', 'readonly':'true',
+				dataInit: function(element){ $(element).on('focus', function(){
+					WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});
+				});
+			}}
+		},
+		{header:'${text("任务有效期")}', name:'yxq', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits'}},
+		{header:'${text("任务动作")}', name:'rwdz', width:100,
+			editable:true, edittype:'select', editoptions:{'class':'form-control',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('pr_task_action')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},
+		{header:'${text("推送类型")}', name:'tstype', width:100,
+			editable:true, edittype:'select', editoptions:{'class':'form-control',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('pr_push_type')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},
+		/*{header:'${text("启动序号")}', name:'qdxh', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'4', 'class':'form-control digits'}},
+		*/{header:'${text("天数")}', name:'tian', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits'}},
+
+		/*{header:'${text("任务对应商品")}', name:'spid', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'64', 'class':'form-control'}},
+		{header:'${text("任务对应考试成绩")}', name:'cj', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control number'}},
+		*/{header:'${text("指定日期启动")}', name:'rq', width:150,
+			formatter:'date', formatoptions:{srcformat:'Y-m-d H:i:s',newformat:'Y-m-d H:i:s'},
+			editable:true, edittype:'text', editoptions:{'class':'form-control Wdate', 'readonly':'true',
+				dataInit: function(element){ $(element).on('focus', function(){
+					WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});
+				});
+			}}
+		},
+		{header:'${text("描述")}', name:'ms', width:150, editable:true, edittype:'text', editoptions:{'class':'form-control'}},
+		{header:'${text("链接类型")}', name:'ljtype', width:100,
+			editable:true, edittype:'select', editoptions:{'class':'form-control',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('pr_link_type')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},
+        {header:'${text("任务对应链接")}', name:'rwlj', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'800', 'class':'form-control'}},
+
+		/*{header:'${text("购买类型")}', name:'lxOrder', width:100,
+			editable:true, edittype:'select', editoptions:{'class':'form-control digits',
+				items: $.merge([{dictLabel:'&nbsp;',dictValue:''}], ${@DictUtils.getDictListJson('pr_buy_type')}),
+				itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function(element){
+					$(element).select2().on("change",function(){$(this).resetValid()});
+				}
+			}
+		},*/
+		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
+			var actions = [];
+			if (val == 'new'){
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#syMbmxDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}else{
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#syMbmxDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}
+			return actions.join('');
+		}, editoptions: {defaultValue: 'new'}}
+	],
+
+	// 编辑表格参数
+	editGrid: true,				// 是否是编辑表格
+	editGridInitRowNum: 1,		// 编辑表格的初始化新增行数
+	editGridAddRowBtn: $('#syMbmxDataGridAddRowBtn'),	// 子表增行按钮
+	editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
+
+	// 编辑表格的提交数据参数
+	editGridInputFormListName: 'syMbmxList', // 提交的数据列表名
+	editGridInputFormListAttrs: 'status,id,mbid.id,syrwbm,syrwmc,type,jfjg,qdrq,yxq,rwdz,tstype,qdxh,tian,rwlj,spid,cj,rq,ms,ljtype,createBy,createDate,updateBy,updateDate,remarks,delFlag,isXs,lxOrder,', // 提交数据列表的属性字段
+
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+
+	}
+});
+</script>
+<script>
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

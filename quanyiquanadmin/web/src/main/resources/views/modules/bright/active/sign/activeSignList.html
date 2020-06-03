@@ -1,0 +1,177 @@
+<% layout('/layouts/default.html', {title: '报名列表', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('报名列表')}
+			</div>
+			<!--<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('bright:active:sign:activeSign:edit')){ %>
+					<a href="${ctx}/bright/active/sign/activeSign/form" class="btn btn-default btnTool" title="${text('新增活动 课程 报名表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>-->
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${activeSign}" action="${ctx}/bright/active/sign/activeSign/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<!--<div class="form-group">
+					<label class="control-label">${text('活动id')}：</label>
+					<div class="control-inline">
+						<#form:input path="hdid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('khid')}：</label>
+					<div class="control-inline">
+						<#form:input path="khid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="zt" dictType="pr_active_sign_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('类型')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="type" dictType="pr_active_sign_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('报名时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="bmRq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('签到时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="qdRq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('截止时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="jzRq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('预约时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="yyRq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('服务类型')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="yyXm" dictType="pr_active_sign_service" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('预约人')}：</label>
+					<div class="control-inline">
+						<#form:input path="supId" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('预约排班ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="yypbId" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('预约状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="yyzt" dictType="pr_active_sign_order_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('预约详情')}：</label>
+					<div class="control-inline">
+						<#form:input path="yyXq" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>-->
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("活动")}', name:'nrHd.title', index:'a.nrHd.title', width:150, align:"left", frozen:true},
+		{header:'${text("客户昵称")}', name:'khxx.wxnc', index:'a.khxx.wxnc', width:150, align:"left"},
+		{header:'${text("客户姓名")}', name:'khxx.wxnc', index:'a.khxx.xm', width:150, align:"left"},
+        {header:'${text("报名状态")}', name:'zt', index:'a.zt', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('pr_active_sign_status')}, val, '${text("未知")}', true);
+        }},
+        /*{header:'${text("khid")}', name:'khid', index:'a.khid', width:150, align:"left"},
+
+        {header:'${text("类型")}', name:'type', index:'a.type', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('pr_active_sign_type')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("报名时间")}', name:'bmRq', index:'a.bm_rq', width:150, align:"center"},
+        {header:'${text("签到时间")}', name:'qdRq', index:'a.qd_rq', width:150, align:"center"},
+        {header:'${text("截止时间")}', name:'jzRq', index:'a.jz_rq', width:150, align:"center"},
+        {header:'${text("预约时间")}', name:'yyRq', index:'a.yy_rq', width:150, align:"center"},
+        {header:'${text("服务类型")}', name:'yyXm', index:'a.yy_xm', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('pr_active_sign_service')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("预约人")}', name:'supId', index:'a.sup_id', width:150, align:"center"},
+        {header:'${text("预约排班ID")}', name:'yypbId', index:'a.yypb_id', width:150, align:"center"},
+        {header:'${text("预约状态")}', name:'yyzt', index:'a.yyzt', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('pr_active_sign_order_status')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("预约详情")}', name:'yyXq', index:'a.yy_xq', width:150, align:"left"},
+        {header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},*/
+
+		{header:'${text("报名时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"}/*,
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('bright:active:sign:activeSign:edit')){ %>
+				actions.push('<a href="${ctx}/bright/active/sign/activeSign/form?id='+row.id+'" class="btnList" title="${text("编辑活动 课程 报名表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/bright/active/sign/activeSign/disable?id='+row.id+'" class="btnList" title="${text("停用活动 课程 报名表")}" data-confirm="${text("确认要停用该活动 课程 报名表吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/bright/active/sign/activeSign/enable?id='+row.id+'" class="btnList" title="${text("启用活动 课程 报名表")}" data-confirm="${text("确认要启用该活动 课程 报名表吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/bright/active/sign/activeSign/delete?id='+row.id+'" class="btnList" title="${text("删除活动 课程 报名表")}" data-confirm="${text("确认要删除该活动 课程 报名表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}*/
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

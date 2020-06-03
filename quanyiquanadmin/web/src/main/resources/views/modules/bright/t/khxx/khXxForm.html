@@ -1,0 +1,397 @@
+<% layout('/layouts/default.html', {title: '客户信息管理', libs: ['validate','fileupload','dataGrid']}){ %>
+<div class="main-content">
+    <div class="box box-main">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="${ctx}/t/khxx/khXx/form?id=${khXx.id}">基础信息</a></li>
+            <!--<li role="presentation"><a href="${ctx}/t/khxx/khXx/khqy?id=${khXx.id}">权益记录</a></li>-->
+            <li role="presentation"><a href="${ctx}/t/khxw/khXw?khid=${khXx.id}">行为记录</a></li>
+            <!--<li role="presentation"><a href="${ctx}/t/propagate/khPropagate?proKhid=${khXx.id}">传播客户</a></li>-->
+        </ul>
+        <div class="box-header with-border">
+            <div class="box-title">
+                <i class="fa fa-list-alt"></i> ${text(khXx.isNewRecord ? '新增客户信息' : '客户详情')}
+            </div>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <#form:form id="inputForm" model="${khXx}" action="${ctx}/t/khxx/khXx/save" method="post" class="form-horizontal">
+            <div class="box-body">
+                <div class="form-unit">${text('基本信息')}</div>
+                <#form:hidden path="id"/>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('客户初次来源')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:select path="type" disabled="true"  dictType="user_type"  class="form-control " />
+
+                               <!-- <#form:select path="type" blankOption="true" disabled="true" items="${source}" itemLabel="sourceName" itemValue="id" class="form-control"/>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('性别')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:radio path="xb" dictType="sys_user_sex" class="form-control digits" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('阅读过内容的标签')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                               <!-- <#form:input path="wxnc" maxlength="255" class="form-control"/>-->
+                                <#form:select id="wxnc" disabled="true" name="wxnc" items="${tags}" multiple="true" itemLabel="tagName" itemValue="id"  class="form-control " />
+                                <script>
+                                    var tagChoice=[];
+                                    $(${toJson(tags)}).each(function(i,v){
+                                        tagChoice.push(v.id);
+                                    })
+                                    $("#wxnc").val(tagChoice).trigger('change');
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('微信昵称')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="wxnc" maxlength="255" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('姓名')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="sm" maxlength="255" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('绑定手机')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="sj" maxlength="255" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('所在群组')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:select id="group" disabled="true" name="group" items="${group}" multiple="true" itemLabel="name" itemValue="id"  class="form-control " />
+                                <script>
+                                    var choice=[];
+                                    $(${toJson(group)}).each(function(i,v){
+                                        choice.push(v.id);
+                                    })
+                                    $("#group").val(choice).trigger('change');
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('微信头像')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:hidden path="wxtx" maxlength="500" class="form-control"/>
+
+                                <#form:fileupload id="wxtxUpload"  returnPath="true"
+                                        filePathInputId="wxtx" uploadType="image" class="" preview="weboffice" maxUploadNum="1" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-footer">
+                <div class="row">
+                    <div class="col-sm-offset-2 col-sm-10">
+                      <!--  <% if (hasPermi('t:khxx:khXx:edit')){ %>
+                        <button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i>
+                            ${text('保 存')}
+                        </button>&nbsp;
+                        <% } %>-->
+                        <button type="button" class="btn btn-sm btn-default" id="btnCancel"
+                                onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </#form:form>
+    </div>
+</div>
+<% } %>
+<script>
+   /* //初始化学生信息DataGrid对象
+    $("#xsXxDataGrid").dataGrid({
+
+        data: ${toJson(khXx.xsXxList)},
+        datatype: "local", // 设置本地数据
+        autoGridHeight: function () {
+            return 'auto'
+        }, // 设置自动高度
+
+        // 设置数据表格列
+        columnModel: [
+            {header: '状态', name: 'status', editable: true, hidden: true},
+            {header: '主键', name: 'id', editable: true, hidden: true},
+            {
+                header: '${text("姓名")}',
+                name: 'xm',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '50', 'class': 'form-control'}
+            },
+            {
+                header: '${text("头像")}',
+                name: 'tx',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '500', 'class': 'form-control'}
+            },
+            {
+                header: '${text("性别")}', name: 'xb', width: 100,
+                editable: true, edittype: 'select', editoptions: {
+                'class': 'form-control digits',
+                items: $.merge([{dictLabel: '&nbsp;', dictValue: ''}], ${@DictUtils.getDictListJson('sys_user_sex')}),
+                itemLabel: 'dictLabel', itemValue: 'dictValue', dataInit: function (element) {
+                    $(element).select2().on("change", function () {
+                        $(this).resetValid()
+                    });
+                }
+            }
+            },
+            {
+                header: '${text("就读学校")}',
+                name: 'schid',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '64', 'class': 'form-control'}
+            },
+            {
+                header: '${text("入学年份")}',
+                name: 'rxnf',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '4', 'class': 'form-control'}
+            },
+            {
+                header: '${text("联系方式")}',
+                name: 'lxfs',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '50', 'class': 'form-control'}
+            },
+            {header: '${text("客户id")}', name: 'khid.id', editable: true, hidden: true},
+            {
+                header: '${text("学校名称")}',
+                name: 'xxmc',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '255', 'class': 'form-control'}
+            },
+            {
+                header: '${text("学校类型")}',
+                name: 'xxlx',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '2', 'class': 'form-control'}
+            },
+            {
+                header: '${text("是否竞赛 1是0否")}',
+                name: 'isjs',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '1', 'class': 'form-control'}
+            },
+            {
+                header: '${text("竞赛课目")}',
+                name: 'jskm',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '255', 'class': 'form-control'}
+            },
+            {
+                header: '${text("加三科，")}',
+                name: 'jsk',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '255', 'class': 'form-control'}
+            },
+            {
+                header: '${text("权限，第一个代表生涯权限，第二个代表天眼智能0是未开通，1是开通")}',
+                name: 'qxData',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '10', 'class': 'form-control required'}
+            },
+            {
+                header: '${text("高考省份")}',
+                name: 'gksf',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '100', 'class': 'form-control'}
+            },
+            {
+                header: '${text("偏好就读城市   ，分割")}',
+                name: 'phcs',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '255', 'class': 'form-control'}
+            },
+            {
+                header: '${text("偏好专业    ， 分割")}',
+                name: 'phzy',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '512', 'class': 'form-control'}
+            },
+            {
+                header: '${text("选考科目  ， 分割")}',
+                name: 'xkkm',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '100', 'class': 'form-control'}
+            },
+            {
+                header: '${text("色弱")}',
+                name: 'sr',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '10', 'class': 'form-control'}
+            },
+            {
+                header: '${text("色盲")}',
+                name: 'sm',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '10', 'class': 'form-control'}
+            },
+            {
+                header: '${text("可接受的学费")}',
+                name: 'kjsxf',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '50', 'class': 'form-control'}
+            },
+            {
+                header: '${text("身高")}',
+                name: 'sg',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '20', 'class': 'form-control digits'}
+            },
+            {
+                header: '${text("体重")}',
+                name: 'tz',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '20', 'class': 'form-control digits'}
+            },
+            {
+                header: '${text("应试语种")}',
+                name: 'ysyz',
+                width: 150,
+                editable: true,
+                edittype: 'text',
+                editoptions: {'maxlength': '20', 'class': 'form-control'}
+            },
+            {
+                header: '${text("操作")}',
+                name: 'actions',
+                width: 80,
+                sortable: false,
+                fixed: true,
+                formatter: function (val, obj, row, act) {
+                    var actions = [];
+                    if (val == 'new') {
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#xsXxDataGrid\').dataGrid(\'delRowData\',\'' + obj.rowId + '\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    } else {
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#xsXxDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    }
+                    return actions.join('');
+                },
+                editoptions: {defaultValue: 'new'}
+            }
+        ],
+
+        // 编辑表格参数
+        editGrid: true,				// 是否是编辑表格
+        editGridInitRowNum: 1,		// 编辑表格的初始化新增行数
+        editGridAddRowBtn: $('#xsXxDataGridAddRowBtn'),	// 子表增行按钮
+        editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
+
+        // 编辑表格的提交数据参数
+        editGridInputFormListName: 'xsXxList', // 提交的数据列表名
+        editGridInputFormListAttrs: 'status,id,xm,tx,xb,schid,rxnf,lxfs,khid.id,xxmc,xxlx,isjs,jskm,jsk,qxData,gksf,phcs,phzy,xkkm,sr,sm,kjsxf,sg,tz,ysyz,', // 提交数据列表的属性字段
+
+        // 加载成功后执行事件
+        ajaxSuccess: function (data) {
+
+        }
+    });*/
+</script>
+<script>
+    $("#inputForm").validate({
+        submitHandler: function (form) {
+            js.ajaxSubmitForm($(form), function (data) {
+                js.showMessage(data.message);
+                if (data.result == Global.TRUE) {
+                    js.closeCurrentTabPage(function (contentWindow) {
+                        contentWindow.page();
+                    });
+                }
+            }, "json");
+        }
+    });
+</script>

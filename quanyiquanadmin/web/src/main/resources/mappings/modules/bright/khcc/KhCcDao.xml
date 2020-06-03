@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.bright.khcc.dao.KhCcDao">
+	
+	<!-- 查询数据
+	<select id="findList" resultType="KhCc">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+
+	<!--支付成功核销-->
+	<select id="hxZfKhCc" parameterType="KhCc" resultType="KhCc" statementType="CALLABLE">
+		{
+			call proc_sp_hx(
+			#{khid,mode=IN,jdbcType=VARCHAR},
+			#{spid,mode=IN,jdbcType=VARCHAR},
+			#{hxid,mode=IN,jdbcType=VARCHAR},
+			#{hxsm,mode=IN,jdbcType=VARCHAR},
+			#{ret,mode=OUT,jdbcType=INTEGER},
+			#{retcode,mode=OUT,jdbcType=VARCHAR}
+			)
+		}
+	</select>
+	
+</mapper>

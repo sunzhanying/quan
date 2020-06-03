@@ -1,0 +1,177 @@
+<% layout('/layouts/default.html', {title: '订单管理', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+
+		<#form:form id="inputForm" model="${order}" action="${ctx}/order/order/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="row">
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('头像')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<img style="width: 60px" src="${order.khXx.wxtx}">
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('昵称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.khXx.wxnc}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('手机号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.khXx.sj}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('主标题')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.spXx.spmc}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('副标题')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.spXx.spfmc}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('券ID')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.spId}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('购买时单价')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.scj}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('订单数量')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.sl}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('订单价格')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.actualPayment}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('订单时间')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.createDate,dateFormat='yyyy-MM-dd HH:mm'}
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-4">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('订单编号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								${order.id}
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+			<!--<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('order:order:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>-->
+		</#form:form>
+
+		<#form:form id="searchForm" model="${qyhsMx}" action="${ctx}/qyhsmx/qyhsMx/orderListData" method="post" class="form-inline hide"
+				data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<#form:hidden path="orderId"/>
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+				<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+			</div>
+		</#form:form>
+		<table id="dataGrid"></table>
+		<div id="dataGridPage"></div>
+	</div>
+</div>
+<% } %>
+<script>
+	var csj = ${order.scj};            //出售价
+	var hsj = ${order.hsj}            //回收价
+    // 初始化DataGrid对象
+    $('#dataGrid').dataGrid({
+        searchForm: $("#searchForm"),
+        columnModel: [
+            {header:'${text("出售人")}', name:'', index:'', width:100, align:"left", formatter: function(val, obj, row, act){
+                return '<img style="width: 60px" src='+row.khXx.wxtx+'>  ' + row.khXx.wxnc;
+            }},
+            {header:'${text("出售数量")}', name:'count', index:'', width:100, align:"center"},
+            {header:'${text("出售时核定价格/元")}', name:'', index:'', width:100, align:"center",formatter:'number', formatoptions:{thousandsSeparator:',', decimalPlaces:'2' ,defaulValue:''},  formatter: function(val, obj, row, act){
+                return js.formatNumber(csj*row.count, 2, false, '');
+            }},
+            {header:'${text("获取收益/元")}', name:'', index:'', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.formatNumber(row.count*(csj - hsj), 2, false, '');
+            }},
+        ],
+        // 加载成功后执行事件
+        ajaxSuccess: function(data){
+
+        }
+    });
+
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

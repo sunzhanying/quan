@@ -1,0 +1,162 @@
+<% layout('/layouts/default.html', {title: '管理', libs: ['dataGrid']}){ %>
+
+<script type="text/javascript">
+    //生成二维码
+    function createQrCode(id,count) {
+        $.post("${ctx}/content/micro/microPage/qrCode", {id:id},function(data){
+                //alert("Data Loaded: " + data);
+				var text = "";
+                if (data != 200){
+                    $(".img"+count).attr("src",data);
+					text = "二维码已生成";
+                } else{
+					text = "二维码生成失败";
+                }
+				layer.msg(text);
+            });
+	}
+
+	function copy(id){
+		$(".biao"+id).select(); // 选择对象
+		document.execCommand("Copy"); // 执行浏览器复制命令
+		layer.msg("复制成功",'success');
+	}
+	//弹出二维码信息
+	function yemian(id) {
+		$("#imgurl").attr("src",$(".img"+id).attr("src"));
+		$("#uploadCode").attr("href",$(".img"+id).attr("src"));
+		$("#url").attr("value",$(".img"+id).attr("src"));
+		$("#more").attr("href","${ctx}/content/product/product/all");
+//页面层
+        layer.open({
+            type: 1,
+            title: '二维码',
+            //skin: 'layui-layer-rim', //加上边框
+            area: ['500px', '550px'],
+            content: $("#yemian").html()
+            ,btn: ['关闭']
+            ,yes: function(index, layero){
+                layer.close(index);
+            }
+        });
+    }
+</script>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('content:micro:microPage:edit')){ %>
+					<a href="${ctx}/content/micro/microPage/form" class="btn btn-default btnTool" title="${text('新增')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${microPage}" action="${ctx}/content/micro/microPage/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="title" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="materialStatus" dictType="material_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推广')}：</label>
+					<div class="control-inline">
+						<#form:input path="popularize" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('访问人次/人数')}：</label>
+					<div class="control-inline">
+						<#form:input path="people" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/content/micro/microPage/form?id='+row.id+'" class="btnList" data-title="${text("编辑")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("状态")}', name:'materialStatus', index:'a.material_status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('material_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("推广")}', name:'popularize', index:'a.popularize', width:150, align:"left",formatter:function (val,obj,row,act) {
+				return '<a href="#" onclick="yemian(\''+row.id+'\')"><img src="http://127.0.0.1:8089'+row.popularize+'" style="width: 60px;height: 60px" class="img'+row.id+'"></a>';
+		}},
+		{header:'${text("访问人次/人数")}', name:'people', index:'a.people', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('content:micro:microPage:edit')){ %>
+				actions.push('<a href="${ctx}/content/micro/microPage/form?id='+row.id+'" class="btnList" title="${text("编辑")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/content/micro/microPage/delete?id='+row.id+'" class="btnList" title="${text("删除")}" data-confirm="${text("确认要删除该吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                actions.push('<a href="#" onclick="createQrCode(\''+row.id+'\','+row.id+')" title="${text("生成二维码")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="#" onclick="copy(\''+row.id+'\')" title="${text("复制内部链接")}"><i class="fa fa-pencil"></i></a>&nbsp;<textarea  class="contentsCls img'+row.id+'" style="display: none" readonly="readonly">'+row.id+'</textarea>');
+
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>
+<div id="yemian" style="display: none">
+	内容地址：<input id = "url" type="text" value="">
+	<div style="margin-top: 30px;margin-left: 100px;margin-bottom: 20px">
+		<img id="imgurl" src="" style="display: block;">
+	</div>
+	<div>
+		<a href="#" download="" id="uploadCode" style="display: block;text-align: center">下载二维码</a>
+	</div>
+	<div>
+		<a href="#" download=""  style="display: block;">更多宣传手段和物料</a>
+	</div>
+</div>
+<style>
+	.layui-layer-title{
+		text-align: center;
+		padding: 0 ;
+	}
+	.layui-layer-content{
+		text-align:center;
+	}
+</style>

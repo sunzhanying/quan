@@ -1,0 +1,77 @@
+#正式环境配置
+##################bright项目###############################
+
+apiPath: /api
+weixin:
+  # 卖方
+  appid: 111
+  appsecret: 222
+  # 买方
+  appidA: 11111
+  appsecretA: 11111
+  Mch_id: 1569581121
+  Mch_key: 22222
+  mch_cet_dir: 1111
+  Notify_url: 2222
+
+  token:
+    header: X-Auth-Token
+
+
+#管理员号码
+admin_phone:
+
+
+#待支付订单超时自动取消 单位 分钟
+order_qx_time: 5
+
+#自动收货 单位 天
+order_sh_time: 7
+
+#pagehelper分页插件配置
+pagehelper:
+  helperDialect: mysql
+
+#  # Redis 连接参数 （RedisProperties）
+spring:
+  redis:
+    goods_prefix: goods
+    host: 1111
+    port: 6379
+    ssl: false
+    database: 1
+    password: 1111
+    timeout: 2000
+    lettuce:
+      pool:
+        # 最大空闲连接数
+        maxIdle: 3
+        # 最大活动连接数
+        maxActive: 20
+
+jdbc:
+  # Mysql 数据库配置
+  type: mysql
+  driver: com.mysql.jdbc.Driver
+  url: jdbc:mysql://127.0.0.1/qybrandhub?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+  username: root
+  password: 1111111
+  testSql: SELECT 1
+
+#文件配置
+file:
+  enabled: true
+#
+#  # 文件上传根路径，设置路径中不允许包含“userfiles”，在指定目录中系统会自动创建userfiles目录，如果不设置默认为contextPath路径
+  baseDir: /pic/${server.servlet.context-path}
+#
+#  # 上传文件的相对路径（支持：yyyy, MM, dd, HH, mm, ss, E）
+  uploadPath: '{yyyy}{MM}/'
+#
+#  # 上传单个文件最大字节（500M），在这之上还有 > Tomcat限制 > Nginx限制，等。
+  maxFileSize: 500*1024*1024
+#
+#  # 设置允许上传的文件后缀
+  imageAllowSuffixes: .gif,.bmp,.jpeg,.jpg,.ico,.png,.tif,.tiff,
+  mediaAllowSuffixes: .flv,.swf,.mkv,webm,.mid,.mov,.mp3,.mp4,.m4v,.mpc,.mpeg,.mpg,.swf,.wav,.wma,.wmv,.avi,.rm,.rmi,.rmvb,.aiff,.asf,.ogg,.ogv,
+  fileAllowSuffixes: .doc,.docx,.rtf,.xls,.xlsx,.csv,.ppt,.pptx,.pdf,.vsd,.txt,.md,.xml,.rar,.zip,7z,.tar,.tgz,.jar,.gz,.gzip,.bz2,.cab,.iso,.ipa,.apk,

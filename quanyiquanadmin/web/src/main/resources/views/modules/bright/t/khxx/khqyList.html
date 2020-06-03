@@ -1,0 +1,141 @@
+<% layout('/layouts/default.html', {title: '客户权益记录', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<ul class="nav nav-tabs">
+			<li role="presentation" ><a href="${ctx}/t/khxx/khXx/form?id=${khXx.id}">基础信息</a></li>
+            <li role="presentation" class="active"><a href="${ctx}/t/khxx/khXx/khqy?id=${khXx.id}">权益记录</a></li>
+			<li role="presentation"><a href="${ctx}/t/khxw/khXw?khid=${khXx.id}">行为记录</a></li>
+			<li role="presentation"><a href="${ctx}/t/propagate/khPropagate?khid=${khXx.id}">传播客户</a></li>
+		</ul>
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('会员明细')}
+			</div>
+
+		</div>
+		<div class="box-body">
+			<table id="dataGrid"></table>
+		</div>
+
+
+        <div class="box-header">
+            <div class="box-title">
+                <i class="fa fa-list-alt"></i> ${text('明细（剩余/总数）')}
+            </div>
+        </div>
+		<div class="box-body">
+			<table id="dataGrid2"></table>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+
+    function add0(m){return m<10?'0'+m:m }
+    $(document).ready(function () {
+        var data;
+        var data2;
+        $.ajax(
+            {
+                url:"${ctx}/t/coustomer/khXx/qylist?id=${khXx.id}",
+                async:false,
+                success:function (ret) {
+                    data=ret.qyjlList;
+                    data2=ret.tqmxList;
+                }
+            })
+        $('#dataGrid').dataGrid({
+            /*//指定数据表格发送ajax请求的地址
+            url:"${@Global.getConfig('inter_server')}/coustomer/khXx/qylist?id=srF86aGcTQXPDTc21qRxFuEEazhMO7",*/
+            //定义标题行所有的列
+            data: data,  // 应用动态生成的数据
+            datatype: "local",
+            columnModel:[
+                {header:'会员权益类型',field:'vipXx.hymc', name:'vipXx.hymc',},
+                {header:'购买时间',field:'payTime', name:'payTime'},
+                {header:'有效期',field:'vipXx.hysx', name:'vipXx.sxxz',formatter: function(val, obj, row, act){
+                    return row.vipXx.hysx+js.getDictLabel(${@DictUtils.getDictListJson('pr_time_type')}, val, '${text("未知")}', true);
+                }},
+                {header:'预计失效时间',field:'vipXx.sxsj', name:'vipXx.sxsj',formatter: function(val, obj, row, act){
+                    var time = new Date(parseInt(val));
+                    var y = time.getFullYear();
+                    var m = time.getMonth()+1;
+                    var d = time.getDate();
+                    var h = time.getHours();
+                    var mm = time.getMinutes();
+                    var s = time.getSeconds();
+
+                    return y+'-'+add0(m)+'-'+add0(d)+' '+add0(h)+':'+add0(mm)+':'+add0(s);
+                }
+                },
+                {header:'涉及订单编号',field:'id', name:'id'}
+                /*
+                            {title:'编号',field:'id',checkbox:true},
+                            {title:'姓名',field:'payment'},
+                            {title:'年龄',field:'contentId'},
+                            {title:'地址',field:'sxxz'}
+                */
+            ]/*,
+
+        rownumbers:true,
+        singleSelect:true,
+        //定义工具栏
+        toolbar:[
+            {text:'添加',iconCls:'icon-add',
+                //为按钮绑定单击事件
+                handler:function(){
+                    alert('add...');
+                }
+            },
+            {text:'删除',iconCls:'icon-remove'},
+            {text:'修改',iconCls:'icon-edit'},
+            {text:'查询',iconCls:'icon-search'}
+        ],*/
+        });
+
+
+        columns=[];
+		data3={};
+        $(data2).each(function (i,v) {
+            if(v.spXx.jldw==4){
+                if(v.kysl==1){
+
+                    data3[""+i]="开启";
+                }else{
+
+                    data3[""+i]="关闭";
+                }
+            }else{
+                data3[""+i]=v.kysl+"/"+v.zsl;
+            }
+            columns.push({header:v.spXx.spmc,name:""+i});
+        })
+		if(jQuery.isEmptyObject(data3)){
+            data3=data2;
+		}else{
+            data3=[data3];
+		}
+        $('#dataGrid2').dataGrid({
+            //定义标题行所有的列
+            data: data3,  // 应用动态生成的数据
+            datatype: "local",
+            columnModel:columns,
+
+        rownumbers:true,
+        singleSelect:true,
+        //定义工具栏
+        toolbar:[
+            {text:'添加',iconCls:'icon-add',
+                //为按钮绑定单击事件
+                handler:function(){
+                    alert('add...');
+                }
+            },
+            {text:'删除',iconCls:'icon-remove'},
+            {text:'修改',iconCls:'icon-edit'},
+            {text:'查询',iconCls:'icon-search'}
+        ],
+        });
+    })
+
+</script>

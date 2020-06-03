@@ -1,0 +1,88 @@
+<% layout('/layouts/default.html', {title: '客户行为管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<ul class="nav nav-tabs">
+			<li role="presentation" ><a href="${ctx}/t/khxx/khXx/form?id=${khXw.khid}">基础信息</a></li>
+			<!--<li role="presentation"><a href="${ctx}/t/khxx/khXx/khqy?id=${khXw.khid}">权益记录</a></li>-->
+			<li role="presentation" class="active"><a href="${ctx}/t/khxw/khXw?khid=${khXw.khid}">行为记录</a></li>
+			<!--<li role="presentation"><a href="${ctx}/t/propagate/khPropagate?proKhid=${khXw.khid}">传播客户</a></li>-->
+		</ul>
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('客户行为管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('t:khxw:khXw:edit')){ %>
+					<a href="${ctx}/t/khxw/khXw/form" class="btn btn-default btnTool" title="${text('新增客户行为')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+				<#form:form id="searchForm" model="${khXw}" action="${ctx}/t/khxw/khXw/listData" method="post" class="form-inline hide"
+                        data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+					<#form:hidden path="khid" maxlength="64" class="form-control width-120"/>
+
+					<!--<div class="form-group">
+                        <label class="control-label">${text('行为名称')}：</label>
+                        <div class="control-inline">
+                            <#form:input path="xwmc" maxlength="500" class="form-control width-120"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">${text('订单id')}：</label>
+                        <div class="control-inline">
+                            <#form:input path="diid" maxlength="64" class="form-control width-120"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">${text('备注信息')}：</label>
+                        <div class="control-inline">
+                            <#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">${text('删除标记')}：</label>
+                        <div class="control-inline">
+                            <#form:input path="delFlag" maxlength="1" class="form-control width-120"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+                        <button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+                    </div>-->
+                </#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+      /*  { header:'${text("客户id")}', name:'khid', index:'a.khid', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+                return '<a href="${ctx}/t/khxw/khXw/form?id='+row.id+'" class="btnList" data-title="${text("编辑客户行为")}">'+(val||row.id)+'</a>';
+        }},*/
+		{header:'${text("行为名称")}', name:'xw.name', index:'a.xw.name', width:150, align:"center"},
+		{header:'${text("行为描述")}', name:'xwms', index:'a.xwms', width:150, align:"left"},
+		{header:'${text("订单id")}', name:'diid', index:'a.diid', width:150, align:"left"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},/*
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("删除标记")}', name:'delFlag', index:'a.del_flag', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('t:khxw:khXw:edit')){ %>
+				actions.push('<a href="${ctx}/t/khxw/khXw/form?id='+row.id+'" class="btnList" title="${text("编辑客户行为")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}*/
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		$("#btnSearch").css("display","none");
+	}
+});
+</script>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.bright.content.dao.meterail.MeterialDao">
+	
+	<!-- 查询数据
+	<select id="findList" resultType="Meterial">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+
+
+	<select id="findAllList"  parameterType="java.util.Map" resultType="com.jeesite.modules.bright.content.entity.meterail.Meterial" >
+		select * from meterial where status != "1" and material_status = "1"
+		<if test="typeid != null and typeid != ''">
+			and type in (select code from meterial_type where code = #{typeid} or FIND_IN_SET(#{typeid},parent_codes))
+		</if>
+		<if test="attributeName != null and attributeName != ''">
+			and attribute_name = #{attributeName}
+		</if>
+		and attribute_name != "视频"
+		<if test="name != null and name != ''">
+			AND (title like concat('%',#{name},'%') OR intro like concat('%',#{name},'%'))
+		</if>
+
+		ORDER BY  
+		<if test="sort != null and sort != ''">
+			<if test="sort == '1'.toString()">
+				case WHEN (id in (SELECT meterial_id from meterial_like GROUP BY meterial_id ORDER BY COUNT(*) DESC)) THEN 0 else 1 END,
+			</if>
+
+		</if>
+		create_date
+		DESC
+	</select>
+</mapper>

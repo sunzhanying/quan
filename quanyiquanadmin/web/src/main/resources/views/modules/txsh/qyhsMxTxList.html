@@ -1,0 +1,43 @@
+<% layout('/layouts/default.html', {title: '权益回收明细管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-body">
+			<#form:form id="searchForm" model="${qyhsMx}" action="${ctx}/qyhsmx/qyhsMx/qyhsMxTxList" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<#form:hidden path="sqdh"/>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+        {header:'${text("出售人")}', name:'', index:'', width:100, align:"left", formatter: function(val, obj, row, act){
+            return '<img style="width: 60px" src='+row.khXx.wxtx+'>  ' + row.khXx.wxnc;
+        }},
+        {header:'${text("相关订单号")}', name:'orderId', index:'', width:100, align:"center"},
+        {header:'${text("卖方收益")}', name:'sy', index:'', width:100, align:"center"},
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+
+	}
+});
+
+//放大图片
+function photos(obj)
+{
+    //console.log(obj.src);
+    layer.photos({photos: {"title":"","id":123,"data":[{"alt":"","pid":"","src":obj.src}]}
+    ,anim:5});
+}
+</script>

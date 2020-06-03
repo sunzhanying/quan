@@ -1,0 +1,367 @@
+<% layout('/layouts/default.html', {title: '管理', libs: ['validate','fileupload','dataGrid']}){ %>
+<script type="text/javascript" src="${ctxStatic}/js/qrcode.js"></script>
+<script type="text/javascript" src="${ctxStatic}/js/qrcode.min.js"></script>
+<script type="text/javascript" src="https://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+<script type="text/javascript" src="${ctxStatic}/js/md5.js"></script>
+
+<div class="main-content">
+    <div class="box box-main">
+        <ul class="nav nav-tabs">
+            <li role="presentation" class="active"><a
+                    href="${ctx}/content/meterail/meterial/propagate/spread?id=${meterial.id}">传播你的内容</a></li>
+            <li role="presentation"><a href="${ctx}/content/meterail/meterial/propagate/flow?id=${meterial.id}">流量分析</a>
+            </li>
+        </ul>
+        <#form:form id="inputForm" model="${meterial}" method="post" class="form-horizontal">
+        <#form:hidden path="id"/>
+        <div class="box-body">
+            <div class="row">
+                <div>
+                    <label style="margin-left: 10px;"><span class=" hide">*</span> ${text('标题')}：<i
+                            class="fa icon-question hide"></i></label>
+
+                    <div style="margin-left: 40px;width: 500px;">
+                        <#form:input path="title" maxlength="255" class="form-control"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div style="padding-top: 20px;">
+                    <label style="margin-left: 10px;"><span class=" hide">*</span> ${text('传播')}：<i
+                            class="fa icon-question hide"></i></label>
+
+                    <div style="margin-left: 40px">
+
+                        <p>下面是本内容的URL和对应的二维码，你可以把它嵌入到各种投放媒体进行传播</p>
+                        <div style="width: 500px;"><#form:input path="qdLink" maxlength="255" class="form-control"/>
+                        </div>
+                        <p>本内容对应的二维码，你也可以下载不同尺寸的二维码</p>
+                        <#form:hidden path="qdcode" maxlength="255" class="form-control"/>
+
+                        <div style="margin: 30px;display: flex;align-items: flex-start">
+                            <div style="float: left">
+                                <div id="bigQrcode"></div>
+                                <!--<img id="bigQrcode" src="" style="display: block;">-->
+                            </div>
+                            <div style="display:none" id="download"></div>
+                            <a id="downloadLink"></a>
+                            <div style="float: right">
+                                <table style="width: 600px;margin-left: 20px;margin-top: 40px;border-spacing: 0;border-collapse: separate;max-width: 100%;background-color: transparent;empty-cells: show;">
+                                    <thead style="display: table-header-group;vertical-align: middle;border-color: inherit;">
+                                    <th>尺寸(分辨率)</th>
+                                    <th>使用场景</th>
+                                    <th>扫描距离(米)</th>
+                                    <th>二维码下载</th>
+                                    </thead>
+                                    <tbody style="display: table-row-group;vertical-align: middle;border-color: inherit;">
+                                    <tr>
+                                        <td>小(430 * 430)</td>
+                                        <td>手机端、PC端</td>
+                                        <td>0.5米</td>
+                                        <td><a size="430" href="javascript:;"
+                                               class="glyphicon glyphicon-save am-icon-download" aria-hidden="true"></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>中(800 * 800)</td>
+                                        <td>PC端、大屏幕</td>
+                                        <td>1米</td>
+                                        <td><a size="800" href="javascript:;"
+                                               class="glyphicon glyphicon-save am-icon-download" aria-hidden="true"></a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>大(1600 * 1600)</td>
+                                        <td>大屏幕、印刷</td>
+                                        <td>2.5米</td>
+                                        <td><a size="1600" href="javascript:;"
+                                               class="glyphicon glyphicon-save am-icon-download" aria-hidden="true"></a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <p>如果要投放到外部营销渠道，你可以为URL加上渠道来源参数，进行来源追踪和统计</p>
+                        <table id="dataGrid2"
+                               style="width: 100%;border-spacing: 0;border-collapse: separate;max-width: 100%;background-color: transparent;empty-cells: show;"></table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-10">
+
+                    <button type="button" class="btn btn-sm btn-default" data-toggle="modal" data-target="#myModal"><i
+                            class="fa fa-plus-square"></i>${text('创建可追踪的URL')}
+                    </button>
+                    <button type="button" class="btn btn-sm btn-default" id="btnCancel"
+                            onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </#form:form>
+</div>
+</div>
+
+<!--渠道表-->
+<#form:form id="searchForm2" model="${meterialChannel}" action="${ctx}/content/meterail/channel/meterialChannel/listData?meterialId=${meterial.id}&status=0" method="post"  class="form-horizontal">
+
+</#form:form>
+<% } %>
+
+<style>
+    .layui-layer-title {
+        text-align: center;
+        padding: 0;
+    }
+
+    .layui-layer-content {
+        text-align: center;
+    }
+
+    .col-xs-6 {
+        width: 80%;
+    }
+
+    .glyphicon-save {
+        color: #0e90d2;
+    }
+</style>
+
+<!--创建可追踪的url页面-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <#form:form id="chanForm" model="${meterialChannel}"
+            action="${ctx}/content/meterail/channel/meterialChannel/save" class="form-horizontal layui-form">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title center" id="myModalLabel" style="text-align: center">
+                    创建可追踪URL
+                </h4>
+            </div>
+            <div class="modal-body">
+                <#form:hidden path="linkUrl" class="form-control"/>
+                <#form:hidden path="meterialId" maxlength="255" class="form-control"/>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required "></span> ${text('来源渠道')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:select path="sourceId" class="form-control" itemLabel="name" itemValue="id"
+                                items="${urlSourceList}"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required "></span> ${text('来源内容')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="sourceContent" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" id="close"><i
+                        class="fa fa-reply-all"></i> ${text('关 闭')}
+                </button>
+                <button type="button" class="btn  btn-primary btn-default" id="btnSubmit"><i class="fa fa-check"></i>
+                    ${text('保 存')}
+                </button>&nbsp;
+
+            </div>
+        </#form:form>
+    </div><!-- /.modal-content btn-sm-->
+</div><!-- /.modal -->
+</div>
+
+<div class="modal fade" id="yemian2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title center" id="myModalLabel2" style="text-align: center">
+                    URL
+                </h4>
+            </div>
+            <div class="modal-body" style="margin: 30px 120px;">
+                URL：<input id="qdcodeUrl" type="text" style="width: 280px;" value="">
+                <div style="margin: 30px 60px;">
+                    <div id="qdcodeImg"></div>
+                    <!--<a href="" id="qdcodeImg" download="" style="display: block;text-align: center"></a>-->
+                </div>
+                <a size="550" href="javascript:;"
+                        class="download_icon" style="margin: 0 140px" aria-hidden="true">下载</a>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i
+                        class="fa fa-reply-all"></i> ${text('关 闭')}
+                </button>
+            </div>
+        </div><!-- /.modal-content btn-sm-->
+    </div><!-- /.modal -->
+</div>
+
+
+<script type="text/javascript">
+    $.ajaxSettings.async = false;
+    window.resultData = null;
+    $('#dataGrid2').dataGrid({
+        searchForm: $("#searchForm2"),
+        columnModel: [
+            {header: '${text("来源")}', name: 'source.name', index: 'a.source_id', width: 60, align: "center"},
+            {header: '${text("来源内容")}', name: 'sourceContent', index: 'a.source_content', width: 80, align: "center"},
+            {
+                header: '${text("可追踪url")}',
+                name: 'linkUrl',
+                index: 'a.link_url',
+                width: 350,
+                align: "left",
+                formatter: function (val, obj, row, act) {
+                    return '<lable class="url' + row.id + '">' + val + '</lable>';
+                }
+            },
+            {
+                header: '${text("二维码")}',
+                name: 'qrcode',
+                index: 'a.qrcode',
+                width: 60,
+                align: "center",
+                formatter: function (val, obj, row, act) {
+                    //return '<a href="#" onclick="yemian(\''+row.id+'\')"><img src="'+row.qrcode+'" style="width: 60px;height: 60px" class="img'+row.id+'"></a>';
+                    return '<a href="#" data-toggle="modal" data-target="#yemian2" onclick="yemian(\'' + row.id + '\')"> <div id="img' + row.id + '" ></div></a>';
+                }
+            },
+            {header: '${text("创建时间")}', name: 'createDate', index: 'a.create_date', width: 100, align: "center"},
+            {
+                header: '${text("操作")}',
+                name: 'actions',
+                width: 80,
+                sortable: false,
+                title: false,
+                formatter: function (val, obj, row, act) {
+                    var actions = [];
+                    actions.push('<a href="${ctx}/content/meterail/channel/meterialChannel/delete?id=' + row.id + '" class="btnList" title="${text("删除")}" data-confirm="${text("确认要删除该条记录吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    return actions.join('');
+                }
+            }
+        ],
+        // 加载成功后执行事件
+        ajaxSuccess: function (data) {
+            resultData = data;
+        }
+    });
+
+    $(document).ready(function () {
+        //渠道二维码(含id、来源、来源内容)
+        $.each(resultData.list, function (index, value) {
+            var externalLinkCode = new QRCode(document.getElementById("img" + value.id), {
+                width: 20, //生成的二维码的宽度
+                height: 20, //生成的二维码的高度
+                correctLevel: 3
+                //correctLevel: QRCode.CorrectLevel.H
+            });
+            externalLinkCode.makeCode(value.linkUrl);
+            //externalLinkCode.makeCode("http://brandhub.lemondm.com${ctx}/content/meterail/meterial/propagate/spread?id='${meterial.id}'");
+        });
+        //大渠道二维码(包含素材id)
+        $("#qdLink").val("${@Global.getConfig('qrCode_realm_name')}/meterial/url=/pages/home/recipeDetail/recipeDetail?id=${meterial.id}");
+        var qdcode = new QRCode(document.getElementById("bigQrcode"), {
+                        width: 220, //生成的二维码的宽度
+                        height: 220, //生成的二维码的高度
+                        correctLevel: 3
+                        //correctLevel: QRCode.CorrectLevel.H
+                    });
+                    qdcode.makeCode($("#qdLink").val());
+        //下载大二维码(含id)
+        $('.am-icon-download').click(function () {
+            var size = $(this).attr('size');
+            var url = $("#qdLink").val();
+            $('#download').html('');
+            var qrcode = new QRCode('download', {
+                text: url,
+                width: size,
+                height: size,
+                correctLevel: QRCode.CorrectLevel.H
+            })
+            var canvas = $('#download').find('canvas')[0];
+            var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            var a = document.createElement('a');
+            a.download = md5(url) + '_' + size + '.png';
+            a.href = image;
+            a.click();
+        })
+
+        $('.download_icon').click(function () {
+            var size = $(this).attr('size');
+            var url = $("#qdcodeUrl").val();
+            $('#download').html('');
+            var qrcode = new QRCode('download', {
+                text: url,
+                width: size,
+                height: size,
+                correctLevel: QRCode.CorrectLevel.H
+            })
+            var canvas = $('#download').find('canvas')[0];
+            var image = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
+            var a = document.createElement('a');
+            a.download = md5(url) + '_' + size + '.png';
+            a.href = image;
+            a.click();
+        })
+
+
+        //渠道提交
+        $("#btnSubmit").click(function () {
+            $("#meterialId").val($("#id").val());
+            $("#linkUrl").val($("#qdLink").val() + "&sourceId=" + $("#sourceId").val() + "&sourceContent=" + $("#sourceContent").val());
+            $.post("${ctx}/content/meterail/channel/meterialChannel/save", $('#chanForm').serialize(), function (data) {
+                data = JSON.parse(data);
+                if (data.message == "success") {
+                    layer.msg("保存成功");
+                    $("#close").click();
+                    location.reload();
+                } else {
+                    layer.msg("出错了哟~~赶紧联系一下程序员小哥哥吧~");
+                }
+            });
+        })
+    });
+
+    /**
+     * 点击二维码弹出页面层
+     * @param id
+     */
+    function yemian(id) {
+        $("#qdcodeUrl").attr("value", $(".url" + id).html());
+        $("#qdcodeImg").empty();
+        var qdcode = new QRCode(document.getElementById("qdcodeImg"), {
+            width: 220, //生成的二维码的宽度
+            height: 220, //生成的二维码的高度
+            correctLevel: 3
+            //correctLevel: QRCode.CorrectLevel.H
+        });
+        qdcode.makeCode($("#qdcodeUrl").val());
+        //qdcode.makeCode("http://brandhub.lemondm.com${ctx}/content/meterail/meterial/propagate/spread?id=${meterial.id}");
+    }
+
+</script>
+
+

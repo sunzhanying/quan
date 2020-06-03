@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.bright.t.dao.group.GroupDao">
+	
+	 <!--查询用户分组-->
+	<select id="selectGroupByKhXx" resultType="Group">
+		SELECT ${group.sqlMap.column.toSql()}
+		FROM ${group.sqlMap.table.toSql()}
+			inner join t_group_kh b on
+		a.id=b.group_id and  b.khid=#{khXx.id}
+		<where>
+			${group.sqlMap.where.toSql()}
+
+		</where>
+		ORDER BY ${group.sqlMap.order.toSql()}
+	</select>
+	
+</mapper>

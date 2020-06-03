@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.bright.t.dao.khxx.KhXxDao">
+	
+	 <!--查询数据-->
+	<select id="sql" resultType="KhXx">
+		SELECT ${khXx.sqlMap.column.toSql()}
+		FROM ${khXx.sqlMap.table.toSql()}
+		<where>
+			#{sql}
+		</where>
+		ORDER BY ${khXx.sqlMap.order.toSql()}
+	</select>
+	
+</mapper>

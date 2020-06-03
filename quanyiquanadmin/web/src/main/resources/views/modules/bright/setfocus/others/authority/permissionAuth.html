@@ -1,0 +1,31 @@
+<% layout('/layouts/default.html', {title: '传播人权限', libs: ['validate']}){ %>
+<div class="main-content">
+    <div class="box box-main">
+
+        <#form:form id="inputForm" model="${config}" action="${ctx}/setfocus/others/authority/permissionAuth/save" method="post" class="form-horizontal">
+        <!--<#form:hidden path="id"/>
+        <#form:hidden path="configName"/>
+        <#form:hidden path="configKey"/>
+        <#form:hidden path="configValue"/>
+        <#form:hidden path="isSys"/>
+        <#form:hidden path="remarks"/>-->
+        <div class="box-body">
+            <div class="form-unit">${text('传播人权限')}</div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label col-sm-4">${text('默认开启')}：</label>
+                        <div class="col-sm-8">
+                            <#form:radio path="configValue" maxlength="255" dictType="sys_yes_no" class="form-control"/>
+                            <button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-filter"></i> ${text('更 新')}</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </#form:form>
+</div>
+</div>
+<% } %>

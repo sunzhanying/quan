@@ -1,0 +1,92 @@
+<% layout('/layouts/default.html', {title: '会员信息表，定义会员级别名称管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('会员信息表，定义会员级别名称管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('vip:vipXx:edit')){ %>
+					<a href="${ctx}/vip/vipXx/form" class="btn btn-default btnTool" title="${text('新增会员信息表，定义会员级别名称')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${vipXx}" action="${ctx}/vip/vipXx/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('会员名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="hymc" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+			<div class="form-group">
+				<label class="control-label">${text('状态')}：</label>
+				<div class="control-inline">
+					<#form:radio path="sxj" dictType="status" blankOption="true" class="form-control"/>
+				</div>
+			</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("会员名称")}', name:'hymc', index:'a.hymc', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+                return '<a href="${ctx}/vip/vipXx/form?id='+row.id+'" class="btnList" data-title="${text("编辑会员信息表，定义会员级别名称")}">'+(val||row.id)+'</a>';
+            }},
+        {header:'${text("状态")}', name:'sxj', index:'a.sxj', width:150, align:"left", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('status')}, val, '${text("未知")}', true);
+            }},
+		{header:'${text("会员价格")}', name:'hyjg', index:'a.hyjg', width:150, align:"right", formatter: function(val, obj, row, act){
+			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+		}},
+		{header:'${text("权益明细")}', name:'spbdy', index:'', width:150, align:"left", formatter: function(val, obj, row, act){
+                var spmx = '';
+                for (var i=0; i < val.spbmxList.length; i++){
+                    spmx +=  val.spbmxList[i].spXx.spmc + '(' + val.spbmxList[i].sl + ')<br>'
+
+                }
+                return spmx;
+            }
+		},
+		{header:'${text("失效时间")}', name:'hysx', index:'a.hysx', width:150, align:"center", formatter: function(val, obj, row, act){
+                var sx = '购买后' + val;
+				if (row.sxxz == 1){
+                    sx += '年';
+				}else if (row.sxxz == 2){
+                    sx += '月';
+				}else {
+                    sx += '日';
+				}
+                return sx + '后失效';
+            }
+		},
+		{header:'${text("会员级别  数越大权益越多")}', name:'hyjb', index:'a.hyjb', width:150, align:"center"},
+		{header:'${text("会员说明")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('vip:vipXx:edit')){ %>
+				actions.push('<a href="${ctx}/vip/vipXx/form?id='+row.id+'" class="btnList" title="${text("编辑会员信息表，定义会员级别名称")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/vip/vipXx/delete?id='+row.id+'" class="btnList" title="${text("删除会员信息表，定义会员级别名称")}" data-confirm="${text("确认要删除该会员信息表，定义会员级别名称吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

@@ -1,0 +1,97 @@
+<% layout('/layouts/default.html', {title: '客户传播管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<ul class="nav nav-tabs">
+			<li role="presentation"><a href="${ctx}/t/khxx/khXx/form?id=${khPropagate.proKhid}">基础信息</a></li>
+			<li role="presentation"><a href="${ctx}/t/khxx/khXx/khqy?id=${khPropagate.proKhid}">权益记录</a></li>
+			<li role="presentation"><a href="${ctx}/t/khxw/khXw?khid=${khPropagate.proKhid}">行为记录</a></li>
+			<li role="presentation" class="active"><a href="${ctx}/t/propagate/khPropagate?proKhid=${khPropagate.proKhid}">传播客户</a></li>
+		</ul>
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('客户传播管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<!--<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>-->
+				<% if(hasPermi('t:propagate:khPropagate:edit')){ %>
+					<a href="${ctx}/t/propagate/khPropagate/form" class="btn btn-default btnTool" title="${text('新增客户传播')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${khPropagate}" action="${ctx}/t/propagate/khPropagate/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<#form:hidden path="proKhid"/>
+				<!--<div class="form-group">
+					<label class="control-label">${text('传播人')}：</label>
+					<div class="control-inline">
+						<#form:input path="proKhid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('被邀请人')}：</label>
+					<div class="control-inline">
+						<#form:input path="beKhid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('内容')}：</label>
+					<div class="control-inline">
+						<#form:input path="productId" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>-->
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+        {header:'${text("微信头像")}', name:'beKhxx.wxtx', index:'a.beKhxx.wxtx', width:150, align:"left",formatter: function(val, obj, row, act){
+            return '<img style="width: 50px;height: 50px" src="'+val+'"  />';
+        }},
+        {header:'${text("微信昵称")}', name:'beKhxx.wxnc', index:'a.beKhxx.wxnc', width:150, align:"left"},
+        {header:'${text("姓名")}', name:'beKhxx.xm', index:'a.beKhxx.xm', width:150, align:"left"},
+
+        {header:'${text("手机")}', name:'beKhxx.sj', index:'a.beKhxx.sj', width:150, align:"left"},
+
+		{header:'${text("内容")}', name:'title', index:'a.title', width:150, align:"left"},
+
+		{header:'${text("创建时间")}', name:'createDate', index:'a.create_date', width:150, align:"center"},
+		/*{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},*/
+		/*{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('t:propagate:khPropagate:edit')){ %>
+				actions.push('<a href="${ctx}/t/propagate/khPropagate/form?id='+row.id+'" class="btnList" title="${text("编辑客户传播")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/t/propagate/khPropagate/delete?id='+row.id+'" class="btnList" title="${text("删除客户传播")}" data-confirm="${text("确认要删除该客户传播吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}*/
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

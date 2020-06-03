@@ -1,0 +1,214 @@
+<% layout('/layouts/default.html', {title: '优惠券管理', libs: ['validate','fileupload']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(spYhq.isNewRecord ? '新增优惠券' : '编辑优惠券')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${spYhq}" action="${ctx}/sp/yhq/spYhq/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required">*</span> ${text('优惠券名称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhName" maxlength="255" class="form-control required"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('优惠券副名称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhFname" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('优惠图片')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:hidden path="yhImg"/>
+								<#form:fileupload id="upload1"
+								uploadType="image" returnPath="true"
+								filePathInputId="yhImg" class="" readonly="false" maxUploadNum="1"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required">*</span> ${text('优惠券类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="type" dictType="yhq_type" blankOption="true" class="form-control required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required">*</span> ${text('用户类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="userType" dictType="yhq_user_type" blankOption="true" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6 mj">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('满减')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhMj" onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control number"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required">*</span> ${text('优惠金额')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhJe" onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control required number"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('优惠范围')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="yhFw" dictType="yhq_yh_fw" blankOption="true" class="form-control required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="sxj" dictType="status" blankOption="true" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('失效性质')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="yhSxlx" dictType="yhq_sx_lx" blankOption="true" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row gdrq">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('优惠开始')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhStart" readonly="true" maxlength="20" class="form-control Wdate "
+									dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('优惠结束')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhEnd" readonly="true" maxlength="20" class="form-control Wdate "
+									dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row rsx">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('几日后失效')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="yhRsx" maxlength="255" class="form-control "/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('sp:yhq:spYhq:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+
+// 根据失效性质显示不同的元素
+$('#yhSxlx input').on('ifCreated ifChecked', function(){
+    if ($(this).is(':checked')){
+
+        if ($(this).val() == '1'){
+            $('.gdrq').show();
+            $('.rsx').hide();
+        }else{
+            $('.rsx').show();
+            $('.gdrq').hide();
+        }
+    }
+});
+
+// 根据优惠券类型显示不同的元素
+$('#type input').on('ifCreated ifChecked', function(){
+    if ($(this).is(':checked')){
+
+        if ($(this).val() == '1'){
+            $('.mj').hide();
+        }else{
+            $('.mj').show();
+        }
+    }
+});
+</script>

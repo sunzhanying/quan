@@ -1,0 +1,98 @@
+<% layout('/layouts/default.html', {title: '优惠券管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('优惠券管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('sp:yhq:spYhq:edit')){ %>
+					<a href="${ctx}/sp/yhq/spYhq/form" class="btn btn-default btnTool" title="${text('新增优惠券')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${spYhq}" action="${ctx}/sp/yhq/spYhq/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+
+				<div class="form-group">
+					<label class="control-label">${text('类型')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="type" dictType="yhq_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('优惠名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="yhName" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+        {header:'${text("优惠名称")}', name:'yhName', index:'a.yh_name', width:150, align:"left", formatter: function(val, obj, row, act){
+                return '<a href="${ctx}/sp/yhq/spYhq/form?id='+row.id+'" class="btnList" data-title="${text("编辑优惠券")}">'+(val||row.id)+'</a>';
+            }},
+        {header:'${text("优惠券图片")}', name:'yhImg', index:'a.yh_img', width:150, align:"left", formatter: function(val, obj, row, act){
+                return '<img style="width: 60px" src='+row.yhImg+'>';
+            }},
+		{header:'${text("状态")}', name:'sxj', index:'a.sxj', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('status')}, val, '${text("未知")}', true);
+            }},
+		{header:'${text("优惠券类型")}', name:'type', index:'a.type', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('yhq_type')}, val, '${text("未知")}', true);
+		}},
+        {header:'${text("用户类型")}', name:'userType', index:'a.user_type', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('yhq_user_type')}, val, '${text("未知")}', true);
+            }},
+		{header:'${text("优惠金额")}', name:'yhJe', index:'a.yh_je', width:150, align:"right", formatter: function(val, obj, row, act){
+			var str = "";
+			if (row.type == 1){
+				str = js.formatNumber(val, 2, false, '');
+            } else{
+				str = "满"+js.formatNumber(row.yhMj, 2, false, '')+"减"+js.formatNumber(val, 2, false, '');;
+            }
+		    return  str;// 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+		}},
+		{header:'${text("优惠范围")}', name:'yhFw', index:'a.yh_fw', width:150, align:"left", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('yhq_yh_fw')}, val, '${text("未知")}', true);
+            }},
+		{header:'${text("有效期")}', name:'yhSxlx', index:'a.yh_sxlx', width:150, align:"left", formatter: function(val, obj, row, act){
+            var str = "";
+            if (val == 1){
+				str = row.yhStart + "—" + row.yhEnd;
+            }else {
+             	str = "购买后" + row.yhRsx + "后失效";
+            }
+		    return str;
+            }},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('sp:yhq:spYhq:edit')){ %>
+				actions.push('<a href="${ctx}/sp/yhq/spYhq/form?id='+row.id+'" class="btnList" title="${text("编辑优惠券定义表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/sp/yhq/spYhq/delete?id='+row.id+'" class="btnList" title="${text("删除优惠券定义表")}" data-confirm="${text("确认要删除该优惠券定义表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

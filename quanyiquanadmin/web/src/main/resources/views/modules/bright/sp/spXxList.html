@@ -1,0 +1,212 @@
+<% layout('/layouts/default.html', {title: '权益券信息管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('权益券信息管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('sp:spXx:edit')){ %>
+					<a href="${ctx}/sp/spXx/form" class="btn btn-default btnTool" title="${text('新增权益券信息')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${spXx}" action="${ctx}/sp/spXx/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('分类')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="splx" items="${spTypeList}" itemLabel="name" itemValue="id" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('类型')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="type" dictType="qyq_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('权益券名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="spmc" maxlength="50" class="form-control width-120"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+
+<% } %>
+<div id="qrcode" style="display: none">
+	<div style="margin-top: 30px;margin-left: 100px;margin-bottom: 20px">
+		<img id="ingurl" src="" style="display: block;">
+	</div>
+	<div>
+		<a href="" id="codexz" download="" style="display: block;text-align: center">下载二维码</a>
+	</div>
+</div>
+<script src="${ctxStatic}/common/clipboard.min.js"></script>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+        {header:'${text("状态")}', name:'status', index:'a.status', width:80, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("分类")}', name:'spType.name', index:'u12.name', width:100, align:"left"},
+        {header:'${text("图片")}', name:'img', index:'a.img', width:100, align:"left", formatter: function(val, obj, row, act){
+            return '<img style="width: 60px" src='+row.img+'>';
+        }},
+		{header:'${text("标题")}', name:'spmc', index:'a.spmc', width:150, align:"left", formatter: function(val, obj, row, act){
+                return '<a href="${ctx}/sp/spXx/form?id='+row.id+'" class="btnList" data-title="${text("编辑权益券信息")}">'+val+'</a>';
+            }},
+        {header:'${text("类型")}', name:'type', index:'a.type', width:80, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('qyq_type')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("回收价/元")}', name:'qyjg.hsj', index:'', width:80, align:"center"},
+        {header:'${text("出售价/元")}', name:'qyjg.csj', index:'', width:80, align:"center"},
+        {header:'${text("库存数量")}', name:'kc', index:'', width:80, align:"center"},
+		/*{header:'${text("会员权益权益券")}', name:'ishyqy', index:'a.ishyqy', width:150, align:"left", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('vip_qy')}, val, '${text("未知")}', true);
+            }},
+		{header:'${text("权益券原价")}', name:'spjg', index:'a.spjg', width:150, align:"right", formatter: function(val, obj, row, act){
+			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+		}},
+		{header:'${text("会员价格")}', name:'hyjg', index:'a.hyjg', width:150, align:"right", formatter: function(val, obj, row, act){
+			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+		}},
+		{header:'${text("计量单位")}', name:'jldw', index:'a.jldw', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('jldw')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("优惠券使用")}', name:'useYhq', index:'a.use_yhq', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('is_yhq')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("积分兑换")}', name:'useJf', index:'a.use_jf', width:150, align:"center", formatter: function(val, obj, row, act){
+            var str = val;
+		    if (val == 0){
+				str = "不可兑换";
+            }
+		    return str;
+            }},
+		{header:'${text("二维码")}', name:'qrcode', index:'a.qrcode', width:150, align:"center", formatter: function(val, obj, row, act){
+                return '<i class="glyphicon glyphicon-qrcode" onclick=qrcode("'+row.id+'") style="font-size: 25px"></i>';
+            }},*/
+        {header:'${text("来源")}', name:'source', index:'a.source', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:150, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('sp:spXx:edit')){ %>
+				actions.push('<a href="${ctx}/sp/spXx/form?id='+row.id+'" class="btnList" title="${text("编辑权益券信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+                if (row.status == Global.STATUS_NORMAL){
+                    actions.push('<a href="${ctx}/sp/spXx/disable?id='+row.id+'" class="btnList" title="${text("停用券")}" data-confirm="${text("确认要停用该券吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+                }
+                if (row.status == Global.STATUS_DISABLE){
+                    actions.push('<a href="${ctx}/sp/spXx/enable?id='+row.id+'" class="btnList" title="${text("启用券")}" data-confirm="${text("确认要启用该券吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+                }
+
+                actions.push('<a href="javascript:" onclick=dzJg("'+ row.id +'") class="" title="${text("价格调整")}"><i class="fa fa-paper-plane"></i></a>&nbsp;');
+                actions.push('<a href="javascript:" onclick=ckkc("'+ row.id +'",'+ row.kc +') class="" title="${text("查看库存")}"><i class="fa fa-gg"></i></a>&nbsp;');
+
+                actions.push('<a href="${ctx}/sp/spXx/delete?id='+row.id+'" class="btnList" title="${text("删除权益券")}" data-confirm="${text("确认要删除该权益券吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+
+				actions.push('<a href="#" class="btnfz" data-clipboard-text="'+row.id+'" title="${text("复制内部链接")}"><i class="fa fa-file-text"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+   // shrinkToFit: false,
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+
+
+//调整价格
+function dzJg(id) {
+    console.log(id);
+    layer.open({
+        type: 2,
+        maxmin: true,
+        shadeClose: true,
+        title :'调整价格',
+        area: ['800px', '500px'],
+        content: '${ctx}/qyjg/qyjg/?qyqId=' + id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+    });
+}
+//查看库存
+function ckkc(id, kc) {
+    console.log(id);
+    layer.open({
+        type: 2,
+        maxmin: true,
+        shadeClose: true,
+        title :'库存总数(' + kc + ')',
+        area: ['800px', '500px'],
+        content: '${ctx}/qyhsmx/qyhsMx/kclist?qyqId=' + id //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+    });
+}
+
+
+//二维码页面显示
+function qrcode(id) {
+    $.post("${ctx}/sp/spXx/qrCode", { id: id },
+        function(data){
+        	if (data.code == 200){
+                $("#ingurl").attr("src", data.datas);
+                $("#codexz").attr("href", data.datas);
+                layer.open({
+                    type: 1,
+                    title: '权益券二维码',
+                    //skin: 'layui-layer-demo', //样式类名
+                    area: ['500px', '550px'],
+                    //closeBtn: 0, //不显示关闭按钮
+                    //anim: 2,
+                    shadeClose: true, //开启遮罩关闭
+                    content: $("#qrcode").html()
+                });
+        	}else{
+                js.showMessage(data.message);
+        	}
+
+        });
+
+
+}
+//new ClipboardJS('.btnfz');
+var clipboard = new ClipboardJS('.btnfz');
+
+clipboard.on('success', function(e) {
+    //console.info('Action:', e.action);
+    //console.info('Text:', e.text);
+    //console.info('Trigger:', e.trigger);
+    e.clearSelection();
+    js.showMessage("复制成功："+e.text);
+});
+
+clipboard.on('error', function(e) {
+    console.error('Action:', e.action);
+    //console.error('Trigger:', e.trigger);
+    js.showMessage("复制失败");
+});
+//复制id
+function copy(id)
+{
+    log($("#"+id).val())
+}
+</script>

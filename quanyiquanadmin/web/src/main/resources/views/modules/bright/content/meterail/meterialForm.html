@@ -1,0 +1,371 @@
+<% layout('/layouts/default.html', {title: '管理', libs: ['validate','fileupload','ueditor']}){ %>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if($("#qrLink").val().length>0){
+            $("#externalLinks").val($("#qrLink").val());
+        }else {
+            $('externalLinks1:radio:first').iCheck("check");
+        }
+        $('#linkType input').on('ifCreated ifChecked', function () {
+            if ($(this).is(':checked')) {
+                var status = $(this).val();
+                if (status == "1") {
+                    $("#qrLink").hide();
+                    $("#externalLinks").parent().parent().parent().hide();
+                } else {
+                    $("#qrLink").hide();
+                    $("#externalLinks").parent().parent().parent().show();
+                }
+            }
+        });
+        $("#externalLinks").change(function () {
+            $("#qrLink").val($("#externalLinks").val());
+        })
+
+        $("#dantu").click(function () {
+            $("#dantu").attr("class", "active");
+            $("#tuji").removeClass("active");
+            $("#shiping").removeClass("active");
+            $("#attributeName").val("单图");
+
+            $("#upsUploader").value = "";
+            $("#up1Uploader").value = "";
+            $("#up1Uploader").parent().show();
+            $("#upsUploader").parent().hide();
+
+            $("#uploadVideoUploader").value = "";
+            $("#uploadVideoUploader").parent().hide();
+
+            window.webuploaderRefresh();
+        });
+        $("#tuji").click(function () {
+            $("#dantu").removeClass("active");
+            $("#tuji").attr("class", "active");
+            $("#shiping").removeClass("active");
+            $("#attributeName").val("图集");
+
+            $("#upsUploader").value = "";
+            $("#up1Uploader").value = "";
+            $("#upsUploader").parent().show();
+            $("#up1Uploader").parent().hide();
+            $("#uploadVideoUploader").value = "";
+            $("#uploadVideoUploader").parent().hide();
+            window.webuploaderRefresh();
+        });
+        $("#shiping").click(function () {
+            $("#shiping").attr("class", "active");
+            $("#dantu").removeClass("active");
+            $("#tuji").removeClass("active");
+            $("#attributeName").val("视频");
+            window.webuploaderRefresh();
+            $("#upsUploader").value = "";
+            $("#up1Uploader").value = "";
+            $("#upsUploader").parent().hide();
+            $("#up1Uploader").parent().hide();
+
+            $("#uploadVideoUploader").value = "";
+            $("#uploadVideoUploader").parent().show();
+        });
+
+        $("#peizhiLink").click(function () {
+            js.addTabPage(null,'配置二维码跳转链接', '${ctx}/setfocus/others/externallink/meterialExternalLink',true,true);
+            clickTime();
+        })
+
+
+    });
+    var wait=5;
+    function clickTime() {
+        if (wait == 0) {
+            window.setInterval(showAuto, 1000);
+        } else {
+            wait--;
+            setTimeout(function() {clickTime()},1000)
+        }
+    }
+    function showAuto() {
+        $.get("${ctx}/setfocus/others/externallink/meterialExternalLink/getAllLink", function (data) {
+            $('#externalLinks').html(""); //把ci内容设为空
+            if (data && data.length > 0) {
+                var html = [];
+                for (var i = 0; i < data.length; i++) {
+                    html.push('<option value="' + data[i].targetLink + '">' + data[i].name + '</option>');
+                }
+                $('#externalLinks').append(html.join(''));
+            }
+            if($("#qrLink").val().length>0){
+                $('#externalLinks').val($("#qrLink").val());
+            }else {
+                $("#qrLink").val($('#externalLinks').val());
+            }
+        });
+    }
+
+
+</script>
+
+<ul class="nav nav-tabs" id="ulmenu">
+    <li role="presentation" class="active" id="dantu"><a href="#">单图</a></li>
+    <li role="presentation" id="tuji"><a href="#">图集</a></li>
+    <li role="presentation" id="shiping"><a href="#">视频</a></li>
+    <li role="presentation" id="yinpin"><a href="#">音频</a></li>
+    <li role="presentation" id="pdf"><a href="#">PDF</a></li>
+</ul>
+
+<div class="main-content">
+    <div class="box box-main">
+        <div class="box-header with-border">
+            <div class="box-title">
+
+            </div>
+            <br/><!--
+			<div id="intro"><p>适用于通过第三方应用制作的、无法对页面代码进行修改的情况。如MAKA、易企秀、百度H5等H5制作工具制作的页面。</p>
+				<p style="padding-left: 53px;">接入要求：请确认h5应用中没有微信授权的相关设置,否则接入后的H5在安卓手机上将无法打开</p>
+				<p style="padding-left: 53px;">这种接入方式只能统计到【页面访问】与【页面转发】数据</p></div>-->
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+
+        <#form:form id="inputForm" model="${meterial}" action="${ctx}/content/meterail/meterial/save" method="post" class="form-horizontal">
+            <div class="box-body">
+                <!--<div class="form-unit">${text('基本信息')}</div>-->
+                <#form:hidden path="id"/>
+                <#form:hidden path="attributeName"/>
+                <script type="text/javascript">
+                    var choice = $("#attributeName").val();
+                    $(window).load(function () {
+                        switch (choice) {
+                            case ("单图"):
+                                $("#dantu").click();
+                                meterial();
+                                break;
+                            case ("图集"):
+                                $("#tuji").click();
+                                meterial();
+                                break;
+                            case ("视频"):
+                                $("#shiping").click();
+                                meterial();
+                                break;
+                            case ("微页面"):
+                                $("#weiyemian").click();
+                                meterial();
+                                break;
+                            default:
+                                $("#dantu").click();
+                                /*$('#materialStatus1:radio:first').iCheck("check");
+                                $('#linkType1:radio:first').iCheck("check");*/
+                                break;
+                        }
+                    });
+
+                    function meterial() {
+                        $("#dantu").unbind("click");
+                        $("#tuji").unbind("click");
+                        $("#shiping").unbind("click");
+                    }
+
+
+                </script>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class=" hide">*</span> ${text('上传')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+
+                                <#form:hidden path="upload" maxlength="255" class="form-control"/>
+                                <#form:fileupload id="up1" uploadType="image" returnPath="true" cueWords="支持大多数图片格式jpg或gng" isMini="true" maxUploadNum="1" filePathInputId="upload" uploadType="image" readonly="false"/>
+                                <#form:fileupload id="ups" uploadType="image" returnPath="true" cueWords="支持大多数图片格式jpg或gng" isMini="true" maxUploadNum="300" filePathInputId="upload" readonly="false"/>
+                                <#form:fileupload id="uploadVideo" uploadType="media" returnPath="true" isMini="true" cueWords="不超过500M,时长不小于1秒，格式MP4" maxUploadNum="300"  filePathInputId="upload" readonly="false"/>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('标题')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="title" maxlength="255" class="form-control required"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide"></span> ${text('价格')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="price" maxlength="10"  class="form-control required number" onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--<div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide"></span> ${text('传播渠道')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:select path="salesroomId" items="${salesroomList}"
+                                        itemLabel="name" itemValue="id" class="form-control required"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>-->
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('内容标签')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:checkbox path="tagsId" items="${tagList}"
+                                        itemLabel="name" itemValue="id" class="form-control required"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('分类')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:treeselect id="meterialType" title="${text('产品类型')}"
+                                        path="type" labelPath="meterialType.name"
+                                        url="${ctx}/setfocus/meterialtype/meterialType/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}"
+                                        class="required" allowClear="true"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('简介')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:textarea path="intro" rows="8" maxlength="10000" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('封面缩略图')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:hidden path="coverImg" maxlength="255" class="form-control required"/>
+                                <#form:fileupload id="uploadCoverfftftft" class="uploadCover"
+                                        uploadType="image" returnPath="true" cueWords="请上传封面图   所使用内容必须与所述内容贴切" isMini="true" maxUploadNum="1"  filePathInputId="coverImg"  readonly="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:radio path="materialStatus" dictType="material_status" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required "></span> ${text('海报二维码跳转链接')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:radio path="linkType" dictType="link_status" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required "></span> ${text('')}<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:hidden path="qrLink"  class="form-control" />
+                                <#form:select path="externalLinks" items="${meterialExternalLinkList}" itemLabel="name" itemValue="targetLink" class="form-control" />
+                                <a href="javascript:void (0);" id="peizhiLink" >配置二维码跳转链接</a>
+                                <!--<a href="javascript:void (0);" onclick="peizhi()">配置二维码跳转链接</a>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('详细介绍')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:ueditor path="detailIntro" maxlength="10000" height="200" class=""
+                                        simpleToolbars="false" readonly="false" outline="false"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="box-footer">
+                <div class="row"><!--class="btn btn-sm btn-primary" -->
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-sm btn-primary"  id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+                        <button type="button" class="btn btn-sm" id="btnCancel" onclick="js.closeCurrentTabPage()"><i
+                                class="fa fa-reply-all"></i> ${text('关 闭')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </#form:form>
+    </div>
+</div>
+<% } %>
+
+<script>
+    $("#inputForm").validate({
+        submitHandler: function (form) {
+            js.ajaxSubmitForm($(form), function (data) {
+                js.showMessage(data.message);
+                if (data.result == Global.TRUE) {
+                    /*js.closeCurrentTabPage(function(contentWindow){
+                        contentWindow.page();
+                    });*/
+                    /*js.getPrevTabPage(function(contentWindow){
+                        contentWindow.page();
+                    },true);*/
+                    //window.location.replace("${ctx}/content/meterail/meterial");
+                    //window.location.replace("http://127.0.0.1:8089/BrandHub/a/index#/BrandHub/a/content/meterail/meterial");
+                    //window.location.href="${ctx}/content/meterail/meterial";
+                    js.getPrevTabPage(function (contentWindow) {
+                        contentWindow.page();
+                    }, true);
+                }
+            }, "json");
+        }
+    });
+
+</script>
+
+<style>
+    .col-xs-6 {
+        width: 80%;
+    }
+</style>

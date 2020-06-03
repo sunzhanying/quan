@@ -1,0 +1,401 @@
+<% layout('/layouts/default.html', {title: '分组类型表管理', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+    <div class="box box-main">
+
+        <div class="box-header with-border">
+            <div class="box-title">
+                <i class="fa fa-list-alt"></i> ${text(group.isNewRecord ? '新增分组类型表' : '编辑分组类型表')}
+            </div>
+            <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                </button>
+            </div>
+        </div>
+        <#form:form id="inputForm" model="${group}"  action="${ctx}/t/group/group/save" method="post" class="form-horizontal" >
+            <div class="box-body">
+                <div class="form-unit">${text('基本信息')}</div>
+                <#form:hidden path="id"/>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('名称')}：<i class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="name" maxlength="255" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('分组类型')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:radio path="type" dictType="pr_group_type" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('创建人')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:input path="createBy" maxlength="100" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('创建日期')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-4">
+                                <#form:input path="createDate" maxlength="100" class="form-control Wdate"
+                                        dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('群组描述')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-8">
+                                <#form:textarea path="remarks" rows="4"  class="form-control"/>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label class="control-label col-sm-4" title="">
+                                <span class="required hide">*</span> ${text('查询语句')}：<i
+                                    class="fa icon-question hide"></i></label>
+                            <div class="col-sm-6">
+                                <#form:textarea path="sqls" rows="4" class="form-control"/>
+                            </div>
+                             <div class="col-sm-2" style="margin-top: 30px">
+                                 <a id="checknew" class="btn btn-default" onclick="checknew()">查询</a>
+                             </div>
+
+                        </div>
+                    </div>
+                </div>
+
+        </div>
+
+            <table id="groupKhDataGrid"></table>
+            <div id="dataGridPage"><ul class="pagination">
+                <li class="disabled"><a href="javascript:" onclick="pageB()"><i class="fa fa-angle-left"></i></a></li>
+                <li class="active" ><a href="javascript:" id="nowPage">1</a></li>
+                <li class="disabled"><a href="javascript:" onclick="pageF()"><i class="fa fa-angle-right"></i></a></li>
+            </ul>
+                <ul class="pagination">
+                    <li class="disabled controls" id="nowCount" title="点击数字，可填写页码和每页条数，按回车即可生效！">当前 <input  disabled="disabled" type="text" id="nowSize" value="5" > 条，共  条</li>
+                </ul>
+                <div style="clear:both;"></div></div>
+
+            <div class="box-footer">
+                <div class="row">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <% if (hasPermi('t:group:group:edit')){ %>
+                        <button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i>
+                            ${text('保 存')}
+                        </button>&nbsp;
+                        <% } %>
+                        <button type="button" class="btn btn-sm btn-default" id="btnCancel"
+                                onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </#form:form>
+
+        <!--<#form:form id="searchForm" model="${khXx}" action="${ctx}/t/group/group/sqls" method="post" class="form-inline hide"
+                data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+            <input type="hidden" id="searchSql" name="searchSql" >
+        </#form:form>
+        <table id="dataGrid"></table>
+        <div id="dataGridPage"></div>-->
+    </div>
+
+</div>
+<% } %>
+<script>
+
+    var size=5;
+    var page=1;
+    var data=${toJson(group.groupKhList)};
+    var count=data.length;
+    function pageSet(page){
+        var dom=$("#groupKhDataGrid .ui-widget-content").not(":has(input[name='status'][value='1'])");
+        $("#nowPage").html(page);
+        var min=(page-1)*size;
+        var max=page*size>count?count:page*size;
+
+        $("#nowCount").html('当前 <input disabled="disabled" type="text" id="nowSize" value="'+(max-min)+'" > 条，共 '+count+' 条');
+        dom.css("display","none");
+        dom.slice(min,max).css("display","");
+    }
+    function pageF(){
+       page++;
+        if(page>= Math.ceil(count/size)){
+            page=Math.ceil(count/size);
+        }
+        pageSet(page);
+   }
+    function pageB(){
+        page--;
+        if(page<= 1){
+            page=1;
+        }
+        pageSet(page);
+    }
+    //初始化分组用户表DataGrid对象
+    $("#groupKhDataGrid").dataGrid({
+        data: data,
+        datatype: "local", // 设置本地数据
+        autoGridHeight: function () {
+            return 'auto'
+        }, // 设置自动高度
+
+        // 设置数据表格列
+        columnModel: [
+            {header: '客户id', name: 'khid', editable: true, hidden: true},
+            {header: '状态', name: 'status', editable: true, hidden: true},
+            {header: '主键', name: 'id', editable: true, hidden: true},
+            {header: '${text("组id")}', name: 'groupId.id', editable: true, hidden: true},
+            {header:'${text("微信头像")}', name:'khXx.wxtx', index:'a.wxtx', width:150, align:"left",formatter: function(val, obj, row, act){
+                return '<img style="width: 50px;height: 50px" src="'+val+'"  />';
+            }},
+            {header:'${text("微信昵称")}', name:'khXx.wxnc', index:'a.wxnc', width:150, align:"left"},
+            {header:'${text("姓名")}', name:'khXx.xm', index:'a.xm', width:150, align:"left"},
+            {header:'${text("性别")}', name:'khXx.xb', index:'a.xb', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_sex')}, val, '${text("未知")}', true);
+            }},
+
+
+            {header:'${text("手机")}', name:'khXx.sj', index:'a.sj', width:150, align:"left"},
+            {header:'${text("状态")}', name:'khXx.status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_status')}, val, '${text("未知")}', true);
+            }},
+
+            {
+                header: '备注信息',
+                name: 'remarks',
+                width: 150,
+                editable: true,
+                edittype: 'textarea',
+                editoptions: {'maxlength': '255', 'class': 'form-control', 'rows': '1'}
+            },
+
+            {
+                header: '${text("操作")}',
+                name: 'actions',
+                width: 80,
+                sortable: false,
+                fixed: true,
+                formatter: function (val, obj, row, act) {
+                    var actions = [];
+                    if (val == 'new') {
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'delRowData\',\'' + obj.rowId + '\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    } else {
+                        //actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').attr(\'value\',\'' + Global.STATUS_DELETE + '\');$(\'#'+obj.rowId+'_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    }
+                    return actions.join('');
+                },
+                editoptions: {defaultValue: 'new'}
+            }
+        ],
+
+        // 编辑表格参数
+        editGrid: true,                // 是否是编辑表格
+        editGridInitRowNum: 1,        // 编辑表格的初始化新增行数
+        editGridAddRowBtn: $('#groupKhDataGridAddRowBtn'),    // 子表增行按钮
+        editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},    // 新增行的时候初始化的数据
+        // 编辑表格的提交数据参数
+        editGridInputFormListName: 'khList', // 提交的数据列表名
+        //editGridInputFormListName: 'groupKhList', // 提交的数据列表名
+        editGridInputFormListAttrs: 'status,id,groupId.id,khid,sqls,createBy,createDate,updateBy,updateDate,remarks,delFlag,', // 提交数据列表的属性字段
+    });
+    pageB();
+
+    function checknew() {
+        sql= $("#sqls").val();
+        if(sql.trim()==""){
+            $("#sqls").parent().parent().addClass("has-error");
+            return ;
+        }
+
+        $.get("${ctx}/t/group/group/sqls",{searchSql:sql},function(ret){
+          //$("#groupKhDataGrid").jqGrid('clearGridData');//清空表格
+
+          /*  if(typeof(ret)=='string'){
+                js.showMessage(ret);
+            }else{
+                setList(ret);
+            }*/
+            count=ret.length;
+            $('#groupKhDataGrid').dataGrid('setParam', {data: ret}, true);
+            $('#groupKhDataGrid').dataGrid('refresh');
+            pageB();
+        })
+    }
+
+
+</script>
+<script>
+    $("#inputForm").validate({
+        submitHandler: function(form){
+            js.ajaxSubmitForm($(form), function(data){
+                js.showMessage(data.message,error );
+                if(data.result == Global.TRUE){
+                    js.closeCurrentTabPage(function(contentWindow){
+                        contentWindow.page();
+                    });
+                }
+            }, "json");
+        }
+    });
+</script>
+<!--<script>
+
+    var size=5;
+    var page=1;
+    var data=${toJson(group.groupKhList)};
+    var count=data.length;
+    function pageSet(page){
+        var dom=$("#groupKhDataGrid .ui-widget-content").not(":has(input[name='status'][value='1'])");
+        $("#nowPage").html(page);
+        var min=(page-1)*size;
+        var max=page*size>count?count:page*size;
+
+        $("#nowCount").html('当前 <input type="text" id="nowSize" value="'+(max-min)+'" > 条，共 '+count+' 条');
+        dom.css("display","none");
+        dom.slice(min,max).css("display","");
+    }
+    function pageF(){
+        page++;
+        if(page>= Math.ceil(count/size)){
+            page=Math.ceil(count/size);
+        }
+        pageSet(page);
+    }
+    function pageB(){
+        page&#45;&#45;;
+        if(page<= 1){
+            page=1;
+        }
+        pageSet(page);
+    }
+    function setList(datas) {
+        $("#gbox_groupKhDataGrid").remove();
+        $("#dataGridPage").before(' <table id="groupKhDataGrid"></table>');
+
+        data=datas;
+        count= data.length;
+
+        //初始化分组用户表DataGrid对象
+        $("#groupKhDataGrid").dataGrid({
+            data: data,
+            datatype: "local", // 设置本地数据
+            autoGridHeight: function () {
+                return 'auto'
+            }, // 设置自动高度
+
+            // 设置数据表格列
+            columnModel: [
+                {header: '客户id', name: 'khid', editable: true, hidden: true},
+                {header: '状态', name: 'status', editable: true, hidden: true},
+                {header: '主键', name: 'id', editable: true, hidden: true},
+                {header: '${text("组id")}', name: 'groupId.id', editable: true, hidden: true},
+                {header:'${text("微信头像")}', name:'khXx.wxtx', index:'a.wxtx', width:150, align:"left",formatter: function(val, obj, row, act){
+                    return '<img style="width: 50px;height: 50px" src="'+val+'"  />';
+                }},
+                {header:'${text("微信昵称")}', name:'khXx.wxnc', index:'a.wxnc', width:150, align:"left"},
+                {header:'${text("姓名")}', name:'khXx.xm', index:'a.xm', width:150, align:"left"},
+                {header:'${text("性别")}', name:'khXx.xb', index:'a.xb', width:150, align:"center", formatter: function(val, obj, row, act){
+                    return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_sex')}, val, '${text("未知")}', true);
+                }},
+
+
+                {header:'${text("手机")}', name:'khXx.sj', index:'a.sj', width:150, align:"left"},
+                {header:'${text("状态")}', name:'khXx.status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+                    return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_status')}, val, '${text("未知")}', true);
+                }},
+
+                {
+                    header: '备注信息',
+                    name: 'remarks',
+                    width: 150,
+                    editable: true,
+                    edittype: 'textarea',
+                    editoptions: {'maxlength': '255', 'class': 'form-control', 'rows': '1'}
+                },
+
+                {
+                    header: '${text("操作")}',
+                    name: 'actions',
+                    width: 80,
+                    sortable: false,
+                    fixed: true,
+                    formatter: function (val, obj, row, act) {
+                        var actions = [];
+                        if (val == 'new') {
+                            actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'delRowData\',\'' + obj.rowId + '\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                        } else {
+                            //actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                            actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').attr(\'value\',\'' + Global.STATUS_DELETE + '\');$(\'#'+obj.rowId+'_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                        }
+                        return actions.join('');
+                    },
+                    editoptions: {defaultValue: 'new'}
+                }
+            ],
+
+            // 编辑表格参数
+            editGrid: true,                // 是否是编辑表格
+            editGridInitRowNum: 1,        // 编辑表格的初始化新增行数
+            editGridAddRowBtn: $('#groupKhDataGridAddRowBtn'),    // 子表增行按钮
+            editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},    // 新增行的时候初始化的数据
+            // 编辑表格的提交数据参数
+            editGridInputFormListName: 'groupKhList', // 提交的数据列表名
+            editGridInputFormListAttrs: 'status,id,groupId.id,khid,sqls,createBy,createDate,updateBy,updateDate,remarks,delFlag,', // 提交数据列表的属性字段
+        });
+
+        pageB();
+    }
+
+    setList(data);
+
+    function checknew() {
+        sql= $("#sqls").val();
+        if(sql.trim()==""){
+            $("#sqls").parent().parent().addClass("has-error");
+            return ;
+        }
+
+        $.get("${ctx}/t/group/group/sqls",{searchSql:sql},function(ret){
+            //$("#groupKhDataGrid").jqGrid('clearGridData');//清空表格
+
+            /*  if(typeof(ret)=='string'){
+                  js.showMessage(ret);
+              }else{
+                  setList(ret);
+              }*/
+            $('#groupKhDataGrid').dataGrid('setParam', {data: ret}, true);
+            $('#groupKhDataGrid').dataGrid('refresh');
+
+        })
+    }
+
+
+</script>-->
+

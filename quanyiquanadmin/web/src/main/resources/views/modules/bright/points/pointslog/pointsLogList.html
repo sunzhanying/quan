@@ -1,0 +1,117 @@
+<% layout('/layouts/default.html', {title: '积分日志', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('积分日志')}
+			</div>
+			<!--<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('bright:points:pointslog:pointsLog:edit')){ %>
+					<a href="${ctx}/bright/points/pointslog/pointsLog/form" class="btn btn-default btnTool" title="${text('新增客户积分流水表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>-->
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${pointsLog}" action="${ctx}/bright/points/pointslog/pointsLog/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+			<!--	<div class="form-group">
+					<label class="control-label">${text('khid')}：</label>
+					<div class="control-inline">
+						<#form:input path="khid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('xsid')}：</label>
+					<div class="control-inline">
+						<#form:input path="xsid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('1|积分；2|消费；3|冻结')}：</label>
+					<div class="control-inline">
+						<#form:input path="lx" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分类型')}：</label>
+					<div class="control-inline">
+						<#form:input path="jflx" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('积分摘要，冻结时存入订单ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="mc" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分数量')}：</label>
+					<div class="control-inline">
+						<#form:input path="sl" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="jfrq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		/*{header:'${text("khid")}', name:'khid', index:'a.khid', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/bright/points/pointslog/pointsLog/form?id='+row.id+'" class="btnList" data-title="${text("编辑客户积分流水表")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("xsid")}', name:'xsid', index:'a.xsid', width:150, align:"left"},*/
+		/*{header:'${text("1|积分；2|消费；3|冻结")}', name:'lx', index:'a.lx', width:150, align:"center"},*/
+		{header:'${text("用户")}', name:'khXx.wxnc', index:'a.khXx.wxnc', width:150, align:"left"},
+		{header:'${text("积分类型")}', name:'pointsConfig.mc', index:'a.pointsConfig.mc', width:150, align:"left"},
+	/*	{header:'${text("积分摘要，冻结时存入订单ID")}', name:'mc', index:'a.mc', width:150, align:"left"},*/
+		{header:'${text("积分数量")}', name:'sl', index:'a.sl', width:150, align:"center"},
+		/*{header:'${text("积分日期")}', name:'jfrq', index:'a.jfrq', width:150, align:"center"},*/
+		/*{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},*/
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		/*{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},*/
+		/*{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('bright:points:pointslog:pointsLog:edit')){ %>
+				actions.push('<a href="${ctx}/bright/points/pointslog/pointsLog/form?id='+row.id+'" class="btnList" title="${text("编辑客户积分流水表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}*/
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

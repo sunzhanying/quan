@@ -1,0 +1,149 @@
+<% layout('/layouts/default.html', {title: '生涯任务明细管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<!--<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('生涯任务明细管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('push:rwmx:syRwmx:edit')){ %>
+					<a href="${ctx}/push/rwmx/syRwmx/form" class="btn btn-default btnTool" title="${text('新增生涯任务明细')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>-->
+		<div class="box-body">
+			<#form:form id="searchForm" model="${syRwmx}" action="${ctx}/push/rwmx/syRwmx/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<!--<div class="form-group">
+					<label class="control-label">${text('客户id')}：</label>
+					<div class="control-inline">
+						<#form:input path="khid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('学生id')}：</label>
+					<div class="control-inline">
+						<#form:input path="xsid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('模板ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('任务ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="rwid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">${text('任务开始日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="ksrq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('任务失效日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="jsrq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('任务完成日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="wcrq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备忘')}：</label>
+					<div class="control-inline">
+						<#form:input path="bz" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推送流水批次号')}：</label>
+					<div class="control-inline">
+						<#form:input path="pcid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分计算标志')}：</label>
+					<div class="control-inline">
+						<#form:input path="jfjsbz" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="zt" dictType="pr_rw_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		/*{header:'${text("客户id")}', name:'khid', index:'a.khid', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/push/rwmx/syRwmx/form?id='+row.id+'" class="btnList" data-title="${text("编辑生涯任务明细")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("学生id")}', name:'xsid', index:'a.xsid', width:150, align:"left"},
+		{header:'${text("模板ID")}', name:'mbid', index:'a.mbid', width:150, align:"left"},
+		{header:'${text("任务ID")}', name:'rwid', index:'a.rwid', width:150, align:"left"},
+		{header:'${text("状态")}', name:'zt', index:'a.zt', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('pr_rw_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("任务开始日期")}', name:'ksrq', index:'a.ksrq', width:150, align:"center"},
+		{header:'${text("任务失效日期")}', name:'jsrq', index:'a.jsrq', width:150, align:"center"},
+		{header:'${text("任务完成日期")}', name:'wcrq', index:'a.wcrq', width:150, align:"center"},
+		{header:'${text("备忘")}', name:'bz', index:'a.bz', width:150, align:"left"},
+		{header:'${text("推送流水批次号")}', name:'pcid', index:'a.pcid', width:150, align:"left"},
+		{header:'${text("积分计算标志")}', name:'jfjsbz', index:'a.jfjsbz', width:150, align:"center"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('push:rwmx:syRwmx:edit')){ %>
+				actions.push('<a href="${ctx}/push/rwmx/syRwmx/form?id='+row.id+'" class="btnList" title="${text("编辑生涯任务明细")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/push/rwmx/syRwmx/disable?id='+row.id+'" class="btnList" title="${text("停用生涯任务明细")}" data-confirm="${text("确认要停用该生涯任务明细吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/push/rwmx/syRwmx/enable?id='+row.id+'" class="btnList" title="${text("启用生涯任务明细")}" data-confirm="${text("确认要启用该生涯任务明细吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/push/rwmx/syRwmx/delete?id='+row.id+'" class="btnList" title="${text("删除生涯任务明细")}" data-confirm="${text("确认要删除该生涯任务明细吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}*/
+
+        {header:'${text("客户昵称")}', name:'khXx.wxnc', index:'a.khXx.wxnc', width:150, align:"left"},
+        {header:'${text("任务名称")}', name:'syMbmx.syrwmc', index:'a.syMbmx.syrwmc', width:150, align:"left"},
+        {header:'${text("模板名称")}', name:'syMb.mbmc', index:'a.syMb.mbmc', width:150, align:"left"},
+        {header:'${text("状态")}', name:'zt', index:'a.zt', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('pr_rw_status')}, val, '${text("未知")}', true);
+        }},
+        {header:'${text("任务开始日期")}', name:'ksrq', index:'a.ksrq', width:150, align:"center"},
+        {header:'${text("任务失效日期")}', name:'jsrq', index:'a.jsrq', width:150, align:"center"},
+        {header:'${text("任务完成日期")}', name:'wcrq', index:'a.wcrq', width:150, align:"center"}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

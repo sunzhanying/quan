@@ -1,0 +1,194 @@
+<% layout('/layouts/default.html', {title: '推送', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(push.isNewRecord ? '编辑推送' : '编辑推送')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${push}" action="${ctx}/push/push/push/updatePorperties" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('设置')}</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('引擎状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input type="text" name="status" disabled value="${properties['pushEngine.status']=='0'?'关闭':'开启'}" class="form-control status"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('自动启动时间')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-4">
+								<input name="autoStart" type="text" readonly="readonly" maxlength="20" class="Wdate form-control"
+									   value="${properties['pushEngine.autoStart']}" onclick="WdatePicker({dateFmt:'HH',isShowClear:false});"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('自动关闭时间')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-4">
+								<input name="autoStop" type="text" readonly="readonly" maxlength="20" class="Wdate form-control"
+									   value="${properties['pushEngine.autoStop']}" onclick="WdatePicker({dateFmt:'HH',isShowClear:false});"/>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('最新启动时间')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-4">
+								<input name="newStart" type="text" disabled readonly="readonly" maxlength="20" class="Wdate form-control"
+									   value="${properties['pushEngine.newStart']}" onclick="WdatePicker({dateFmt:'HH',isShowClear:false});"/>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('每次推送条数')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input type="number" min="1" name="pushNumber"  value="${properties['pushEngine.pushNumber']}" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('间隔数')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input type="number" min="1" name="interval"  value="${properties['pushEngine.interval']}" htmlEscape="false" maxlength="64" class="form-control "/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="box-footer">
+					<div class="row">
+						<div class="col-sm-offset-2 col-sm-10">
+							<input id="submit" class="btn btn-primary" type="submit" value="设置自动启停时间及间隔设置定时任务时间"/>
+						</div>
+					</div>
+				</div>
+		</#form:form>
+		<#form:form id="inputForm2" model="${push}" action="${ctx}/push/push/push/pushEngine" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('设置')}</div>
+				<form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('')}<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+
+								<input  value="${qdms}"  htmlEscape="false" maxlength="64" disabled="true" class="form-control "/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('')}<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input  value="${ytdt}" htmlEscape="false" maxlength="11" disabled="true" class="form-control "/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('')}<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input  value="${cgsb}"  htmlEscape="false" maxlength="255" disabled="true" class="form-control "/>
+
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('')}<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<input value="${qtsj}" htmlEscape="false" maxlength="64" disabled="true" class="form-control "/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="box-footer">
+					<div class="row">
+						<div class="col-sm-offset-2 col-sm-10">
+							<input id="btnSubmit" class="btn btn-primary" type="button" value="启动" onclick="start()"/>
+							<input id="btnCancel" class="btn" type="button" value="停止" onclick="stop()"/>
+						</div>
+					</div>
+				</div>
+		</#form:form>
+
+	</div>
+</div>
+<% } %>
+
+<script>
+	console.log('${toJson(properties)}');
+	console.log('${qdms}');
+	console.log('${ytdt}');
+	console.log('${cgsb}');
+	console.log('${qtsj}');
+    //启动
+    function start() {
+        $.ajax({
+            url:'statusPushEngine?status=1',
+            success:function () {
+                alert("启动成功");
+                $("#btnSubmit").attr("disabled",true);
+                $("#btnCancel").attr("disabled",false);
+                $(".status").val("启动");
+                $("#status_1").val("1");
+            }
+        });
+    }
+    //暂停
+    function stop() {
+        $.ajax({
+            url:'statusPushEngine?status=2',
+            success:function () {
+                alert("暂停成功");
+                $("#btnCancel").attr("disabled",true);
+                $("#btnSubmit").attr("disabled",false);
+                $(".status").val("关闭");
+                $("#status_1").val("");
+            }
+        });
+    }
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

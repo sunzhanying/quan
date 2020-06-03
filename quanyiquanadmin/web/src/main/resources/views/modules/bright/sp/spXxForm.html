@@ -1,0 +1,363 @@
+<% layout('/layouts/default.html', {title: '权益券信息管理', libs: ['validate','fileupload','ueditor']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(spXx.isNewRecord ? '新增权益券信息' : '编辑权益券信息')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${spXx}" action="${ctx}/sp/spXx/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券ID')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="id" maxlength="50" disabled="true" class="form-control required"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券分类')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="splx" items="${spTypeList}" itemLabel="name" itemValue="id" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券主标题')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spmc" maxlength="50" class="form-control required"/>
+							</div>
+						</div>
+					</div>
+					<!--<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券副标题')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spfmc" maxlength="50" class="form-control required"/>
+							</div>
+						</div>
+					</div>-->
+				</div>
+				<!--<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('权益券副名称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spfmc" class="form-control "/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('标签')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:checkbox path="bq" items="${labelList}" itemLabel="name" itemValue="id" class="form-control" />
+							</div>
+						</div>
+					</div>
+				</div>-->
+				<!--<div class="row">
+					&lt;!&ndash;<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('年份')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="nf"  class="form-control number required" />
+							</div>
+						</div>
+					</div>&ndash;&gt;
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('会员权益权益券')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="ishyqy" dictType="vip_qy"
+								value="1"
+								class="form-control required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('积分价格')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="useJf" maxlength="11" class="form-control digits"/>
+							</div>
+						</div>
+					</div>
+
+				</div>-->
+				<!--<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券原价')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spjg"  onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control required number"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('会员价格')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="hyjg"  onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control required number"/>
+							</div>
+						</div>
+					</div>
+				</div>-->
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('缩略图')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:hidden path="img"/>
+								<#form:fileupload id="upload1"
+								uploadType="image" returnPath="true"
+								filePathInputId="img" imageMaxWidth="-1" imageMaxHeight="-1" class="" readonly="false" maxUploadNum="1"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('大图')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:hidden path="imgBig"/>
+								<#form:fileupload id="upload2"
+								uploadType="image" returnPath="true"
+								filePathInputId="imgBig" imageMaxWidth="-1" imageMaxHeight="-1"  class="" readonly="false" maxUploadNum="1"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<!--<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('计量单位')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="jldw" dictType="jldw" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>-->
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="type" dictType="qyq_type" class="form-control required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('来源')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="source" maxlength="50" class="form-control "/>
+							</div>
+						</div>
+					</div>
+					<!--<div class="col-xs-6 isYhq">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('权益券对应优惠券')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								&lt;!&ndash;<#form:input path="yhqId" maxlength="64" class="form-control"/>&ndash;&gt;
+								<#form:select path="yhqId" items="${yhqList}" itemLabel="yhName" itemValue="id" blankOption="true" class="form-control " />
+							</div>
+						</div>
+					</div>-->
+
+					<!--<div class="col-xs-6 kc">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('库存')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								&lt;!&ndash;<#form:input path="yhqId" maxlength="64" class="form-control"/>&ndash;&gt;
+								<#form:input path="kc" class="form-control digits required" />
+							</div>
+						</div>
+					</div>-->
+				</div>
+
+
+				<!--<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('失效类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="spSxlx" dictType="sp_sx_data" class="form-control required" />
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6 rsx">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('购买后多少日失效')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spRsx" maxlength="11" class="form-control digits"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6 gdsx">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('固定失效日期')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spSxrq" readonly="true" maxlength="20" class="form-control Wdate"
+								dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
+							</div>
+						</div>
+					</div>
+				</div>-->
+
+				<!--<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('是否允许使用优惠')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="useYhq" dictType="is_yhq" class="form-control required" />
+							</div>
+						</div>
+					</div>
+					&lt;!&ndash;<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('该权益券在权限中是第几位')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="qxw" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>&ndash;&gt;
+				</div>-->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('上传须知')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="remarks" rows="4" maxlength="500" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('使用说明')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="sysm" rows="4" maxlength="1000" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<div class="form-unit">详情</div>
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="form-group">
+					<label class="control-label col-sm-2">详情：</label>
+					<div class="col-sm-10">
+						<#form:ueditor path="description" maxlength="10000" height="200" class=""
+						simpleToolbars="false" readonly="false" outline="false"/>
+					</div>
+				</div>
+			</div>
+		</div>
+
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('sp:spXx:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+
+
+
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+
+// 根据计量单位显示不同的元素
+$('#jldw input').on('ifCreated ifChecked', function(){
+    if ($(this).is(':checked')){
+        // 1：菜单；2：权限
+        if ($(this).val() == '1'){
+           // $('.isYhq').hide();
+            $('.kc').show();
+        }else if ($(this).val() == '2') {
+           // $('.isYhq').show();
+            $('.kc').hide();
+        }else{
+           // $('.isYhq').hide();
+            $('.kc').hide();
+		}
+    }
+});
+
+// 根据失效类型显示不同的元素
+$('#spSxlx input').on('ifCreated ifChecked', function(){
+    if ($(this).is(':checked')){
+
+        if ($(this).val() == '1'){
+            $('.gdsx').show();
+            $('.rsx').hide();
+        }else{
+            $('.rsx').show();
+            $('.gdsx').hide();
+        }
+    }
+});
+
+
+</script>

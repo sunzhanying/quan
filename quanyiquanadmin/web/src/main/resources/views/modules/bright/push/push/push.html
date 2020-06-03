@@ -1,0 +1,227 @@
+<% layout('/layouts/default.html', {title: '推送', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(push.isNewRecord ? '新增推送' : '编辑推送')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${push}" action="${ctx}/push/push/push/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('消息模板')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="mbid" items="${xxtsmb}" itemLabel="mbmc" blankOption="true" itemValue="id" class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('内容预览')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:textarea path="tsnr" rows="5" cols="30" disabled="true" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('动态群组重算')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="bz" defaultValue="1" dictType="sys_yes_no"  class="form-control"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('失联时推送手机号')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="isPhone" defaultValue="1" dictType="sys_yes_no"  class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('计划推送时间')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-4">
+								<input name="jhsj" type="text" readonly="readonly" class="form-control Wdate "
+									   dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:true});"/>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="hide">*</span> ${text('推送群组')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-4">
+								<#form:select path="groupid" items="${group}" blankOption="true" itemLabel="name" itemValue="id" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--用户表格-->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="hide">*</span> ${text('组内成员')}：<i class="fa icon-question hide"></i>
+							</label>
+							<div class="col-sm-8">
+
+								<table id="groupKhDataGrid"></table>
+								<div id="dataGridPage" style="margin-left: 50%;"><ul class="pagination">
+									<li class="disabled"><a href="javascript:" onclick="pageB()"><i class="fa fa-angle-left"></i></a></li>
+									<li class="active" ><a href="javascript:" id="nowPage">1</a></li>
+									<li class="disabled"><a href="javascript:" onclick="pageF()"><i class="fa fa-angle-right"></i></a></li>
+								</ul>
+									<ul class="pagination">
+										<li class="disabled controls" id="nowCount" title="点击数字，可填写页码和每页条数，按回车即可生效！">当前 <input disabled="disabled" type="text" id="nowSize" value="5" > 条，共  条</li>
+									</ul>
+									<div style="clear:both;"></div>
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+
+
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('push:push:push:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('推 送')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+	 	</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+
+    var size=5;
+    var page=1;
+    var data=[];
+    var count=0;
+    function pageSet(page){
+        var dom=$("#groupKhDataGrid .ui-widget-content").not(":has(input[name='status'][value='1'])");
+        $("#nowPage").html(page);
+        var min=(page-1)*size;
+        var max=page*size>count?count:page*size;
+
+        $("#nowCount").html('当前 <input disabled="disabled" type="text" id="nowSize" value="'+(max-min)+'" > 条，共 '+count+' 条');
+        dom.css("display","none");
+        dom.slice(min,max).css("display","");
+    }
+    function pageF(){
+        page++;
+        if(page>= Math.ceil(count/size)){
+            page=Math.ceil(count/size);
+        }
+        pageSet(page);
+    }
+    function pageB(){
+        page--;
+        if(page<= 1){
+            page=1;
+        }
+        pageSet(page);
+    }
+    //初始化分组用户表DataGrid对象
+    $("#groupKhDataGrid").dataGrid({
+        data: data,
+        datatype: "local", // 设置本地数据
+        autoGridHeight: function () {
+            return 'auto'
+        }, // 设置自动高度
+
+        // 设置数据表格列
+        columnModel: [
+            {header: '客户id', name: 'khid', editable: true, hidden: true},
+            {header: '状态', name: 'status', editable: true, hidden: true},
+            {header: '主键', name: 'id', editable: true, hidden: true},
+            {header: '${text("组id")}', name: 'groupId.id', editable: true, hidden: true},
+            {header:'${text("微信头像")}', name:'khXx.wxtx', index:'a.wxtx', width:150, align:"left",formatter: function(val, obj, row, act){
+                return '<img style="width: 50px;height: 50px" src="'+val+'"  />';
+            }},
+            {header:'${text("微信昵称")}', name:'khXx.wxnc', index:'a.wxnc', width:150, align:"left"},
+            {header:'${text("姓名")}', name:'khXx.xm', index:'a.xm', width:150, align:"left"},
+            {header:'${text("性别")}', name:'khXx.xb', index:'a.xb', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_sex')}, val, '${text("未知")}', true);
+            }},
+
+
+            {header:'${text("手机")}', name:'khXx.sj', index:'a.sj', width:150, align:"left"},
+            {header:'${text("状态")}', name:'khXx.status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_status')}, val, '${text("未知")}', true);
+            }}
+        ]
+    });
+
+    pageB();
+    $('#groupid').on('change',function(){
+        checknew($(this).val());
+    })
+    function checknew(val) {
+
+        $.get("${ctx}/push/templet/syConfig/group",{groupId:val},function(ret){
+
+            count=ret.length;
+            $('#groupKhDataGrid').dataGrid('setParam', {data: ret}, true);
+            $('#groupKhDataGrid').dataGrid('refresh');
+            pageB();
+        })
+
+
+    }
+
+
+</script>
+<script>
+   $("#mbid").on("change",function () {
+       $.get("${ctx}/push/templet/xxtsmb/get?mbid="+$(this).val(),function (data) {
+           $("#tsnr").val(data.mbnr);
+       })
+
+   })
+</script>
+<script>
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

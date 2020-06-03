@@ -1,0 +1,380 @@
+<% layout('/layouts/default.html', {title: '管理', libs: ['validate','fileupload','dataGrid']}){ %>
+
+<script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+
+<div class="main-content">
+    <div class="box box-main">
+        <ul class="nav nav-tabs">
+            <li role="presentation"><a href="${ctx}/content/meterail/meterial/propagate/spread?id=${meterial.id}">传播你的内容</a></li>
+            <li role="presentation" class="active"><a href="${ctx}/content/meterail/meterial/propagate/flow?id=${meterial.id}">流量分析</a></li>
+        </ul>
+        <#form:form id="inputForm" model="${meterial}" method="post"  class="form-horizontal">
+        <div class="box-body">
+            <#form:hidden path="id"/>
+                <div class="am-tab-panel">
+                    <div class="card">
+                        <div class="card-left">
+                            <span style="color: #0f9ae0;font-size: 60px"><i class="fa fa-user"></i></span>
+                        </div>
+                        <div class="card-right">
+                            <div class="card-title">访问量</div>
+                            <div class="card-num">
+                                <span class="pre-num">701</span> /
+                                <span class="next-num">579</span>
+                            </div>
+                            <div class="card-bottom">人次 / 人数</div>
+                        </div>
+                    </div>
+                    <div class="charts">
+                        <div id="selectTime" class="selectDiv">
+                            <select class="select">
+                                <option value="7">最近7天</option>
+                                <option value="30">最近30天</option>
+                                <option value="90">最近90天</option>
+                                <option value="1">今天</option>
+                                <option value="0">自定义</option>
+                            </select>
+
+                        </div>
+                        <div class="date">
+                            <input type="text" disabled="" class="am-form-field nd-search-field" name="start_time" placeholder="开始日期" value="" data-am-datepicker="">
+                            <input type="text" disabled="" class="am-form-field nd-search-field" name="end_time" placeholder="结束日期" value="" data-am-datepicker="">
+                        </div>
+                        <div class="radio">
+                            <div class="am-btn-group">
+                                <button type="button" class="am-btn am-radius group-btn group-btn-checked">人次</button>
+                                <button type="button" class="am-btn am-radius group-btn">人数</button>
+                            </div>
+                        </div>
+                        <div class="hr"></div>
+                        <div id="source" style="width: 100%; height: 350px;"></div>
+                    </div>
+                    <div class="hr"></div>
+                    <div id="visit" style="width: 100%; height: 400px; -webkit-tap-highlight-color: transparent; user-select: none; position: relative;"><div style="position: relative; overflow: hidden; width: 1674px; height: 400px; padding: 0px; margin: 0px; border-width: 0px;">
+                        <canvas width="1674" height="400" style="position: absolute; left: 0px; top: 0px; width: 1674px; height: 400px; user-select: none; padding: 0px; margin: 0px; border-width: 0px;"></canvas>
+                    </div><div></div></div>
+                </div>
+        </div>
+        </div>
+        </div>
+
+        <div class="box-footer">
+            <div class="row">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="button" class="btn btn-sm btn-default" id="btnCancel"
+                            onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </#form:form>
+</div>
+</div>
+<% } %>
+
+<script>
+    $.get("${ctx}/content/meterail/visited/meterialVisitedLog/getSum",function (data) {
+        $(".pre-num").html(data.person_time);
+        $(".next-num").html(data.visitor);
+    })
+    var sourceChart = echarts.init(document.getElementById('source'), 'macarons');
+    var visitChart = echarts.init(document.getElementById('visit'), 'macarons');
+
+    sourceChart.setOption({
+        title: {
+            text: '页面访问量来源分析',
+            top: '15',
+            textStyle: {
+                fontSize: '12',
+                color: '#333'
+            }
+        },
+        toolbox: {
+            top: '15',
+            right: '20',
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: "{a} <br/>{b}: {c} ({d}%)"
+        },
+        legend: {
+            orient: 'vertical',
+            x: 'left',
+            top: '50',
+            left: '100',
+            icon: 'circle',
+            data: []
+        },
+        series: [{
+            name: '访问来源',
+            type: 'pie',
+            roseType: 'angle',
+            radius: '50%',
+            data: []
+        }]
+    });
+
+    visitChart.setOption({
+        title: {
+            text: '访问量按日统计',
+            top: '15',
+            textStyle: {
+                fontSize: '12',
+                color: '#333'
+            }
+        },
+        toolbox: {
+            /*top: '15',
+            right: '20',*/
+            feature: {
+                saveAsImage: {}
+            }
+        },
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                lineStyle: {
+                    color: '#ddd'
+                }
+            },
+            backgroundColor: 'rgba(255,255,255,1)',
+            /*padding: [5, 10],*/
+            textStyle: {
+                color: '#7588E4',
+            },
+            extraCssText: 'box-shadow: 0 0 5px rgba(0,0,0,0.3)'
+        },
+        legend: {
+            top: '15',
+            icon: 'circle',
+            data: []
+        },
+        xAxis: {
+            type: 'category',
+            data: [],
+            boundaryGap: false
+        },
+        yAxis: {
+            type: 'value'
+        },
+        grid: {
+            top: '100'
+        },
+        series: []
+    })
+
+    var chartDataType = 'pv'; //pv 人次  uv 人数
+    var chartDay = 90;
+    var chartStartTime, chartEndTime;
+
+    function getChartData() {
+        var data = {}
+        if(chartDay == 0){
+            data.startTime = chartStartTime;
+            data.endTime = chartEndTime;
+        }
+        data.day = chartDay;
+        data.type = chartDataType;
+        /*data.app_id = "ba65885a0ecccb688cfc7c4b6cecb8fa";*/
+        $.ajax({
+            url: '${ctx}/content/meterail/visited/meterialVisitedLog/getChartData',
+            type: 'POST',
+            data: data,
+            success: function (result) {/*
+                var result = JSON.parse(result);*/
+                console.log(result);
+                sourceChart.setOption({
+                    legend:{
+                        data: result.channel
+                    },
+                    series:{
+                        data: result.data
+                    }
+                });
+                result.data2.forEach(function(val,idx) {
+                    var ext = {
+                        type: 'line',
+                        smooth: true,
+                        symbol: 'circle',
+                        symbolSize: 5,
+                        areaStyle: {},
+                        lineStyle: {
+                            normal: {
+                                width: 2
+                            }
+                        }
+                    }
+                    val = $.extend(val, ext);
+                });
+                visitChart.setOption({
+                    legend:{
+                        data: result.channel
+                    },
+                    xAxis: {
+                        data: result.date
+                    },
+                    series: result.data2
+                })
+            }
+        })
+    }
+
+    $(function () {
+
+        getChartData();
+
+        // 选择时间 状态
+        $(".select").change(function(){
+            chartDay = parseInt($(this).val());
+            if (chartDay === 0) {
+                $('.date').find('input').removeAttr('disabled', false);
+            } else {
+                $('.date').find('input').attr('disabled', true);
+                //ajax
+                getChartData();
+            }
+        })
+        $('.date').on('blur', 'input', function () {
+            setTimeout(function() {
+                chartStartTime = $('input[name=start_time]').val();
+                chartEndTime = $('input[name=end_time]').val();
+                if(chartStartTime && chartEndTime){
+                    getChartData();
+                }
+            }, 300);
+        })
+
+        // 切换 pv uv
+        $('.group-btn').on('click', function () {
+            $(this).addClass('group-btn-checked').siblings('button').removeClass('group-btn-checked');
+            chartDataType = chartDataType === 'pv' ? 'uv' : 'pv';
+            getChartData();
+        })
+    })
+
+</script>
+<style>
+    .card {
+        height: 110px;
+        border-radius: 2px;
+        background-color: white;
+        border: 1px solid #ddd;
+        flex: 1;
+        max-width: 500px;
+        margin-top: 15px;
+    }
+
+    .card-left {
+        display: inline-block;
+        width: 30%;
+        height: 100%;
+        text-align: center;
+    }
+
+    .card-left i {
+        margin-top: 25px;
+    }
+
+    .card-right {
+        display: inline-block;
+        vertical-align: top;
+        width: 69%;
+        height: 100%;
+    }
+
+    .card-right .card-title {
+        margin-top: 15px;
+        padding-left: 3px;
+    }
+
+    .card-right .card-num {
+        font-size: 22px;
+    }
+
+    .card-right .card-bottom {
+        color: #c0c7ca;
+        padding-left: 3px;
+    }
+
+    .charts {
+        padding: 15px 0px;
+    }
+
+    .charts .select {
+        display: inline-block;
+        float: left;
+    }
+
+    .charts .date {
+        display: flex;
+        float: left;
+    }
+
+    .charts .date input {
+        width: 150px;
+        margin-left: 20px;
+    }
+
+    .charts .radio {
+        float: right;
+    }
+
+    .hr {
+        clear: both;
+        border-bottom: 1px solid #ccc;
+        padding: 10px 0;
+    }
+
+    .am-selected-text {
+        font-size: 14px;
+    }
+
+    .am-selected-status {
+        font-size: 14px;
+        line-height: 19px;
+    }
+
+    .group-btn,
+    .group-btn:hover {
+        background: #fff;
+        border: 1px solid #d9d9d9;
+        font-size: 14px;
+        color: #666666;
+    }
+
+    .group-btn-checked,
+    .group-btn-checked:hover {
+        border: 1px solid #7fcbff;
+        color: #7fcbff;
+        z-index: 1000
+    }
+
+    .u-icon,
+    .u-icon:hover {
+        color: #7fcbff;
+        background: #fff;
+        font-size: 40px;
+    }
+
+    .qr {
+        margin: 30px;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .down-qr {
+        margin-left: 20px;
+    }
+
+    .dialog {
+        border: 1px solid #ccc !important;
+        border-radius: 2px !important;
+    }
+    .center {
+        margin: 20px auto;
+        width: 200px;
+    }
+</style>

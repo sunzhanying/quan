@@ -1,0 +1,131 @@
+<% layout('/layouts/default.html', {title: '消息推送模板管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('消息推送模板管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('push:templet:xxtsmb:edit')){ %>
+					<a href="${ctx}/push/templet/xxtsmb/form" class="btn btn-default btnTool" title="${text('新增消息推送模板')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${xxtsmb}" action="${ctx}/push/templet/xxtsmb/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('模板名称')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbmc" maxlength="50" class="form-control width-120"/>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('模板入参')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbrc" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('模板内容')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbnr" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推送渠道')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="qdmc" dictType="pr_push_channel" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('小程序或订阅号模板ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="mbid" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('模板描述')}：</label>
+					<div class="control-inline">
+						<#form:input path="bz" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('公众模板')}：</label>
+					<div class="control-inline">
+						<#form:input path="gzId" maxlength="200" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('删除标记')}：</label>
+					<div class="control-inline">
+						<#form:input path="delFlag" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("模板名称")}', name:'mbmc', index:'a.mbmc', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/push/templet/xxtsmb/form?id='+row.id+'" class="btnList" data-title="${text("编辑消息推送模板")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("模板入参")}', name:'mbrc', index:'a.mbrc', width:150, align:"left"},
+		{header:'${text("模板内容")}', name:'mbnr', index:'a.mbnr', width:150, align:"left"},
+		{header:'${text("推送渠道")}', name:'qdmc', index:'a.qdmc', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('pr_push_channel')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("小程序或订阅号模板ID")}', name:'mbid', index:'a.mbid', width:150, align:"left"},
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},
+		{header:'${text("模板描述")}', name:'bz', index:'a.bz', width:150, align:"left"},
+		{header:'${text("公众模板")}', name:'gzId', index:'a.gz_id', width:150, align:"left"},
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('push:templet:xxtsmb:edit')){ %>
+				actions.push('<a href="${ctx}/push/templet/xxtsmb/form?id='+row.id+'" class="btnList" title="${text("编辑消息推送模板")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				if (row.status == Global.STATUS_NORMAL){
+					actions.push('<a href="${ctx}/push/templet/xxtsmb/disable?id='+row.id+'" class="btnList" title="${text("停用消息推送模板")}" data-confirm="${text("确认要停用该消息推送模板吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+				}
+				if (row.status == Global.STATUS_DISABLE){
+					actions.push('<a href="${ctx}/push/templet/xxtsmb/enable?id='+row.id+'" class="btnList" title="${text("启用消息推送模板")}" data-confirm="${text("确认要启用该消息推送模板吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+				}
+				actions.push('<a href="${ctx}/push/templet/xxtsmb/delete?id='+row.id+'" class="btnList" title="${text("删除消息推送模板")}" data-confirm="${text("确认要删除该消息推送模板吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

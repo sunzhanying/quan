@@ -1,0 +1,236 @@
+<% layout('/layouts/default.html', {title: '', bodyClass: ''}){ %>
+<!-- <link rel="stylesheet" href="${ctxStatic}/modules/sys/sysDesktop.css?${_version}"> -->
+<ul class="nav nav-tabs">
+	<li class="active"><a href="${ctx}/journaaling/journaaling/journaaling">新增客户趋势</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling2">客户来源TOP10</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling3">客户地域分布</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling4">客户标签TOP20</a></li>
+</ul>
+<div class="content pb0">
+
+	<div class="row">
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-aqua" ><i class="fa fa-users"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">客户总数</span>
+					<span class="info-box-number">5800<small></small></span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-red"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">微信粉丝</span>
+					<span class="info-box-number">4000</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- fix for small devices only -->
+		<div class="clearfix visible-sm-block"></div>
+
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-green"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">会员</span>
+					<span class="info-box-number">1800</span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-yellow"><i class="fa fa-users"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text">活跃度</span>
+					<span class="info-box-number">20</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- Chart boxes -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box box-widget">
+				<div class="box-header with-border">
+					<h3 class="box-title">每周趋势</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool" data-widget="collapse">
+							<i class="fa fa-minus"></i>
+						</button>
+						<div class="btn-group">
+							<button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+								<i class="fa fa-wrench"></i></button>
+							<ul class="dropdown-menu" role="menu">
+								<li><a href="#">导出Excel</a></li>
+								<li><a href="#">导出Word</a></li>
+								<li class="divider"></li>
+								<li><a href="#">基本设置</a></li>
+							</ul>
+						</div>
+						<button type="button" class="btn btn-box-tool" data-widget="remove">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<div class="box-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="chart">
+								<div style="margin: 0 auto;text-align: center;">
+									<span style="color: #0e90d2"><i class="fa fa-stop"></i></span>  新会员
+									<span style="color: #8a6aaa"><i class="fa fa-stop"></i></span>  订单
+								</div>
+								<div id="myChart" style="height:230px;width:99%"></div>
+								<script src="${ctxStatic}/echarts/4.2/echarts.simple.min.js"></script>
+								<script>
+                                    var option = {
+                                        title : {
+                                            text: '2017-5'
+                                        },
+                                        color:['#0e90d2', '#8a6aaa'],
+                                        tooltip : {
+                                            trigger: 'axis'
+                                        },
+                                        legend: {
+                                            data:['新会员','订单']
+                                        },
+                                        toolbox: {
+                                            show : true,
+                                            feature : {
+                                                mark : {show: true},
+                                                dataView : {show: true, readOnly: false},
+                                                magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+                                                restore : {show: true},
+                                                saveAsImage : {show: true}
+                                            },
+                                            type:'value',
+
+                                        },
+                                        calculable : true,
+                                        grid : {
+                                            top: '49',
+                                            right: '20',
+                                            bottom: '30'
+                                        },
+                                        xAxis : [
+                                            {
+                                                type : 'category',
+                                                boundaryGap : false,
+                                                data : ['周一','周二','周三','周四','周五','周六','周日']
+                                            }
+                                        ],
+                                        yAxis : [
+                                            {
+                                                type : 'value'
+                                            }
+                                        ],
+                                        series : [
+                                            {
+                                                name:'新会员',
+                                                type:'line',
+                                                smooth:true,
+                                                itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                                data:[0, 1500,1000, 800, 500, 260, 830, 710]
+                                            },
+                                            {
+                                                name:'订单',
+                                                type:'line',
+                                                smooth:true,
+                                                itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                                data:[0, 182, 434, 791, 390, 30, 10]
+                                            }
+                                        ]
+                                    };
+                                    // 基于准备好的dom，初始化echarts实例
+                                    var myChart = echarts.init(document.getElementById('myChart'));
+                                    myChart.setOption(option);
+								</script>
+							</div>
+						</div>
+						<!--<div class="col-md-4">
+							<p class="text-center">
+								<strong>活跃客户</strong>
+							</p>
+							<div class="progress-group">
+								<span class="progress-text">认知</span>
+								<span class="progress-number"><b>160</b></span>
+								<div class="progress sm">
+									<div class="progress-bar progress-bar-aqua" style="width: 80%"></div>
+								</div>
+							</div>
+							<div class="progress-group">
+								<span class="progress-text">兴趣</span>
+								<span class="progress-number"><b>310</b></span>
+								<div class="progress sm">
+									<div class="progress-bar progress-bar-red" style="width: 70%"></div>
+								</div>
+							</div>
+							<div class="progress-group">
+								<span class="progress-text">购买</span>
+								<span class="progress-number"><b>480</b></span>
+								<div class="progress sm">
+									<div class="progress-bar progress-bar-green" style="width: 40%"></div>
+								</div>
+							</div>
+							<div class="progress-group">
+								<span class="progress-text">忠诚</span>
+								<span class="progress-number"><b>250</b></span>
+								<div class="progress sm">
+									<div class="progress-bar progress-bar-yellow" style="width: 60%"></div>
+								</div>
+							</div>
+						</div>-->
+					</div>
+				</div>
+				<div class="box-footer">
+					<div class="row">
+						<div class="col-sm-3 col-xs-6">
+							<div class="description-block border-right">
+								<span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+								<h5 class="description-header">35,210.43</h5>
+								<span class="description-text">可用积分</span>
+							</div>
+						</div>
+						<div class="col-sm-3 col-xs-6">
+							<div class="description-block border-right">
+								<span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+								<h5 class="description-header">10,390.90</h5>
+								<span class="description-text">总营收</span>
+							</div>
+						</div>
+						<div class="col-sm-3 col-xs-6">
+							<div class="description-block border-right">
+								<span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
+								<h5 class="description-header">24,813.53</h5>
+								<span class="description-text">总订单数</span>
+							</div>
+						</div>
+						<!--<div class="col-sm-3 col-xs-6">
+							<div class="description-block">
+								<span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
+								<h5 class="description-header">1200</h5>
+								<span class="description-text">目标完成</span>
+							</div>
+						</div>-->
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<footer class="main-footer m0">
+	<div class="pull-right hidden-xs">当前版本： ${@Global.getConfig('productVersion')}</div>
+	&copy; ${@DateUtils.getYear()} ${@Global.getConfig('productName')} - Powered By <a href="http://jeesite.com">JeeSite</a>
+</footer>
+<% } %>
+<script>
+    $(window).resize(function(){
+        var footerHeight  = $('.main-footer').outerHeight() || 0;
+        var windowHeight  = $(window).height();
+        $('.content').css('min-height', windowHeight - footerHeight)
+    }).resize();
+</script>

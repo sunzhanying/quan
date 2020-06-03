@@ -1,0 +1,135 @@
+<% layout('/layouts/default.html', {title: '素材表管理', libs: ['dataGrid']}){ %>
+<script src="${ctxStatic}/common/clipboard.min.js"></script>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('素材表管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('content:meterail:meterial:edit')){ %>
+					<a href="${ctx}/content/meterail/meterial/form" class="btn btn-default btnTool" title="${text('新增素材表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${meterial}" action="${ctx}/content/meterail/meterial/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="title" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('属性')}：</label>
+					<div class="control-inline">
+						<#form:hidden path="attributeName" maxlength="64" class="form-control width-120"/>
+						<select id="selectAttr" class="form-control width-120">
+							<option value="">全部</option>
+							<option value="单图">单图</option>
+							<option value="图集">图集</option>
+							<option value="视频">视频</option>
+						</select>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('分类')}：</label>
+					<div class="control-inline">
+						<#form:treeselect id="meterialType" title="${text('产品类型')}"
+						path="type" labelPath="meterialType.name" canSelectParent = "true" canSelectRoot="true"
+						url="${ctx}/setfocus/meterialtype/meterialType/treeData?ctrlPermi=${@Global.getConfig('user.adminCtrlPermi', '2')}"
+						class="" allowClear="true"/>
+					</div>
+				</div>-->
+
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline">
+						<#form:radio path="materialStatus" dictType="material_status" blankOption="true" blankOptionLabel="全部状态"  class="form-control" />
+					</div>
+				</div>
+
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("属性")}', name:'attributeName', index:'a.attribute_name', width:150, align:"left"},
+		{header:'${text("分类/标签")}', name:'type', index:'a.type', width:150, align:"left",formatter:function (val,obj,row,act) {
+				var text = " 》";
+				if(row.tagList.length>0){
+					$.each(row.tagList, function (index, item) {
+						if(index % 3 == 0){
+							text += "<br />";
+						}
+						text += item.name +"   ";
+					})
+				}else {
+					text = "";
+				}
+				return val +text;
+			}},
+		{header:'${text("封面缩略图")}', name:'coverImg', index:'a.cover_img', width:150, align:"left",formatter:function (val,obj,row,act) {
+				return '<img src="'+val+'" style="width: 60px;height: 60px"/>';
+		}},
+		{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left",formatter:function (val,obj,row,act) {
+				return  '<a  class="btnList" title="${text("传播")}" href="/BrandHub/a/content/meterail/meterial/propagate/spread?id='+row.id+'">'+val+'</a>';
+		}},
+		{header:'${text("状态")}', name:'materialStatus', index:'a.material_status', width:150, align:"left", formatter: function(val, obj, row, act){
+				return js.getDictLabel(${@DictUtils.getDictListJson('material_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("访问人次/人数")}', name:'personTime', index:'a.person_time', width:150, align:"left",formatter:function (val,obj,row,act) {
+				return val+"/"+row.visitor;
+		}},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('content:meterail:meterial:edit')){ %>
+				actions.push('<a href="${ctx}/content/meterail/meterial/form?id='+row.id+'" class="btnList" title="${text("编辑素材表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/content/meterail/meterial/delete?id='+row.id+'" class="btnList" title="${text("删除素材表")}" data-confirm="${text("确认要删除该素材表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                actions.push('<a href="#" class="btnfz" data-clipboard-text="'+row.id+'" title="${text("复制内部链接")}"><i class="fa fa-file-o"></i></a>&nbsp;');
+				<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+
+	}
+});
+</script>
+<script type="text/javascript">
+	$(function () {
+		$("#selectAttr").change(function () {
+			$("#attributeName").val($("#selectAttr").val());
+		});
+	})
+	/**
+	 *  复制内部链接
+	 */
+    var clipboard = new ClipboardJS('.btnfz');
+
+    clipboard.on('success', function(e) {
+        e.clearSelection();
+        js.showMessage("复制成功："+e.text);
+    });
+
+    clipboard.on('error', function(e) {
+        console.error('Action:', e.action);
+        js.showMessage("复制失败");
+    });
+
+</script>

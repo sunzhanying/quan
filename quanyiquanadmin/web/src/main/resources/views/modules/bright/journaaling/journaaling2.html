@@ -1,0 +1,134 @@
+<% layout('/layouts/default.html', {title: '', bodyClass: ''}){ %>
+<!-- <link rel="stylesheet" href="${ctxStatic}/modules/sys/sysDesktop.css?${_version}"> -->
+<ul class="nav nav-tabs">
+	<li><a href="${ctx}/journaaling/journaaling/journaaling">新增客户趋势</a></li>
+	<li class="active"><a href="${ctx}/journaaling/journaaling/journaaling2">客户来源TOP10</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling3">客户地域分布</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling4">客户标签TOP20</a></li>
+</ul>
+<div class="content pb0">
+
+	<!--<div class="row">
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-aqua" ><i class="fa fa-users"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">客户总数</span>
+					<span class="info-box-number">5800<small></small></span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-red"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">微信粉丝</span>
+					<span class="info-box-number">4000</span>
+				</div>
+			</div>
+		</div>
+
+		&lt;!&ndash; fix for small devices only &ndash;&gt;
+		<div class="clearfix visible-sm-block"></div>
+
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-green"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">会员</span>
+					<span class="info-box-number">1800</span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-yellow"><i class="fa fa-users"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text">活跃度</span>
+					<span class="info-box-number">20</span>
+				</div>
+			</div>
+		</div>
+	</div>-->
+	<!-- Chart boxes -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box box-widget">
+				<div class="box-header with-border">
+					<h3 class="box-title">客户来源</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool" data-widget="collapse">
+							<i class="fa fa-minus"></i>
+						</button>
+					</div>
+				</div>
+				<div class="box-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="chart">
+								<div id="myChart" style="height:330px;width:99%"></div>
+								<script src="${ctxStatic}/echarts/4.2/echarts.simple.min.js"></script>
+								<script>
+                                    var option = {
+                                        title : {
+                                            text: '客户来源',
+                                            subtext: ''
+                                        },
+                                        tooltip : {
+                                            trigger: 'axis'
+                                        },
+                                        legend: {
+                                            data:['2019年']
+                                        },
+                                        toolbox: {
+                                            show : true,
+                                            feature : {
+                                                mark : {show: true},
+                                                dataView : {show: true, readOnly: false},
+                                                magicType: {show: true, type: ['line', 'bar']},
+                                                restore : {show: true},
+                                                saveAsImage : {show: true}
+                                            }
+                                        },
+                                        calculable : true,
+                                        xAxis : [
+                                            {
+                                                type : 'value',
+                                                boundaryGap : [0, 0.01]
+                                            }
+                                        ],
+                                        yAxis : [
+                                            {
+                                                type : 'category',
+                                                data : ['线下活动','美物卡OR码','H5微应用','微信朋友圈','微信小程序','微信公众号']
+                                            }
+                                        ],
+                                        series : [
+                                            {
+                                                name:'2019年',
+                                                type:'bar',
+                                                data:[2, 132, 266, 341, 654, 234]
+                                            }
+                                        ]
+                                    };
+                                    // 基于准备好的dom，初始化echarts实例
+                                    var myChart = echarts.init(document.getElementById('myChart'));
+                                    myChart.setOption(option);
+								</script>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+    $(window).resize(function(){
+        var footerHeight  = $('.main-footer').outerHeight() || 0;
+        var windowHeight  = $(window).height();
+        $('.content').css('min-height', windowHeight - footerHeight)
+    }).resize();
+</script>

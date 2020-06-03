@@ -1,0 +1,157 @@
+<% layout('/layouts/default.html', {title: '', bodyClass: ''}){ %>
+<!-- <link rel="stylesheet" href="${ctxStatic}/modules/sys/sysDesktop.css?${_version}"> -->
+<ul class="nav nav-tabs">
+	<li><a href="${ctx}/journaaling/journaaling/journaaling">新增客户趋势</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling2">客户来源TOP10</a></li>
+	<li class="active"><a href="${ctx}/journaaling/journaaling/journaaling3">客户地域分布</a></li>
+	<li><a href="${ctx}/journaaling/journaaling/journaaling4">客户标签TOP20</a></li>
+</ul>
+<div class="content pb0">
+
+	<!--<div class="row">
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-aqua" ><i class="fa fa-users"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">客户总数</span>
+					<span class="info-box-number">5800<small></small></span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-red"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">微信粉丝</span>
+					<span class="info-box-number">4000</span>
+				</div>
+			</div>
+		</div>
+
+		&lt;!&ndash; fix for small devices only &ndash;&gt;
+		<div class="clearfix visible-sm-block"></div>
+
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-green"><i class="fa fa-user"></i></span>
+				<div class="info-box-content">
+					<span class="info-box-text">会员</span>
+					<span class="info-box-number">1800</span>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-3 col-sm-6 col-xs-12">
+			<div class="info-box">
+				<span class="info-box-icon bg-yellow"><i class="fa fa-users"></i></span>
+
+				<div class="info-box-content">
+					<span class="info-box-text">活跃度</span>
+					<span class="info-box-number">20</span>
+				</div>
+			</div>
+		</div>
+	</div>-->
+	<!-- Chart boxes -->
+	<div class="row">
+		<div class="col-md-12">
+			<div class="box box-widget">
+				<div class="box-header with-border">
+					<h3 class="box-title">客户地域分布图</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool" data-widget="collapse">
+							<i class="fa fa-minus"></i>
+						</button>
+					</div>
+				</div>
+				<div class="box-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="chart">
+								<div id="myChart" style="height:430px;width:99%"></div>
+								<script src="${ctxStatic}/echarts/echarts.min.js"></script>
+								<script src="${ctxStatic}/echarts/china.js"></script>
+								<script>
+                                    function randomData() {
+                                        return Math.round(Math.random()*500);
+                                    }
+                                    var mydata = [
+                                        {name: '北京',value: '100' },{name: '天津',value: randomData() },
+                                        {name: '上海',value: randomData() },{name: '重庆',value: randomData() },
+                                        {name: '河北',value: randomData() },{name: '河南',value: randomData() },
+                                        {name: '云南',value: randomData() },{name: '辽宁',value: randomData() },
+                                        {name: '黑龙江',value: randomData() },{name: '湖南',value: randomData() },
+                                        {name: '安徽',value: randomData() },{name: '山东',value: randomData() },
+                                        {name: '新疆',value: randomData() },{name: '江苏',value: randomData() },
+                                        {name: '浙江',value: randomData() },{name: '江西',value: randomData() },
+                                        {name: '湖北',value: randomData() },{name: '广西',value: randomData() },
+                                        {name: '甘肃',value: randomData() },{name: '山西',value: randomData() },
+                                        {name: '内蒙古',value: randomData() },{name: '陕西',value: randomData() },
+                                        {name: '吉林',value: randomData() },{name: '福建',value: randomData() },
+                                        {name: '贵州',value: randomData() },{name: '广东',value: randomData() },
+                                        {name: '青海',value: randomData() },{name: '西藏',value: randomData() },
+                                        {name: '四川',value: randomData() },{name: '宁夏',value: randomData() },
+                                        {name: '海南',value: randomData() },{name: '台湾',value: randomData() },
+                                        {name: '香港',value: randomData() },{name: '澳门',value: randomData() }
+                                    ];
+
+                                    var optionMap = {
+                                        backgroundColor: '#FFFFFF',
+                                        title: {
+                                            text: '客户地域分布图',
+                                            subtext: '',
+                                            x:'center'
+                                        },
+                                        tooltip : {
+                                            trigger: 'item'
+                                        },
+
+                                        //左侧小导航图标
+                                        visualMap: {
+                                            show : true,
+                                            x: 'left',
+                                            y: 'center',
+                                            splitList: [
+                                                {start: 500, end:600},{start: 400, end: 500},
+                                                {start: 300, end: 400},{start: 200, end: 300},
+                                                {start: 100, end: 200},{start: 0, end: 100},
+                                            ],
+                                            color: ['#5475f5', '#9feaa5', '#85daef','#74e2ca', '#e6ac53', '#9fb5ea']
+                                        },
+
+                                        //配置属性
+                                        series: [{
+                                            name: '数据',
+                                            type: 'map',
+                                            mapType: 'china',
+                                            roam: true,
+                                            label: {
+                                                normal: {
+                                                    show: true  //省份名称
+                                                },
+                                                emphasis: {
+                                                    show: false
+                                                }
+                                            },
+                                            data:mydata  //数据
+                                        }]
+                                    };
+                                    // 基于准备好的dom，初始化echarts实例
+                                    var myChart = echarts.init(document.getElementById('myChart'));
+                                    myChart.setOption(optionMap);
+								</script>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+    $(window).resize(function(){
+        var footerHeight  = $('.main-footer').outerHeight() || 0;
+        var windowHeight  = $(window).height();
+        $('.content').css('min-height', windowHeight - footerHeight)
+    }).resize();
+</script>

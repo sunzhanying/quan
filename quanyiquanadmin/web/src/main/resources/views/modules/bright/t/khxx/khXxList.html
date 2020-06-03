@@ -1,0 +1,364 @@
+<% layout('/layouts/default.html', {title: '客户信息管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('客户信息管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<!--<% if(hasPermi('t:khxx:khXx:edit')){ %>
+					<a href="${ctx}/t/khxx/khXx/form" class="btn btn-default btnTool" title="${text('新增客户信息')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>-->
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${khXx}" action="${ctx}/t/khxx/khXx/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+
+				<!--<div class="form-group">
+					<label class="control-label">${text('open_id')}：</label>
+					<div class="control-inline">
+						<#form:input path="openId" maxlength="225" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('union_id')}：</label>
+					<div class="control-inline">
+						<#form:input path="unionId" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('子账号id')}：</label>
+					<div class="control-inline">
+						<#form:input path="childUid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('分享人id')}：</label>
+					<div class="control-inline">
+						<#form:input path="shareUid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('客户号')}：</label>
+					<div class="control-inline">
+						<#form:input path="khh" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('微信昵称')}：</label>
+					<div class="control-inline">
+						<#form:input path="wxnc" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('姓名')}：</label>
+					<div class="control-inline">
+						<#form:input path="xm" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('性别')}：</label>
+					<div class="control-inline">
+						<#form:radio path="xb" dictType="sys_user_sex" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+-->
+
+				<!--<div class="form-group">
+					<label class="control-label">${text('邮箱地址')}：</label>
+					<div class="control-inline">
+						<#form:input path="email" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('qq号')}：</label>
+					<div class="control-inline">
+						<#form:input path="qq" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('密码')}：</label>
+					<div class="control-inline">
+						<#form:input path="mima" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('手机')}：</label>
+					<div class="control-inline">
+						<#form:input path="sj" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('可关注学校')}：</label>
+					<div class="control-inline">
+						<#form:input path="kgzxx" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('可关注专业')}：</label>
+					<div class="control-inline">
+						<#form:input path="kgzzy" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分')}：</label>
+					<div class="control-inline">
+						<#form:input path="jf" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('积分备用字段，用于冻结等')}：</label>
+					<div class="control-inline">
+						<#form:input path="jf1" maxlength="11" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('vip的id')}：</label>
+					<div class="control-inline">
+						<#form:input path="vipid" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('会员失效时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="sxDate" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('成为会员时间')}：</label>
+					<div class="control-inline">
+						<#form:input path="hyDate" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('推荐人ID')}：</label>
+					<div class="control-inline">
+						<#form:input path="recId" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="pr_user_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('用户来源')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="type" dictType="user_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+
+				<!--<div class="form-group">
+					<label class="control-label">${text('签到日期')}：</label>
+					<div class="control-inline">
+						<#form:input path="qdrq" readonly="true" maxlength="20" class="form-control Wdate-datetime"
+							dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('备注信息')}：</label>
+					<div class="control-inline">
+						<#form:input path="remarks" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('删除标记')}：</label>
+					<div class="control-inline">
+						<#form:input path="delFlag" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('二维码地址')}：</label>
+					<div class="control-inline">
+						<#form:input path="qrcode" maxlength="999" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('省份')}：</label>
+					<div class="control-inline">
+						<#form:input path="sf" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('城市')}：</label>
+					<div class="control-inline">
+						<#form:input path="cs" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('地区')}：</label>
+					<div class="control-inline">
+						<#form:input path="dq" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('是否是供应商')}：</label>
+					<div class="control-inline">
+						<#form:input path="isSuplier" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+	<!--<div id="chuanbo" style="display: none">
+		传播dddd
+		<div style="margin-top: 30px;margin-left: 100px;margin-bottom: 20px">
+			<select id="aa"></select>
+		</div>
+
+	</div>
+-->
+
+
+<div id="yemian" class="layui-layer-content" style="height: 360px;padding: 40px 30px;display: none" >
+	<div style="width: 100%;text-align: center;margin:30px 0 30px;font-size: 22px;">确认开启传播权限</div>
+	<div style="width: 100%;text-align: center;margin:30px 0 30px;font-size: 18px;">请选择传播渠道</div>
+	<div style="margin-bottom: 20px;margin-left: 100px;font-size: 18px;">
+		<select id="salesroomId"></select>
+	</div>
+
+	<!--	<div style="margin-bottom: 20px;margin-left: 50px;font-size: 18px;">
+            <input type="radio" name="as" value="1164729723916505088">渠道2【默认      </div>
+    <!--
+        <div style="margin-bottom: 20px;margin-left: 50px;font-size: 18px;">
+            <input type="radio" name="as" value="1164740729624322048">默认
+        </div>
+
+        <div style="margin-bottom: 20px;margin-left: 50px;font-size: 18px;">
+            <input type="radio" name="as" value="1164729530689114112">渠道1
+        </div>-->
+	<input type="hidden" id="kh_id">
+	<div style="text-align: center;">
+		<button onclick="sub()" class="btn btn-sm btn-primary"  style="width: 100px;  font-size: 18px;border: 1px solid #000;margin: 40px auto 20px;">保存</button>
+	</div>
+
+
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		/*{header:'${text("客户号")}', name:'khh', index:'a.khh', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/t/khxx/khXx/form?id='+row.id+'" class="btnList" data-title="${text("编辑客户信息")}">'+(val||row.id)+'</a>';
+		}},*/
+        {header:'${text("微信头像")}', name:'wxnc', index:'a.wxnc', width:150, align:"left",formatter: function(val, obj, row, act){
+    return  val == null ? '<img style="width: 50px;height: 50px" src="${ctxStatic}/mrtx.png"  />':'<img style="width: 50px;height: 50px" src="'+row.wxtx+'"  />';
+}},
+        {header:'${text("微信昵称")}', name:'wxnc', index:'a.wxnc', width:150, align:"left", formatter: function(val, obj, row, act){
+            return val == null ? '匿名':val;
+        }},
+		{header:'${text("姓名")}', name:'xm', index:'a.xm', width:150, align:"left"},
+		/*{header:'${text("性别")}', name:'xb', index:'a.xb', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_sex')}, val, '${text("未知")}', true);
+		}},*/
+
+		/*{header:'${text("邮箱地址")}', name:'email', index:'a.email', width:150, align:"left"},*/
+		/*{header:'${text("qq号")}', name:'qq', index:'a.qq', width:150, align:"left"},*/
+		{header:'${text("手机")}', name:'sj', index:'a.sj', width:150, align:"left"},
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_status')}, val, '${text("未知")}', true);
+		}},
+		/*{header:'${text("传播人权限")}', name:'propagate', index:'a.propagate', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('pr_open_status')}, val, '${text("未知")}', true);
+		}},*/
+        /*{header:'${text("用户来源")}', name:'wxConfig.project', index:'a.wxConfig.project', width:150, align:"left", formatter: function(val, obj, row, act){
+            return "【"+val+"】 "+row.source.name;
+        }},*/
+        {header:'${text("用户来源")}', name:'type', index:'a.type', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('user_type')}, val, '${text("未知")}', true);
+        }},
+		{header:'${text("注册时间")}', name:'createDate', index:'a.createDate', width:150, align:"left"},
+		/*{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},*/
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('t:khxx:khXx:edit')){ %>
+				actions.push('<a href="${ctx}/t/khxx/khXx/form?id='+row.id+'" class="btnList"  title="${text("编辑客户信息")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+                /*if (row.propagate != "1"){
+                    actions.push('<a href="#"  onclick="layers(\''+row.id+'\')" title="${text("开启传播权限")}" ><i class="glyphicon glyphicon-eye-open"></i></a>&nbsp;');
+				}
+                if (row.propagate == "1"){
+                    actions.push('<a href="${ctx}/t/khxx/khXx/disablePro?id='+row.id+'" class="btnList" title="${text("关闭传播权限")}" data-confirm="${text("确认要关闭传播权限吗？")}"><i class="glyphicon glyphicon-eye-close"></i></a>&nbsp;');
+                }*/
+				if (row.status == "0"){
+                    actions.push('<a href="${ctx}/t/khxx/khXx/disable?id='+row.id+'" class="btnList" title="${text("停用数据")}" data-confirm="${text("确认要停用该数据吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+                }
+                if (row.status == "1"){
+                    actions.push('<a href="${ctx}/t/khxx/khXx/enable?id='+row.id+'" class="btnList" title="${text("启用数据")}" data-confirm="${text("确认要启用该数据吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+                }
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+
+
+function layers(id) {
+    $("#kh_id").val(id);
+    var contents;
+    $.ajaxSettings.async = false;
+    $.get("${ctx}/bright/setfocus/others/salesroom/salesroom/getSalesroom",function (data) {
+        console.log(data);
+        $('#salesroomId').html(""); //把ci内容设为空
+        if (data && data.length > 0) {
+            var html = [];
+            for (var i = 0; i < data.length; i++) {
+                //html.push('<input type="radio" name="as" value="'  + data[i].id + '">' + data[i].name + '</input>');
+                html.push('<option  value="'  + data[i].id + '">' + data[i].name + '</option>');
+            }
+
+            //contents=html.join('');
+			$('#salesroomId').append(html.join(''));
+        }
+    })
+
+
+    layer.open({
+        type: 1,
+        title: false,
+        area: ['450px', '360px'],
+        shadeClose: true,
+        skin: 'yourclass',
+        content: $("#yemian").html(),
+        yes: function(index){
+            layer.close(index);
+        }
+    });
+
+}
+
+
+	
+	function sub() {
+        //alert($("#kh_id").val()+$("#salesroomId").val());
+
+        $.post("${ctx}/t/khxx/khXx/enablePro", {id: $("#kh_id").val(),salesroomId:$("#salesroomId").val()}, function (data) {
+            //data = JSON.parse(data);
+			console.log(data);
+            if (data.code == "200") {
+                layer.closeAll('page');
+                location.reload();
+                layer.msg("保存成功");
+            } else {
+                layer.msg("出错了哟");
+            }
+        });
+    }
+</script>

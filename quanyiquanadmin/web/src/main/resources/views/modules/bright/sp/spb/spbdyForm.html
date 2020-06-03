@@ -1,0 +1,244 @@
+<% layout('/layouts/default.html', {title: '商品包管理', libs: ['validate','dataGrid','fileupload']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(spbdy.isNewRecord ? '新增商品包' : '编辑商品包')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${spbdy}" action="${ctx}/sp/spb/spbdy/save" method="post" class="form-horizontal">
+			<div class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('商品包名称')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="spbmc" maxlength="255" class="form-control required"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('状态')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="sxj" dictType="status" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('商品包图片')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:hidden path="spbpic"/>
+								<#form:fileupload id="upload2"
+								uploadType="image" returnPath="true"
+								filePathInputId="spbpic" class="" readonly="false" maxUploadNum="1"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('是否是会员权益商品包')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:radio path="ishyqy" dictType="is_vip_spb" class="form-control required" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('非会员价')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="fhyj"  onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control number required"/>
+							</div>
+						</div>
+					</div>
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('会员价')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="hyj"  onkeyup="if(this.value.split('').reverse().join('').indexOf('.')>2)this.value=this.value.substring(0,this.value.length-1);this.value=this.value.replace(/-/g,'')" class="form-control number required"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('备注信息')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="remarks" rows="4" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('备注信息')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:listselect id="empUserSelect" title="用户"
+								url="${ctx}/sys/empUser/empUserSelect" allowClear="false"
+								checkbox="false" itemCode="userCode" itemName="userName"/>
+							</div>
+						</div>
+					</div>
+				</div>-->
+				<h4 class="form-unit">${text('商品包明细')}</h4>
+				<div class="ml10 mr10">
+					<table id="spbmxDataGrid"></table>
+					<% if (hasPermi('sp:spb:spbdy:edit')){ %>
+						<a href="#" id="spbmxDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i class="fa fa-plus"></i> ${text('增行')}</a>
+					<% } %>
+				</div>
+
+				<h4 class="form-unit">${text('商品包内赠送的优惠券')}</h4>
+				<div class="ml10 mr10">
+					<table id="spbYhqDataGrid"></table>
+					<% if (hasPermi('sp:spb:spbdy:edit')){ %>
+					<a href="#" id="spbYhqDataGridAddRowBtn" class="btn btn-primary btn-sm mt10 mb10"><i class="fa fa-plus"></i> ${text('增行')}</a>
+					<% } %>
+				</div>
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('sp:spb:spbdy:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>
+//初始化商品包内定义的优惠券DataGrid对象
+$("#spbYhqDataGrid").dataGrid({
+
+	data: ${toJson(spbdy.spbYhqList)},
+	datatype: "local", // 设置本地数据
+	autoGridHeight: function(){return 'auto'}, // 设置自动高度
+	
+	// 设置数据表格列
+	columnModel: [
+		{header:'状态', name:'status', editable:true, hidden:true},
+		{header:'主键', name:'id', editable:true, hidden:true},
+		{header:'${text("商品包id")}', name:'spbid.id', editable:true, hidden:true},
+		{header:'${text("优惠券")}', name:'yhqid', width:150,
+            editable:true, edittype:'select', editoptions:{'class':'form-control required',
+                items: $.merge([{yhName:'&nbsp;',id:''}],  ${toJson(yhqList)}),
+                itemLabel: 'yhName', itemValue: 'id', dataInit: function(element){
+                    $(element).select2().on("change",function(){$(this).resetValid()});
+                }
+            }
+		},
+		{header:'${text("赠送数量")}', name:'sl', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'4', 'class':'form-control digits required'}},
+		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
+			var actions = [];
+			if (val == 'new'){
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#spbYhqDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}else{
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#spbYhqDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}
+			return actions.join('');
+		}, editoptions: {defaultValue: 'new'}}
+	],
+	
+	// 编辑表格参数
+	editGrid: true,				// 是否是编辑表格
+    editGridInitRowNum: 0,		// 编辑表格的初始化新增行数
+	editGridAddRowBtn: $('#spbYhqDataGridAddRowBtn'),	// 子表增行按钮
+	editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
+	
+	// 编辑表格的提交数据参数
+	editGridInputFormListName: 'spbYhqList', // 提交的数据列表名
+	editGridInputFormListAttrs: 'status,id,spbid.id,yhqid,sl,', // 提交数据列表的属性字段
+	
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+//初始化商品包明细DataGrid对象
+$("#spbmxDataGrid").dataGrid({
+
+	data: ${toJson(spbdy.spbmxList)},
+	datatype: "local", // 设置本地数据
+	autoGridHeight: function(){return 'auto'}, // 设置自动高度
+	
+	// 设置数据表格列
+	columnModel: [
+		{header:'状态', name:'status', editable:true, hidden:true},
+		{header:'主键', name:'id', editable:true, hidden:true},
+		{header:'${text("商品包id")}', name:'spbid.id', editable:true, hidden:true},
+        {header:'${text("商品选择")}', name:'spid', width:150,
+            editable:true, edittype:'select', editoptions:{'class':'form-control required',
+                items: $.merge([{spmc:'&nbsp;',id:''}],  ${toJson(spList)}),
+                itemLabel: 'spmc', itemValue: 'id', dataInit: function(element){
+                    $(element).select2().on("change",function(){$(this).resetValid()});
+                }
+            }
+        },
+		{header:'${text("商品数量")}', name:'sl', width:150, editable:true, edittype:'text', editoptions:{'maxlength':'11', 'class':'form-control digits required'}},
+		{header:'${text("操作")}', name:'actions', width:80, sortable:false, fixed:true, formatter: function(val, obj, row, act){
+			var actions = [];
+			if (val == 'new'){
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#spbmxDataGrid\').dataGrid(\'delRowData\',\''+obj.rowId+'\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}else{
+				actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#spbmxDataGrid\').dataGrid(\'setRowData\',\''+obj.rowId+'\',null,{display:\'none\'});$(\'#'+obj.rowId+'_status\').val(\''+Global.STATUS_DELETE+'\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			}
+			return actions.join('');
+		}, editoptions: {defaultValue: 'new'}}
+	],
+	
+	// 编辑表格参数
+	editGrid: true,				// 是否是编辑表格
+	editGridInitRowNum: 1,		// 编辑表格的初始化新增行数
+	editGridAddRowBtn: $('#spbmxDataGridAddRowBtn'),	// 子表增行按钮
+	editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},	// 新增行的时候初始化的数据
+	
+	// 编辑表格的提交数据参数
+	editGridInputFormListName: 'spbmxList', // 提交的数据列表名
+	editGridInputFormListAttrs: 'status,id,spbid.id,spid,sl,', // 提交数据列表的属性字段
+	
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>
+
+<script>
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

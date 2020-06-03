@@ -1,0 +1,322 @@
+<% layout('/layouts/default.html', {title: '适用对象', libs: ['validate','dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header with-border">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text(syConfig.isNewRecord ? '新增适用对象')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+		<#form:form id="inputForm" model="${syConfig}" action="${ctx}/push/templet/syConfig/save" method="post" class="form-horizontal">
+			<hr class="box-body">
+				<div class="form-unit">${text('基本信息')}</div>
+				<#form:hidden path="id"/>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="hide">*</span> ${text('推送群组')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="groupid" items="${group}" blankOption="true" itemLabel="name" itemValue="id" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+<!--用户表格-->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="hide">*</span> ${text('组内成员')}：<i class="fa icon-question hide"></i>
+							</label>
+							<div class="col-sm-8">
+
+								<table id="groupKhDataGrid"></table>
+								<div id="dataGridPage" style="margin-left: 50%;"><ul class="pagination">
+									<li class="disabled"><a href="javascript:" onclick="pageB()"><i class="fa fa-angle-left"></i></a></li>
+									<li class="active" ><a href="javascript:" id="nowPage">1</a></li>
+									<li class="disabled"><a href="javascript:" onclick="pageF()"><i class="fa fa-angle-right"></i></a></li>
+								</ul>
+									<ul class="pagination">
+										<li class="disabled controls" id="nowCount" title="点击数字，可填写页码和每页条数，按回车即可生效！">当前 <input type="text" id="nowSize" value="5" > 条，共  条</li>
+									</ul>
+									<div style="clear:both;"></div>
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('生涯模板')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="mbid" items="${symb}" blankOption="true" itemLabel="mbmc" itemValue="id" class="form-control "/>
+							</div>
+						</div>
+					</div>
+
+				</div>
+
+<!--生涯表格-->
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="form-group">
+						<label class="control-label col-sm-2" title="">
+							<span class="required hide">*</span> ${text('相关任务清单')}：<i class="fa icon-question hide"></i>
+						</label>
+						<div class="col-sm-8">
+
+							<table id="groupKhDataGrid2"></table>
+							<div id="dataGridPage2" style="margin-left: 50%;"><ul class="pagination">
+								<li class="disabled"><a href="javascript:" onclick="pageB2()"><i class="fa fa-angle-left"></i></a></li>
+								<li class="active" ><a href="javascript:" id="nowPage2">1</a></li>
+								<li class="disabled"><a href="javascript:" onclick="pageF2()"><i class="fa fa-angle-right"></i></a></li>
+							</ul>
+								<ul class="pagination">
+									<li class="disabled controls" id="nowCount2" title="点击数字，可填写页码和每页条数，按回车即可生效！">当前 <input type="text" id="nowSize2" value="5" > 条，共  条</li>
+								</ul>
+								<div style="clear:both;"></div>
+							</div>
+
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+
+
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required hide">*</span> ${text('备注信息')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="remarks" rows="4" maxlength="255" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<% if (hasPermi('push:templet:syConfig:edit')){ %>
+							<button type="submit" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('保 存')}</button>&nbsp;
+						<% } %>
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+
+<script>
+
+    var size=5;
+    var page=1;
+    var data=${toJson(groupKh)};
+    var count=data.length;
+    function pageSet(page){
+        var dom=$("#groupKhDataGrid .ui-widget-content").not(":has(input[name='status'][value='1'])");
+        $("#nowPage").html(page);
+        var min=(page-1)*size;
+        var max=page*size>count?count:page*size;
+
+        $("#nowCount").html('当前 <input type="text" id="nowSize" value="'+(max-min)+'" > 条，共 '+count+' 条');
+        dom.css("display","none");
+        dom.slice(min,max).css("display","");
+    }
+    function pageF(){
+        page++;
+        if(page>= Math.ceil(count/size)){
+            page=Math.ceil(count/size);
+        }
+        pageSet(page);
+    }
+    function pageB(){
+        page--;
+        if(page<= 1){
+            page=1;
+        }
+        pageSet(page);
+    }
+    //初始化分组用户表DataGrid对象
+    $("#groupKhDataGrid").dataGrid({
+        data: data,
+        datatype: "local", // 设置本地数据
+        autoGridHeight: function () {
+            return 'auto'
+        }, // 设置自动高度
+
+        // 设置数据表格列
+        columnModel: [
+            {header: '客户id', name: 'khid', editable: true, hidden: true},
+            {header: '状态', name: 'status', editable: true, hidden: true},
+            {header: '主键', name: 'id', editable: true, hidden: true},
+            {header: '${text("组id")}', name: 'groupId.id', editable: true, hidden: true},
+            {header:'${text("微信头像")}', name:'khXx.wxtx', index:'a.wxtx', width:150, align:"left",formatter: function(val, obj, row, act){
+                return '<img style="width: 50px;height: 50px" src="'+val+'"  />';
+            }},
+            {header:'${text("微信昵称")}', name:'khXx.wxnc', index:'a.wxnc', width:150, align:"left"},
+            {header:'${text("姓名")}', name:'khXx.xm', index:'a.xm', width:150, align:"left"},
+            {header:'${text("性别")}', name:'khXx.xb', index:'a.xb', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_sex')}, val, '${text("未知")}', true);
+            }},
+
+
+            {header:'${text("手机")}', name:'khXx.sj', index:'a.sj', width:150, align:"left"},
+            {header:'${text("状态")}', name:'khXx.status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+                return js.getDictLabel(${@DictUtils.getDictListJson('sys_user_status')}, val, '${text("未知")}', true);
+            }},
+
+            {
+                header: '备注信息',
+                name: 'remarks',
+                width: 150,
+                editable: true,
+                edittype: 'textarea',
+                editoptions: {'maxlength': '255', 'class': 'form-control', 'rows': '1'}
+            },
+
+            {
+                header: '${text("操作")}',
+                name: 'actions',
+                width: 80,
+                sortable: false,
+                fixed: true,
+                formatter: function (val, obj, row, act) {
+                    var actions = [];
+                    if (val == 'new') {
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'delRowData\',\'' + obj.rowId + '\')});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    } else {
+                        //actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                        actions.push('<a href="#" onclick="js.confirm(\'${text("你确认要删除这条数据吗？")}\', function(){$(\'#groupKhDataGrid\').dataGrid(\'setRowData\',\'' + obj.rowId + '\',null,{display:\'none\'});$(\'#' + obj.rowId + '_status\').attr(\'value\',\'' + Global.STATUS_DELETE + '\');$(\'#'+obj.rowId+'_status\').val(\'' + Global.STATUS_DELETE + '\');});return false;"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                    }
+                    return actions.join('');
+                },
+                editoptions: {defaultValue: 'new'}
+            }
+        ],
+
+        // 编辑表格参数
+        editGrid: true,                // 是否是编辑表格
+        editGridInitRowNum: 1,        // 编辑表格的初始化新增行数
+        editGridAddRowBtn: $('#groupKhDataGridAddRowBtn'),    // 子表增行按钮
+        editGridAddRowInitData: {id: '', status: Global.STATUS_NORMAL},    // 新增行的时候初始化的数据
+        // 编辑表格的提交数据参数
+        editGridInputFormListName: 'khList', // 提交的数据列表名
+        //editGridInputFormListName: 'groupKhList', // 提交的数据列表名
+        editGridInputFormListAttrs: 'status,id,groupId.id,khid,sqls,createBy,createDate,updateBy,updateDate,remarks,delFlag,', // 提交数据列表的属性字段
+    });
+
+    pageB();
+    $('#groupid').on('change',function(){
+
+        checknew($(this).val());
+    })
+    function checknew(val) {
+
+            $.get("${ctx}/push/templet/syConfig/group",{groupId:val},function(ret){
+                count=ret.length;
+                $('#groupKhDataGrid').dataGrid('setParam', {data: ret}, true);
+                $('#groupKhDataGrid').dataGrid('refresh');
+                pageB();
+            })
+
+
+    }
+
+
+</script>
+
+<script>
+
+    var size2=5;
+    var page2=1;
+    var data2=${toJson(symbmx)};
+    var count2=data2.length;
+    function pageSet2(page2){
+        var dom=$("#groupKhDataGrid2 .ui-widget-content").not(":has(input[name='status'][value='1'])");
+        $("#nowPage2").html(page2);
+        var min=(page2-1)*size2;
+        var max=page2*size2>count2?count2:page2*size2;
+
+        $("#nowCount2").html('当前 <input type="text" id="nowSize2" value="'+(max-min)+'" > 条，共 '+count2+' 条');
+        dom.css("display","none");
+        dom.slice(min,max).css("display","");
+    }
+    function pageF2(){
+        page2++;
+        if(page2>= Math.ceil(count2/size2)){
+            page2=Math.ceil(count2/size2);
+        }
+        pageSet2(page2);
+    }
+    function pageB2(){
+        page2--;
+        if(page2<= 1){
+            page2=1;
+        }
+        pageSet2(page2);
+    }
+    //初始化分组用户表DataGrid对象
+    $("#groupKhDataGrid2").dataGrid({
+        data: data2,
+        datatype: "local", // 设置本地数据
+        autoGridHeight: function () {
+            return 'auto'
+        }, // 设置自动高度
+
+        // 设置数据表格列
+        columnModel: [
+            {header: '名称', name: 'syrwmc', editable: true}
+        ]
+
+    });
+
+    pageB2();
+    $('#mbid').on('change',function(){
+        checknew2($(this).val());
+    })
+    function checknew2(val) {
+
+        $.get("${ctx}/push/templet/syConfig/symb",{mbid:val},function(ret){
+            count2=ret.length;
+            $('#groupKhDataGrid2').dataGrid('setParam', {data: ret}, true);
+            $('#groupKhDataGrid2').dataGrid('refresh');
+            pageB2();
+        })
+
+
+    }
+
+
+</script>
+<script>
+
+
+$("#inputForm").validate({
+	submitHandler: function(form){
+		js.ajaxSubmitForm($(form), function(data){
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				js.closeCurrentTabPage(function(contentWindow){
+					contentWindow.page();
+				});
+			}
+		}, "json");
+    }
+});
+</script>

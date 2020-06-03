@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeesite.modules.bright.content.dao.meterail.visited.MeterialVisitedLogDao">
+	
+	<!-- 查询数据
+	<select id="findList" resultType="MeterialVisitedLog">
+		SELECT ${sqlMap.column.toSql()}
+		FROM ${sqlMap.table.toSql()}
+		<where>
+			${sqlMap.where.toSql()}
+		</where>
+		ORDER BY ${sqlMap.order.toSql()}
+	</select> -->
+	<!--<select id="getData" parameterType="java.util.Map" resultType="java.lang.String">
+
+		select DISTINCT(DATE_FORMAT(l.create_date,'%Y-%m-%d')) from meterial_visited_log l LEFT JOIN source s on l.source_id = s.id
+		where CASE WHEN #{day}=0 THEN l.create_date BETWEEN #{startTime} AND #{endTime}
+		WHEN #{day}=1 THEN DATE_FORMAT(l.create_date,'%Y-%m-%d') = DATE_FORMAT( CURDATE() ,'%Y-%m-%d' )
+		ELSE DATE_SUB(CURDATE(), INTERVAL #{day} DAY) &gt;= DATE_FORMAT(l.create_date,'%Y-%m-%d')
+		END GROUP BY l.source_id
+	</select>-->
+
+
+	<select id="getEchartsData2" parameterType="java.util.Map" resultType="java.lang.String">
+
+		<foreach collection="dateList" separator=" UNION ALL " index="index" item="d">
+			SELECT case WHEN #{type}="pv" THEN COUNT(*) ELSE COUNT(DISTINCT l.kh_id) END from meterial_visited_log l where DATE_FORMAT(l.create_date,'%Y-%m-%d') = DATE_FORMAT(#{d},'%Y-%m-%d' )
+			and source_id =#{sourceId}
+		</foreach>
+
+	</select>
+</mapper>

@@ -1,0 +1,129 @@
+<% layout('/layouts/default.html', {title: '用户地址表管理', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('用户地址表管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('yhdz:khDz:edit')){ %>
+					<a href="${ctx}/yhdz/khDz/form" class="btn btn-default btnTool" title="${text('新增用户地址表')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${khDz}" action="${ctx}/yhdz/khDz/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('user_id')}：</label>
+					<div class="control-inline">
+						<#form:input path="userId" maxlength="100" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('名字')}：</label>
+					<div class="control-inline">
+						<#form:input path="name" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('电话')}：</label>
+					<div class="control-inline">
+						<#form:input path="phone" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('1男2女')}：</label>
+					<div class="control-inline">
+						<#form:input path="sex" maxlength="4" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('省份')}：</label>
+					<div class="control-inline">
+						<#form:input path="province" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('市')}：</label>
+					<div class="control-inline">
+						<#form:input path="city" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('省市区域')}：</label>
+					<div class="control-inline">
+						<#form:input path="area" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('详细地址')}：</label>
+					<div class="control-inline">
+						<#form:input path="address" maxlength="255" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('是否默认地址1是，2否')}：</label>
+					<div class="control-inline">
+						<#form:input path="isDefault" maxlength="1" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('标签')}：</label>
+					<div class="control-inline">
+						<#form:input path="bq" maxlength="50" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="status" dictType="sys_search_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("user_id")}', name:'userId', index:'a.user_id', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/yhdz/khDz/form?id='+row.id+'" class="btnList" data-title="${text("编辑用户地址表")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("名字")}', name:'name', index:'a.name', width:150, align:"left"},
+		{header:'${text("电话")}', name:'phone', index:'a.phone', width:150, align:"left"},
+		{header:'${text("1男2女")}', name:'sex', index:'a.sex', width:150, align:"center"},
+		{header:'${text("省份")}', name:'province', index:'a.province', width:150, align:"left"},
+		{header:'${text("市")}', name:'city', index:'a.city', width:150, align:"left"},
+		{header:'${text("省市区域")}', name:'area', index:'a.area', width:150, align:"left"},
+		{header:'${text("详细地址")}', name:'address', index:'a.address', width:150, align:"left"},
+		{header:'${text("是否默认地址1是，2否")}', name:'isDefault', index:'a.is_default', width:150, align:"center"},
+		{header:'${text("标签")}', name:'bq', index:'a.bq', width:150, align:"left"},
+		{header:'${text("状态")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('yhdz:khDz:edit')){ %>
+				actions.push('<a href="${ctx}/yhdz/khDz/form?id='+row.id+'" class="btnList" title="${text("编辑用户地址表")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+				actions.push('<a href="${ctx}/yhdz/khDz/delete?id='+row.id+'" class="btnList" title="${text("删除用户地址表")}" data-confirm="${text("确认要删除该用户地址表吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

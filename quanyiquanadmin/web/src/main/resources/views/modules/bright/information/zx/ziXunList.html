@@ -1,0 +1,177 @@
+<% layout('/layouts/default.html', {title: '内容资讯管理', libs: ['dataGrid']}){ %>
+
+<script type="text/javascript" src="${ctxStatic}/js/qrcode.js"></script>
+<script type="text/javascript" src="${ctxStatic}/js/qrcode.min.js"></script>
+<script type="text/javascript" src="${ctxStatic}/js/md5.js"></script>
+<script src="${ctxStatic}/common/clipboard.min.js"></script>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa fa-list-alt"></i> ${text('内容资讯管理')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<% if(hasPermi('bright:information:zx:ziXun:edit')){ %>
+					<a href="${ctx}/bright/information/zx/ziXun/form" class="btn btn-default btnTool" title="${text('新增内容资讯')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${ziXun}" action="${ctx}/bright/information/zx/ziXun/listData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<!--<div class="form-group">
+					<label class="control-label">${text('类别')}：</label>
+					<div class="control-inline">
+						<#form:input path="type" maxlength="2" class="form-control width-120"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="title" maxlength="300" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('副标题')}：</label>
+					<div class="control-inline">
+						<#form:input path="ftitle" maxlength="300" class="form-control width-120"/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="control-label">${text('链接类型 1 内链 2 外链')}：</label>
+					<div class="control-inline">
+						<#form:radio path="ljType" dictType="link_status" class="form-control" />
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="yemian2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+					&times;
+				</button>
+				<h4 class="modal-title center" id="myModalLabel2" style="text-align: center">
+					URL
+				</h4>
+			</div>
+			<div class="modal-body" style="margin: 30px 120px;">
+				URL：<input id="qdcodeUrl" type="text" style="width: 280px;" value="">
+				<div style="margin: 30px 60px;">
+					<div id="qdcodeImg"></div>
+					<!--<a href="" id="qdcodeImg" download="" style="display: block;text-align: center"></a>-->
+				</div>
+				<a size="550" href="javascript:;"
+				   class="download_icon" style="margin: 0 140px" aria-hidden="true">下载</a>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-sm btn-default" data-dismiss="modal"><i
+						class="fa fa-reply-all"></i> ${text('关 闭')}
+				</button>
+			</div>
+		</div><!-- /.modal-content btn-sm-->
+	</div><!-- /.modal -->
+</div>
+
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("id")}', name:'type', index:'a.type', width:150, align:"left", frozen:true, formatter: function(val, obj, row, act){
+			return '<a href="${ctx}/bright/information/zx/ziXun/form?id='+row.id+'" class="btnList" data-title="${text("编辑内容资讯")}">'+(val||row.id)+'</a>';
+		}},
+		{header:'${text("标题")}', name:'title', index:'a.title', width:150, align:"left"},
+		{header:'${text("副标题")}', name:'ftitle', index:'a.ftitle', width:150, align:"left"},
+		{header:'${text("图片")}', name:'img', index:'a.img', width:150, align:"center",formatter:function (val,obj,row,act) {
+            return '<img src="'+val+'" style="width: 60px;height: 60px"/>';
+        }},
+		/*{header:'${text("阅读数量")}', name:'ydl', index:'a.ydl', width:150, align:"center"},
+		{header:'${text("适用")}', name:'sy', index:'a.sy', width:150, align:"left"},
+		{header:'${text("适用年级id")}', name:'syNj', index:'a.sy_nj', width:150, align:"left"},
+		{header:'${text("适用专业id")}', name:'syZy', index:'a.sy_zy', width:150, align:"left"},
+		{header:'${text("适用院校")}', name:'syYx', index:'a.sy_yx', width:150, align:"left"},
+		{header:'${text("详情")}', name:'details', index:'a.details', width:150, align:"left"},
+		{header:'${text("状态 1|录入 2|审核通过 3|下架")}', name:'status', index:'a.status', width:150, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sys_search_status')}, val, '${text("未知")}', true);
+		}},
+		{header:'${text("审核人ID")}', name:'auditingId', index:'a.auditing_id', width:150, align:"left"},
+		{header:'${text("auditing_rq")}', name:'auditingRq', index:'a.auditing_rq', width:150, align:"center"},
+		{header:'${text("更新时间")}', name:'updateDate', index:'a.update_date', width:150, align:"center"},
+		{header:'${text("备注信息")}', name:'remarks', index:'a.remarks', width:150, align:"left"},*/
+		{header:'${text("二维码地址")}', name:'qrcode', index:'a.qrcode', width:150, align:"center", formatter: function(val, obj, row, act){
+            return '<i class="glyphicon glyphicon-qrcode"  data-toggle="modal" data-target="#yemian2"  onclick="yemian(\'' + row.id + '\')" style="font-size: 25px"></i>';
+        }},
+		{header:'${text("链接类型 1 内链 2 外链")}', name:'ljType', index:'a.lj_type', width:150, align:"center" ,formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('link_status')}, val, '${text("未知")}', true);
+        }},
+		{header:'${text("外链链接地址")}', name:'ljUrl', index:'a.lj_url', width:150, align:"left"},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('bright:information:zx:ziXun:edit')){ %>
+				actions.push('<a href="${ctx}/bright/information/zx/ziXun/form?id='+row.id+'" class="btnList" title="${text("编辑内容资讯")}"><i class="fa fa-pencil"></i></a>&nbsp;');
+               /* if (row.status == Global.STATUS_NORMAL){
+                    actions.push('<a href="${ctx}/bright/information/zx/ziXun/disable?id='+row.id+'" class="btnList" title="${text("停用")}" data-confirm="${text("确认要停用该资讯吗？")}"><i class="glyphicon glyphicon-ban-circle"></i></a>&nbsp;');
+                }
+                if (row.status == Global.STATUS_DISABLE){
+                    actions.push('<a href="${ctx}/bright/information/zx/ziXun/enable?id='+row.id+'" class="btnList" title="${text("启用")}" data-confirm="${text("确认要启用该资讯吗？")}"><i class="glyphicon glyphicon-ok-circle"></i></a>&nbsp;');
+                }*/
+				actions.push('<a href="${ctx}/bright/information/zx/ziXun/delete?id='+row.id+'" class="btnList" title="${text("删除内容资讯")}" data-confirm="${text("确认要删除该内容资讯吗？")}"><i class="fa fa-trash-o"></i></a>&nbsp;');
+                actions.push('<a href="#" class="btnfz" data-clipboard-text="'+row.id+'" title="${text("复制内部链接")}"><i class="fa fa-file-text"></i></a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+	$(document).ready(function () {
+        /**
+         * 点击二维码弹出页面层
+         * @param id
+         */
+        function yemian(id) {
+            var url = "${@Global.getConfig('qrCode_realm_name')}/zixun/url=/pages/home/recipeDetail/recipeDetail?id=" + id;
+
+            $("#qdcodeUrl").attr("value", url);
+            $("#qdcodeImg").empty();
+            var qdcode = new QRCode(document.getElementById("qdcodeImg"), {
+                width: 220, //生成的二维码的宽度
+                height: 220, //生成的二维码的高度
+                correctLevel: 3
+                //correctLevel: QRCode.CorrectLevel.H
+            });
+            qdcode.makeCode($("#qdcodeUrl").val());
+        }
+
+        var clipboard = new ClipboardJS('.btnfz');
+
+        clipboard.on('success', function(e) {
+            //console.info('Action:', e.action);
+            //console.info('Text:', e.text);
+            //console.info('Trigger:', e.trigger);
+            e.clearSelection();
+            js.showMessage("复制成功："+e.text);
+        });
+
+        clipboard.on('error', function(e) {
+            console.error('Action:', e.action);
+            //console.error('Trigger:', e.trigger);
+            js.showMessage("复制失败");
+        });
+    })
+</script>
