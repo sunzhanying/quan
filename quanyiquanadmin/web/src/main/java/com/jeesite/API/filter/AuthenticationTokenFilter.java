@@ -161,6 +161,9 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
         if (uri.startsWith(site + apiPath + "/auth")) {
             return true;
         }
+        if (uri.startsWith(site + apiPath + "/qyq")) {//todo 本地调试用，上线之后注释掉
+            return true;
+        }
         if (uri.startsWith(site + apiPath + "/wx/notify")) {
             return true;
         }

@@ -47,6 +47,17 @@ public class ApiAuthController {
     @Autowired
     private RedisTemplateUtils redisUtils;
 
+    @GetMapping(value = "test1")
+    public Response test1(){
+        //用户sp
+        //redisUtils.hincr("userId","SpXxId");
+        //用户获取SpXxId的缓存
+        //System.out.println(redisUtils.hget("userId","SpXxId"));
+        //用户获取所有spxx缓存
+        return new Response("hello test");
+
+    }
+
     @GetMapping(value = "test")
     public Response test(){
         //用户sp

@@ -36,11 +36,12 @@ pagehelper:
 spring:
   redis:
     goods_prefix: goods
-    host: 1111
+    # host: 1111
+    host: 127.0.0.1
     port: 6379
     ssl: false
     database: 1
-    password: 1111
+    #password: 1111
     timeout: 2000
     lettuce:
       pool:
@@ -55,7 +56,8 @@ jdbc:
   driver: com.mysql.jdbc.Driver
   url: jdbc:mysql://127.0.0.1/qybrandhub?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
   username: root
-  password: 1111111
+  #password: 1111111
+  password: sun123
   testSql: SELECT 1
 
 #文件配置
