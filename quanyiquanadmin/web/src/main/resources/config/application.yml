@@ -37,7 +37,7 @@ demoMode: false
 
 server:
 
-  port: 8986
+  port: 80
   servlet:
     context-path: /Equity
   tomcat:
