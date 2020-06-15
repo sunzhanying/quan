@@ -98,7 +98,7 @@
             {header:'${text("出售单号")}', name:'qyhsId', index:'a.qyhs_id', width:80, align:"left"},
             {header:'${text("出售时间")}', name:'createDate', index:'a.create_date', width:70, align:"left"}
         ],
-        //showCheckbox: true,    // 是否显示复选框
+        showCheckbox: true,    // 是否显示复选框
         // 加载成功后执行事件
         ajaxSuccess: function(data){
             js.getCurrentTabPage(function(contentWindow){ contentWindow.page();}, false);
