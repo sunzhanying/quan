@@ -232,5 +232,17 @@ public class QyhsMxController extends BaseController {
 		qyhsMxService.delete(qyhsMx);
 		return renderResult(Global.TRUE, text("删除权益回收明细成功！"));
 	}
-	
+
+	/**
+	 * 批量下载
+	 * @return
+	 */
+	@RequestMapping(value = "downloadQuan")
+	@ResponseBody
+	public String downloadQuan(String str) {
+		//System.out.println("type: " + type + "\tstr:" + str);
+		//qyhsMxService.updateTgOrTh(str, type);
+		return renderResult(Global.TRUE, text("下载成功！"));
+	}
+
 }

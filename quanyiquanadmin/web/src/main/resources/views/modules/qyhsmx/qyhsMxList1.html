@@ -123,7 +123,7 @@
 		if (str.length == 0){
 			js.showMessage("请选择券");
 		}else {
-			js.confirm('确认批量下载吗？', '${ctx}/qyhsmx/qyhsMx/updateTgOrTh', {"str": str.join(",") , "type":"1"}, function (data) {
+			js.confirm('确认批量下载吗？', '${ctx}/qyhsmx/qyhsMx/downloadQuan', {"str": str.join(",") }, function (data) {
 				js.showMessage(data.message);
 				if(data.result == Global.TRUE){
 					$('#dataGrid').dataGrid('reloadGrid');
