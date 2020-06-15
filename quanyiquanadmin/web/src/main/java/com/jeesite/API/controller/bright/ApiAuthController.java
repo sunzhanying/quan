@@ -3,6 +3,7 @@ package com.jeesite.API.controller.bright;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.util.RedisTemplateUtils;
+import com.jeesite.API.util.TokenUtils;
 import com.jeesite.API.weixin.api.SnsAPI;
 import com.jeesite.API.weixin.bean.sns.SnsToken;
 import com.jeesite.modules.bright.banner.entity.Banner;
@@ -47,6 +48,16 @@ public class ApiAuthController {
     @Autowired
     private RedisTemplateUtils redisUtils;
 
+    @Autowired
+    private TokenUtils tokenUtils;
+
+    /*@GetMapping(value = "setString")
+    public Response setString(){
+        redisUtils.set("")
+        return new Response(nameTemp);
+
+    }*/
+
     @GetMapping(value = "test1")
     public Response test1(){
         //用户sp
@@ -55,6 +66,15 @@ public class ApiAuthController {
         //System.out.println(redisUtils.hget("userId","SpXxId"));
         //用户获取所有spxx缓存
         return new Response("hello test");
+
+    }
+
+    @GetMapping(value = "test2")
+    public Response test2(){
+        String token = tokenUtils.generateToken("sunzy","abddd");
+        String nameTemp = tokenUtils.getUsernameFromToken(token);
+        String role = tokenUtils.getRoles(token);
+        return new Response(nameTemp);
 
     }
 

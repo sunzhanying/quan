@@ -5,7 +5,7 @@ apiPath: /api
 weixin:
   # 卖方
   appid: 111
-  appsecret: 222
+  appsecret: 123456789
   # 买方
   appidA: 11111
   appsecretA: 11111

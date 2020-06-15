@@ -3,6 +3,7 @@ package com.jeesite.API.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
+import com.jeesite.API.util.RedisTemplateUtils;
 import com.jeesite.API.util.TokenUtils;
 import com.jeesite.modules.bright.t.dao.khxx.KhXxDao;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
@@ -50,6 +51,9 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
     @Autowired
     private KhXxDao khXxDao;
 
+    @Autowired
+    private RedisTemplateUtils redisUtils;
+
     public AuthenticationTokenFilter() {
         log.info("=================初始化过滤器================");
     }
@@ -66,10 +70,17 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
             return;
         }
         //开发阶段不需要验证token
-       /* if (true) {
+        /*Object flagObj = redisUtils.get("filterFlag");
+        if(flagObj instanceof String){
+            if("on".equals(String.valueOf(flagObj))){
+                chain.doFilter(req, res);
+                return;
+            }
+        }*/
+        if (true) {
             chain.doFilter(req, res);
             return;
-        }*/
+        }
 
         // 开始过滤
         String uri = request.getRequestURI();
@@ -161,7 +172,7 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
         if (uri.startsWith(site + apiPath + "/auth")) {
             return true;
         }
-        // 本地调试用，上线之后注释掉
+        // 本地调试用，上线之后需要过滤，并且将该部分代码注释掉
         /*if (uri.startsWith(site + apiPath + "/qyq")) {
             return true;
         }*/
