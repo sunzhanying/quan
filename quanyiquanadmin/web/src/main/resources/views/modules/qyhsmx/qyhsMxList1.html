@@ -11,6 +11,7 @@
 			</div>
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<a href="#" class="btn btn-default" id="downloadclick" title="${text('批量下载')}"><i class="fa fa-check"></i> ${text('批量下载')}</a>
 			</div>
 		</div>
 		<div class="box-body">
@@ -66,6 +67,7 @@
     // 初始化DataGrid对象
     $('#dataGrid').dataGrid({
         searchForm: $("#searchForm"),
+		multiselectWidth: 30,   // 复选框的宽度
         columnModel: [
             {header:'${text("状态")}', name:'zt', index:'a.zt', width:50, align:"center", formatter: function(val, obj, row, act){
                 return val > 1?'已审核':'待审核';
@@ -111,4 +113,22 @@
         layer.photos({photos: {"title":"","id":123,"data":[{"alt":"","pid":"","src":obj.src}]}
             ,anim:5});
     }
+
+	//批量下载
+	$("#downloadclick").click(function(){
+		var str = [];
+		console.log($('#dataGrid').dataGrid('getSelectRows'));
+		str = $('#dataGrid').dataGrid('getSelectRows');
+		console.log(str.length);
+		if (str.length == 0){
+			js.showMessage("请选择券");
+		}else {
+			js.confirm('确认批量下载吗？', '${ctx}/qyhsmx/qyhsMx/updateTgOrTh', {"str": str.join(",") , "type":"1"}, function (data) {
+				js.showMessage(data.message);
+				if(data.result == Global.TRUE){
+					$('#dataGrid').dataGrid('reloadGrid');
+				}
+			}, 'json', true, '批量下载中...');
+		}
+	})
 </script>
