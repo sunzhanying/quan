@@ -124,5 +124,14 @@ public class QyhsMxService extends CrudService<QyhsMxDao, QyhsMx> {
 	public void delete(QyhsMx qyhsMx) {
 		super.delete(qyhsMx);
 	}
+
+	/**
+	 * 批量下载
+	 */
+	@Transactional(readOnly=false)
+	public List<QyhsMx> downloadFile(String str) {
+		List<QyhsMx> list = spXxDao.findListForDownload(str);
+		return list;
+	}
 	
 }

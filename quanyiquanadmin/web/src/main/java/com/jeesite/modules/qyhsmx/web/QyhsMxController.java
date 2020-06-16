@@ -6,6 +6,7 @@ package com.jeesite.modules.qyhsmx.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.jeesite.API.util.excelUtil.ExcelUtils;
 import com.jeesite.common.mybatis.mapper.MapperHelper;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 import com.jeesite.modules.bright.sp.entity.SpXx;
@@ -30,6 +31,7 @@ import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -239,9 +241,32 @@ public class QyhsMxController extends BaseController {
 	 */
 	@RequestMapping(value = "downloadQuan")
 	@ResponseBody
-	public String downloadQuan(String str) {
+	public String downloadQuan(String str, HttpServletResponse response) {
 		//System.out.println("type: " + type + "\tstr:" + str);
-		//qyhsMxService.updateTgOrTh(str, type);
+		List<QyhsMx> list = qyhsMxService.downloadFile(str);
+		if(list == null || list.isEmpty()){
+			return renderResult(Global.TRUE, text("无下载内容！"));
+		}
+		try{
+			System.out.println("in downloadExcel");
+			response.reset();//貌似有用
+			String name = "卡券.xlsx";
+			String[] title = {"卡号","卡密"};
+			List<Object[]> objects = new ArrayList<>();
+			objects.add(title);
+			for(QyhsMx temp : list){
+				String[] tempArr = {temp.getKh(),temp.getKm()};
+				objects.add(tempArr);
+			}
+			response.setContentType("application/x-excel;charset=UTF-8");
+			response.setHeader("Content-Disposition","attachment;filename=" + URLEncoder.encode(name,"UTF-8"));
+			response.setCharacterEncoding("UTF-8");
+			// response.getOutputStream() 也可以指向固定目录的文件流
+			ExcelUtils.exportExcelToResponse(name,objects,"sheet007",response.getOutputStream());
+
+		}catch (Exception e){
+			return renderResult(Global.TRUE, text("下载失败！"));
+		}
 		return renderResult(Global.TRUE, text("下载成功！"));
 	}
 
