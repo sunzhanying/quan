@@ -77,10 +77,10 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
                 return;
             }
         }*/
-        if (true) {
+        /*if (true) {
             chain.doFilter(req, res);
             return;
-        }
+        }*/
 
         // 开始过滤
         String uri = request.getRequestURI();

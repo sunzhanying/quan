@@ -69,12 +69,12 @@ public class ApiAuthController {
 
     }
 
-    @GetMapping(value = "test2")
-    public Response test2(){
-        String token = tokenUtils.generateToken("sunzy","abddd");
-        String nameTemp = tokenUtils.getUsernameFromToken(token);
-        String role = tokenUtils.getRoles(token);
-        return new Response(nameTemp);
+    @PostMapping(value = "test2")
+    public Response test2(String name){
+        String token = tokenUtils.generateToken(name,"");
+        //String nameTemp = tokenUtils.getUsernameFromToken(token);
+        //String role = tokenUtils.getRoles(token);
+        return new Response(token);
 
     }
 
