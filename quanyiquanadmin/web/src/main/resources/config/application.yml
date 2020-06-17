@@ -34,6 +34,20 @@ demoMode: false
 #======================================#
 #========== Server settings ===========#
 #======================================#
+#http:
+#  port: 80
+#
+#server:
+#
+#  port: 443
+#  ssl:
+#    key-store: classpath:4076405_quan.whaleupgo.com.pfx
+#    key-store-password: 7gCMbw76
+#    keyStoreType: PKCS12
+#  servlet:
+#    context-path: /Equity
+#  tomcat:
+#    uri-encoding: UTF-
 
 server:
 

@@ -26,7 +26,9 @@ public class SmsUtil {
     
     public static String PHONE_BIND = "SMS_145475062";
     //验证客户手机号
-    public static final String SMS_CODE_PHONE = "SMS_171086574";
+    //public static final String SMS_CODE_PHONE = "SMS_171086574";
+    public static final String SMS_CODE_PHONE = "SMS_181196022";
+
     //购买商品 通知管理员
     //public static final String SMS_CODE_GOODS = "SMS_179295402";
     public static final String SMS_CODE_GOODS = "SMS_171355543";
@@ -40,8 +42,10 @@ public class SmsUtil {
     static final String domain = "dysmsapi.aliyuncs.com";
 
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
-    static final String accessKeyId = "LTAIqFoA433V0PIQ";
-    static final String accessKeySecret = "iWI1aCnwUwxciFz9p4DT0ZOCA9Ij5t";
+    //static final String accessKeyId = "LTAIqFoA433V0PIQ";
+    //static final String accessKeySecret = "iWI1aCnwUwxciFz9p4DT0ZOCA9Ij5t";
+    static final String accessKeyId = "LTAI4Fgoag7Em6aJifgtVW5C";
+    static final String accessKeySecret = "";
 
     public static SendSmsResponse sendSms(String smsCode, String phone,Map map) throws ClientException {
         //可自助调整超时时间
@@ -58,7 +62,8 @@ public class SmsUtil {
         //必填:待发送手机号
         request.setPhoneNumbers(phone);
         //必填:短信签名-可在短信控制台中找到
-        request.setSignName("宁蒙非信息科技");
+        //request.setSignName("宁蒙非信息科技");
+        request.setSignName("鲸品库");
         //必填:短信模板-可在短信控制台中找到
         request.setTemplateCode(smsCode);
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
