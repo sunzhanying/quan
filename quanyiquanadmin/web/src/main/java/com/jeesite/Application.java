@@ -43,7 +43,7 @@ import java.util.List;
 @ServletComponentScan
 public class Application extends SpringBootServletInitializer {
 
-	/*@Bean
+	@Bean
 	public ServletWebServerFactory servletContainer() {
 		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory() {
 			@Override
@@ -67,7 +67,7 @@ public class Application extends SpringBootServletInitializer {
 		connector.setSecure(false);
 		connector.setRedirectPort(443);
 		return connector;
-	}*/
+	}
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(Application.class);
