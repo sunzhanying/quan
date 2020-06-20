@@ -157,6 +157,7 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
     public Object login(SnsToken token, String source) {
 		KhXx khXx =new KhXx();
 		khXx.setOpenId(token.getOpenid());
+		khXx.setType(source);
 		khXx = khXxDao.getByEntity(khXx);
 		//没有注册为新用户
 		if(khXx==null){

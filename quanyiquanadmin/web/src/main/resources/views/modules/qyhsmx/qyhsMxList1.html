@@ -98,7 +98,7 @@
             {header:'${text("出售单号")}', name:'qyhsId', index:'a.qyhs_id', width:80, align:"left"},
             {header:'${text("出售时间")}', name:'createDate', index:'a.create_date', width:70, align:"left"}
         ],
-        //showCheckbox: true,    // 是否显示复选框
+        showCheckbox: true,    // 是否显示复选框
         // 加载成功后执行事件
         ajaxSuccess: function(data){
             js.getCurrentTabPage(function(contentWindow){ contentWindow.page();}, false);
@@ -123,12 +123,14 @@
 		if (str.length == 0){
 			js.showMessage("请选择券");
 		}else {
-			js.confirm('确认批量下载吗？', '${ctx}/qyhsmx/qyhsMx/downloadQuan', {"str": str.join(",") }, function (data) {
+			var url = '${ctx}/qyhsmx/qyhsMx/downloadQuan' + '?str=' + str.join(",");
+			window.open(url);
+			/*js.confirm('确认批量下载吗？', '${ctx}/qyhsmx/qyhsMx/downloadQuan', {"str": str.join(",") }, function (data) {
 				js.showMessage(data.message);
 				if(data.result == Global.TRUE){
 					$('#dataGrid').dataGrid('reloadGrid');
 				}
-			}, 'json', true, '批量下载中...');
+			}, 'json', true, '批量下载中...');*/
 		}
 	})
 </script>

@@ -53,10 +53,11 @@ public interface SpXxDao extends CrudDao<SpXx> {
 
     //显示商品列表
     @Select("<script>" +
-            "select id,kh,km from a_qyhs_mx " +
+            "select id, qyhs_id, qyq_id, khid, type, kh, km, img, yxq_date, zt, status, create_by, create_date, " +
+            "    update_by, update_date, remarks, order_id, jszt, sy, sqdh from a_qyhs_mx " +
             "where " +
             "<if test='str != null and str != &quot;&quot;'>" +
-            " zt in ( #{str} )" +
+            " id in ( #{str} )" +
             "</if>" +
             "</script>")
     List<QyhsMx> findListForDownload(@Param("str") String str);

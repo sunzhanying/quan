@@ -241,21 +241,30 @@ public class QyhsMxController extends BaseController {
 	 */
 	@RequestMapping(value = "downloadQuan")
 	@ResponseBody
-	public String downloadQuan(String str, HttpServletResponse response) {
+	public void downloadQuan(String str, HttpServletResponse response) {
 		//System.out.println("type: " + type + "\tstr:" + str);
-		List<QyhsMx> list = qyhsMxService.downloadFile(str);
+		if(str == null || "".equals(str)){
+			//return renderResult(Global.TRUE, text("无下载内容！"));
+		}
+		String arr[] = str.split(",");
+		List<QyhsMx> list = new ArrayList<>();
+		for(String s : arr){
+			List<QyhsMx> listTemp = qyhsMxService.downloadFile(s);
+			list.addAll(listTemp);
+		}
+
 		if(list == null || list.isEmpty()){
-			return renderResult(Global.TRUE, text("无下载内容！"));
+			//return renderResult(Global.TRUE, text("无下载内容！"));
 		}
 		try{
 			System.out.println("in downloadExcel");
 			response.reset();//貌似有用
 			String name = "卡券.xlsx";
-			String[] title = {"卡号","卡密"};
+			String[] title = {"卡号","卡密","卡图"};
 			List<Object[]> objects = new ArrayList<>();
 			objects.add(title);
 			for(QyhsMx temp : list){
-				String[] tempArr = {temp.getKh(),temp.getKm()};
+				String[] tempArr = {temp.getKh(),temp.getKm(),temp.getImg()};
 				objects.add(tempArr);
 			}
 			response.setContentType("application/x-excel;charset=UTF-8");
@@ -265,9 +274,9 @@ public class QyhsMxController extends BaseController {
 			ExcelUtils.exportExcelToResponse(name,objects,"sheet007",response.getOutputStream());
 
 		}catch (Exception e){
-			return renderResult(Global.TRUE, text("下载失败！"));
+			//return renderResult(Global.TRUE, text("下载失败！"));
 		}
-		return renderResult(Global.TRUE, text("下载成功！"));
+		//return renderResult(Global.TRUE, text("下载成功！"));
 	}
 
 }
