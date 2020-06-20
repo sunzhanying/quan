@@ -32,6 +32,7 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -241,15 +242,22 @@ public class QyhsMxController extends BaseController {
 	 */
 	@RequestMapping(value = "downloadQuan")
 	@ResponseBody
-	public void downloadQuan(String str, HttpServletResponse response) {
+	public void downloadQuan(String str, HttpServletRequest request,HttpServletResponse response) {
 		//System.out.println("type: " + type + "\tstr:" + str);
 		if(str == null || "".equals(str)){
 			//return renderResult(Global.TRUE, text("无下载内容！"));
 		}
 		String arr[] = str.split(",");
 		List<QyhsMx> list = new ArrayList<>();
+
+		QyhsMx qyhsMx = new QyhsMx();
+		qyhsMx.setPage(new Page<>(request, response));
 		for(String s : arr){
-			List<QyhsMx> listTemp = qyhsMxService.downloadFile(s);
+
+			qyhsMx.setId(s);
+			Page<QyhsMx> page = qyhsMxService.findPage(qyhsMx);
+			List<QyhsMx> listTemp = page.getList();
+			//List<QyhsMx> listTemp = qyhsMxService.downloadFile(s);
 			list.addAll(listTemp);
 		}
 
@@ -260,11 +268,42 @@ public class QyhsMxController extends BaseController {
 			System.out.println("in downloadExcel");
 			response.reset();//貌似有用
 			String name = "卡券.xlsx";
-			String[] title = {"卡号","卡密","卡图"};
+			String[] title = {"状态","类型","券标题","卡号","卡密","卡图","有效期","出售人头像","出售人昵称","手机号","出售单号","出售时间"};
+
 			List<Object[]> objects = new ArrayList<>();
 			objects.add(title);
 			for(QyhsMx temp : list){
-				String[] tempArr = {temp.getKh(),temp.getKm(),temp.getImg()};
+				String statusTemp = "已审核";
+
+				String lx = "";
+				if("1".equals(temp.getType())){
+					lx = "卡密";
+				}else if("2".equals(temp.getType())){
+					lx = "卡号/卡密";
+				}else if("3".equals(temp.getType())){
+					lx = "图片截图";
+				}
+
+				String imageUrlTemp = "";
+				if(temp.getImg() != null && !"".equals(temp.getImg())){
+					imageUrlTemp = "https://quan.whaleupgo.com" + temp.getImg();
+				}
+
+				//有效期
+				SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM-dd");
+				String yxq = "";
+				if(temp.getYxqDate() != null){
+					yxq = sdfInput.format(temp.getYxqDate());
+				}
+
+				String csTime = "";
+				if(temp.getCreateDate() != null){
+					csTime = sdfInput.format(temp.getCreateDate());
+				}
+
+				String[] tempArr = {statusTemp,lx,temp.getSpXx().getSpmc(),temp.getKh(),temp.getKm(),imageUrlTemp
+				,yxq,temp.getKhXx().getWxtx(),temp.getKhXx().getWxnc(),temp.getKhXx().getSj(),temp.getQyhsId(),csTime};
+
 				objects.add(tempArr);
 			}
 			response.setContentType("application/x-excel;charset=UTF-8");
