@@ -101,6 +101,8 @@ public class SpXx extends DataEntity<SpXx> {
 	private Long cjl;         //成交量
 	private Boolean issc;     //是否收藏
 	private String sysm;      //使用说明
+	private String myCheck;      //校验
+	private String myLength;      //长度
 
 	private List<Tag> tagList = Lists.newArrayList(); //标签列表
 
