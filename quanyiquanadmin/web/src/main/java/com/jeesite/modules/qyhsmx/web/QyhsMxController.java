@@ -268,7 +268,7 @@ public class QyhsMxController extends BaseController {
 			System.out.println("in downloadExcel");
 			response.reset();//貌似有用
 			String name = "卡券.xlsx";
-			String[] title = {"状态","类型","券标题","卡号","卡密","卡图","有效期","出售人头像","出售人昵称","手机号","出售单号","出售时间"};
+			String[] title = {"状态","类型","券标题","卡号","卡密","卡图","有效期","出售人头像","手机号","出售单号","出售时间"};
 
 			List<Object[]> objects = new ArrayList<>();
 			objects.add(title);
@@ -302,7 +302,7 @@ public class QyhsMxController extends BaseController {
 				}
 
 				String[] tempArr = {statusTemp,lx,temp.getSpXx().getSpmc(),temp.getKh(),temp.getKm(),imageUrlTemp
-				,yxq,temp.getKhXx().getWxtx(),temp.getKhXx().getWxnc(),temp.getKhXx().getSj(),temp.getQyhsId(),csTime};
+				,yxq,temp.getKhXx().getWxtx(),temp.getKhXx().getSj(),temp.getQyhsId(),csTime};
 
 				objects.add(tempArr);
 			}

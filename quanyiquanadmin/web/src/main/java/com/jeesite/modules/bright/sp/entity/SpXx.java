@@ -55,6 +55,8 @@ import java.util.List;
 		@Column(name="bq", attrName="bq", label="标签"),
 		@Column(name="type", attrName="type", label="类型"),
 		@Column(name="source", attrName="source", label="来源"),
+		@Column(name="inCheck", attrName="inCheck", label="校验"),
+		@Column(name="inLength", attrName="inLength", label="输入长度"),
 		@Column(name="sysm", attrName="sysm", label="使用说明"),
 		@Column(name = "status", attrName = "status", label = "状态", isUpdate = false,
 				comment = "（推荐状态：0：正常；1：删除；2：停用；3：冻结；4：审核、待审核；5：审核驳回；9：草稿）"
@@ -101,8 +103,8 @@ public class SpXx extends DataEntity<SpXx> {
 	private Long cjl;         //成交量
 	private Boolean issc;     //是否收藏
 	private String sysm;      //使用说明
-	private String myCheck;      //校验
-	private String myLength;      //长度
+	private String inCheck;      //校验
+	private Long inLength;      //长度
 
 	private List<Tag> tagList = Lists.newArrayList(); //标签列表
 
@@ -384,5 +386,21 @@ public class SpXx extends DataEntity<SpXx> {
 
 	public void setSysm(String sysm) {
 		this.sysm = sysm;
+	}
+
+	public String getInCheck() {
+		return inCheck;
+	}
+
+	public void setInCheck(String inCheck) {
+		this.inCheck = inCheck;
+	}
+
+	public Long getInLength() {
+		return inLength;
+	}
+
+	public void setInLength(Long inLength) {
+		this.inLength = inLength;
 	}
 }
