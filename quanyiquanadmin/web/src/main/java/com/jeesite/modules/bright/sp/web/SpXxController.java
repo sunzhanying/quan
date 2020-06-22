@@ -19,7 +19,6 @@ import com.jeesite.modules.bright.util.message.Message;
 import com.jeesite.modules.bright.util.message.MessageEnum;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
-import jdk.internal.org.objectweb.asm.Handle;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
