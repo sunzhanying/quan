@@ -29,7 +29,7 @@ public class PayController {
     private PayService payService;
     @Autowired
     private QyhsMxService qyhsMxService;
-
+    //买家付款
     @ApiOperation(value = "pay",notes = "微信支付",httpMethod ="POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name="spId",value = "权益id",required = true),
