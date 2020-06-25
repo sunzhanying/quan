@@ -13,6 +13,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +31,9 @@ public class PayController {
     private PayService payService;
     @Autowired
     private QyhsMxService qyhsMxService;
+
+    private final Log logger = LogFactory.getLog(getClass());
+
     //买家付款
     @ApiOperation(value = "pay",notes = "微信支付",httpMethod ="POST")
     @ApiImplicitParams({
@@ -40,6 +45,7 @@ public class PayController {
     public synchronized Response pay(HttpServletRequest request, @RequestParam String spId,
                                      @RequestParam Integer sl, String orderId) {
         KhXx khXx = (KhXx) request.getAttribute("khXx");
+        logger.info("买家付款接口参数：sl:" + sl + "; spId:" + spId + "; orderId:" + orderId);
         //检查权益库存
         //有订单id时不检查库存
         if (Strings.isNullOrEmpty(orderId)){
