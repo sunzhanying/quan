@@ -336,13 +336,14 @@ public class ApiKhxxController {
     }
 
 
-    //发送验证码
+    //发送验证码 2买家 1卖家
     @ApiOperation(value = "send-register-sms",notes = "发送验证码",httpMethod ="POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name="phone",value = "手机号",required = true)
     })
     @RequestMapping(value = "/send-register-sms",method = RequestMethod.POST)
-    public Response<String> sendRegisterSms(@RequestParam String phone) throws ClientException {
+    public Response<String> sendRegisterSms(@RequestParam String phone,
+                                            @RequestParam(defaultValue = "1") String source) throws ClientException {
         SmsRecord smsRecord = new SmsRecord();
         smsRecord.setPhone(phone);
         smsRecord.setZt(SmsRecord.PHONE_ZT_DYZ);
@@ -360,6 +361,7 @@ public class ApiKhxxController {
         String verifyCode = RandomUtils.generateSmsVerifyCode();
         Map map=new HashMap();
         map.put("code",verifyCode);
+        map.put("source",source);
         //阿里
         SendSmsResponse result = SmsUtil.sendSms(SmsUtil.SMS_CODE_PHONE, phone, map);
 

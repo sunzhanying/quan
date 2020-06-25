@@ -45,7 +45,7 @@ public class SmsUtil {
     //static final String accessKeyId = "LTAIqFoA433V0PIQ";
     //static final String accessKeySecret = "iWI1aCnwUwxciFz9p4DT0ZOCA9Ij5t";
     static final String accessKeyId = "LTAI4Fgoag7Em6aJifgtVW5C";
-    static final String accessKeySecret = "";
+    static final String accessKeySecret = "aMHrv7RO81qBysH4UDCUxuSz59caG";// last number
 
     public static SendSmsResponse sendSms(String smsCode, String phone,Map map) throws ClientException {
         //可自助调整超时时间
@@ -63,7 +63,12 @@ public class SmsUtil {
         request.setPhoneNumbers(phone);
         //必填:短信签名-可在短信控制台中找到
         //request.setSignName("宁蒙非信息科技");
-        request.setSignName("鲸品库");
+        if(map != null && "2".equals(map.get("source"))){//买家
+            request.setSignName("券享家");
+        }else{
+            request.setSignName("券易通");
+        }
+
         //必填:短信模板-可在短信控制台中找到
         request.setTemplateCode(smsCode);
         //可选:模板中的变量替换JSON串,如模板内容为"亲爱的${name},您的验证码为${code}"时,此处的值为
