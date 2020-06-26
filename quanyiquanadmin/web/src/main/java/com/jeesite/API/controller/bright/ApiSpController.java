@@ -192,7 +192,12 @@ public class ApiSpController {
         if ("2".equals(type)){
             qyhsMx.setZt(QyhsMx.STATUS_CSZ);
         }
-        if ("1".equals(type) || "2".equals(type)){
+        if ("1".equals(type)){//待审核的，不合并展示
+            String extColumn = "count(a.id) AS \"count\"";
+            qyhsMx.getSqlMap().add("extColumn", extColumn);
+            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
+        }
+        if (/*"1".equals(type) || */"2".equals(type)){
             String extColumn = "count(a.id) AS \"count\"";
             qyhsMx.getSqlMap().add("extColumn", extColumn);
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id");

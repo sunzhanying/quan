@@ -99,6 +99,7 @@ public class PayController {
 
     @RequestMapping(value = "/notify")
     public void notify(HttpServletRequest request, HttpServletResponse response) throws IOException,ClientException {
+        logger.info("买家支付成功进入回调函数");
         payService.payNotify(request, response);
     }
 
