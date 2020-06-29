@@ -186,10 +186,10 @@ public class ApiSpController {
         qyhsMxPage.setPageSize(size);
         QyhsMx qyhsMx = new QyhsMx();
         qyhsMx.setKhid(khXx.getId());
-        if ("1".equals(type)){
+        if ("1".equals(type)){//待审核
             qyhsMx.setZt(QyhsMx.STATUS_DSH);
         }
-        if ("2".equals(type)){
+        if ("2".equals(type)){//出售中
             qyhsMx.setZt(QyhsMx.STATUS_CSZ);
         }
         if ("1".equals(type)){//待审核的，不合并展示
@@ -197,10 +197,13 @@ public class ApiSpController {
             qyhsMx.getSqlMap().add("extColumn", extColumn);
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
         }
-        if (/*"1".equals(type) || */"2".equals(type)){
+        if (/*"1".equals(type) || */"2".equals(type)){//出售中，不合并展示
+            /*String extColumn = "count(a.id) AS \"count\"";
+            qyhsMx.getSqlMap().add("extColumn", extColumn);
+            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id");*/
             String extColumn = "count(a.id) AS \"count\"";
             qyhsMx.getSqlMap().add("extColumn", extColumn);
-            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id");
+            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
         }
         if ("3".equals(type)){
             qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
