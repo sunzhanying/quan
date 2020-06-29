@@ -37,9 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.jeesite.modules.bright.util.QRCodeUtil.qrCode;
@@ -231,6 +229,21 @@ public class ApiSpController {
             item.setSpXx(spXxService.get(item.getQyqId()));
             if ("3".equals(type)){
                 item.setOrder(orderService.get(item.getOrderId()));
+            }
+        });
+        //按照提交时间倒序排列
+        Collections.sort(qyhsMxList, new Comparator<QyhsMx>(){//先按照成绩从小到大排序，如果成绩相等则按照年龄从小到大 如果是String则用 String类的compareTo方法
+            public int compare(QyhsMx o1, QyhsMx o2) {
+                Date d1 = o1.getUpdateDate();
+                Date d2 = o2.getUpdateDate() ;
+                if(d1 == null || d2 == null){
+                    return 0;
+                }
+                if(d1.before(d2)){
+                    return 1;
+                }else{
+                    return -1;
+                }
             }
         });
         return qyhsMxPage.setList(qyhsMxList);
