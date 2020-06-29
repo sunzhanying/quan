@@ -56,8 +56,9 @@ import java.util.Date;
 )
 public class QyhsMx extends DataEntity<QyhsMx> {
 
+	//卖家权益券状态
 	public static final String STATUS_DSH = "1";   //待审核
-	public static final String STATUS_TH = "2";   //退回
+	public static final String STATUS_TH = "2";   //退回，对应无效券
 	public static final String STATUS_CSZ = "3";   //出售中
 	public static final String STATUS_DFK = "4";   //待付款
 	public static final String STATUS_YFK = "5";   //已付款

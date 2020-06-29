@@ -208,6 +208,12 @@ public class ApiSpController {
             qyhsMx.getSqlMap().add("extColumn", extColumn);
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id,a.order_id");
         }
+        if ("4".equals(type)){//无效券
+            qyhsMx.setZt(QyhsMx.STATUS_TH);
+            String extColumn = "count(a.id) AS \"count\"";
+            qyhsMx.getSqlMap().add("extColumn", extColumn);
+            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
+        }
         qyhsMx.setPage(qyhsMxPage);
         List<QyhsMx> qyhsMxList = qyhsMxService.findList(qyhsMx);
         Qyjg qyjg = new Qyjg();
