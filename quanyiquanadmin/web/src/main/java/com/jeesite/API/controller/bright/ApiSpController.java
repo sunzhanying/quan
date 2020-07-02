@@ -151,6 +151,24 @@ public class ApiSpController {
     })
     @RequestMapping(value = "/addQy",method = RequestMethod.POST)
     public Response isKyYhq(HttpServletRequest request, @RequestBody Qyhs qyhs) {
+        if(qyhs == null || qyhs.getQyhsMxes() == null || qyhs.getQyhsMxes().isEmpty()){
+            return new Response(Code.API_CHECK_NULL);
+        }
+        //先从mx明细表中 校验卡密不能重复
+        QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
+        QyhsMx mxForCheck = new QyhsMx();
+        mxForCheck.setKm(mxForSave.getKm());
+        List<String> stringList = new ArrayList<>();
+        stringList.add(QyhsMx.STATUS_DSH);
+        stringList.add(QyhsMx.STATUS_CSZ);
+        stringList.add(QyhsMx.STATUS_DFK);
+        stringList.add(QyhsMx.STATUS_YFK);
+        mxForCheck.getSqlMap().getWhere().and("zt", QueryType.IN, stringList.toArray());
+        long count = qyhsMxService.findCount(mxForCheck);
+        if(count > 0){
+            return new Response(Code.API_CHECK_KM);
+        }
+
         KhXx khXx = (KhXx) request.getAttribute("khXx");
         qyhs.setKhid(khXx.getId());
         qyhs.setZt(Qyhs.STATUS_DSH);
