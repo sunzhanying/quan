@@ -1,13 +1,15 @@
 package com.jeesite.API.controller.bright;
 
-import com.google.common.base.Strings;
+import com.alibaba.fastjson.JSONObject;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.util.RedisTemplateUtils;
+import com.jeesite.API.weixin.api.SnsAPI;
+import com.jeesite.API.weixin.api.TokenAPI;
+import com.jeesite.API.weixin.bean.token.Token;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 import com.jeesite.modules.bright.setfocus.dao.tag.TagDao;
-import com.jeesite.modules.bright.setfocus.entity.tag.Tag;
 import com.jeesite.modules.bright.sp.entity.SpXx;
 import com.jeesite.modules.bright.sp.entity.sptype.SpType;
 import com.jeesite.modules.bright.sp.service.SpXxService;
@@ -36,11 +38,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.jeesite.modules.bright.util.QRCodeUtil.qrCode;
 
 @Api(description = "关于权益券的接口")
 @RestController
@@ -64,6 +62,12 @@ public class ApiSpController {
     @Value("${spring.redis.goods_prefix}")
     protected String goodsPrefix;
 
+    //卖方
+    @Value("${weixin.appid}")
+    private String wxAppId;
+    @Value("${weixin.appsecret}")
+    private String wxAppSecret;
+
     @Autowired
     private RedisTemplateUtils redisUtils;
     @Autowired
@@ -74,6 +78,19 @@ public class ApiSpController {
     private OrderService orderService;
     @Autowired
     private CollectService collectService;
+
+    //上传文件，不可删除
+    @RequestMapping(value = "/getQRCode",method = RequestMethod.POST)
+    public Response getQRCode(@RequestParam String code,@RequestParam String url) {
+        ///卖方
+        Token token = TokenAPI.token(wxAppId, wxAppSecret);
+        if (token.isSuccess()) {
+            return new Response(Code.API_USER_AUTH_ERROR);
+        }
+
+        JSONObject jsonObject = SnsAPI.getQRInfo(token.getAccess_token(),url);
+        return new Response(jsonObject);
+    }
 
     //上传文件，不可删除
     @RequestMapping({"upload"})
@@ -157,7 +174,13 @@ public class ApiSpController {
         //先从mx明细表中 校验卡密不能重复
         QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
         QyhsMx mxForCheck = new QyhsMx();
-        mxForCheck.setKm(mxForSave.getKm());
+        if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
+            mxForCheck.setKm(mxForSave.getKm());
+        }
+        if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
+            mxForCheck.setKh(mxForSave.getKh());
+        }
+
         /*List<String> stringList = new ArrayList<>();
         stringList.add(QyhsMx.STATUS_DSH);
         stringList.add(QyhsMx.STATUS_CSZ);
