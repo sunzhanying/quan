@@ -28,7 +28,7 @@ public enum Code {
     API_VIP_CARD(70005, "请完善会员资料"),
     API_TXJE_NULL(80000, "金额不足，无法提现"),
     API_CHECK_NULL(80001, "入参不合法，有空值"),
-    API_CHECK_KM(80002, "卡密已存在，无法重复提交"),
+    API_CHECK_KM(80002, "请勿重复上传卡券"),
     ;
 
     private long code;

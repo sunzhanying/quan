@@ -158,12 +158,12 @@ public class ApiSpController {
         QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
         QyhsMx mxForCheck = new QyhsMx();
         mxForCheck.setKm(mxForSave.getKm());
-        List<String> stringList = new ArrayList<>();
+        /*List<String> stringList = new ArrayList<>();
         stringList.add(QyhsMx.STATUS_DSH);
         stringList.add(QyhsMx.STATUS_CSZ);
         stringList.add(QyhsMx.STATUS_DFK);
         stringList.add(QyhsMx.STATUS_YFK);
-        mxForCheck.getSqlMap().getWhere().and("zt", QueryType.IN, stringList.toArray());
+        mxForCheck.getSqlMap().getWhere().and("zt", QueryType.IN, stringList.toArray());*/
         long count = qyhsMxService.findCount(mxForCheck);
         if(count > 0){
             return new Response(Code.API_CHECK_KM);
