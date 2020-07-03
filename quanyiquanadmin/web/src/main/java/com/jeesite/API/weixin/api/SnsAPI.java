@@ -1,6 +1,7 @@
 package com.jeesite.API.weixin.api;
 
 
+import com.alibaba.fastjson.JSONObject;
 import com.jeesite.API.weixin.bean.sns.SnsToken;
 import com.jeesite.API.weixin.bean.user.WxUser;
 import com.jeesite.API.weixin.client.LocalHttpClient;
@@ -55,6 +56,19 @@ public class SnsAPI extends BaseAPI {
                 .addParameter("grant_type", "authorization_code")
                 .build();
         return LocalHttpClient.executeJsonResult(httpUriRequest, SnsToken.class);
+    }
+
+    /**
+     * access_token 获取二维码信息
+     * @return
+     */
+    public static JSONObject getQRInfo(String token, String url) {
+        HttpUriRequest httpUriRequest = RequestBuilder.post()
+                .setUri(BASE_URI + "/cv/img/qrcode")
+                .addParameter("access_token", token)
+                .addParameter("img_url", url)
+                .build();
+        return LocalHttpClient.executeJsonResult(httpUriRequest, JSONObject.class);
     }
 
     /**
