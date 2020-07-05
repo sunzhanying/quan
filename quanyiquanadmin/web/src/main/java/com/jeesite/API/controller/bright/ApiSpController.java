@@ -79,9 +79,12 @@ public class ApiSpController {
     @Autowired
     private CollectService collectService;
 
-    //上传文件，不可删除
+    private final Log logger = LogFactory.getLog(getClass());
+
+    //识别二维码
     @RequestMapping(value = "/getQRCode",method = RequestMethod.POST)
-    public Response getQRCode(@RequestParam String code,@RequestParam String url) {
+    public Response getQRCode(@RequestParam String url) {
+        logger.info("getQRCode url:" + url);
         ///卖方
         Token token = TokenAPI.token(wxAppId, wxAppSecret);
         if (token.isSuccess()) {
@@ -95,9 +98,12 @@ public class ApiSpController {
     //上传文件，不可删除
     @RequestMapping({"upload"})
     public Map<String, Object> upload(FileUploadParams params) {
+        logger.info("打印上传  upload begin");
         params.setFileMd5(UUID.randomUUID().toString());
         //params.setFileName(params.getFile().getName());
         params.setFileName(params.getFile().getOriginalFilename());
+        logger.info("打印参数 params getFileMd5：" + params.getFileMd5());
+        logger.info("打印参数 params setFileName：" + params.getFileName());
         return fileUploadService.uploadFile(params);
     }
 
