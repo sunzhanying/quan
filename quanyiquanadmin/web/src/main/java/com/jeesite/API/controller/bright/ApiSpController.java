@@ -87,11 +87,13 @@ public class ApiSpController {
         logger.info("getQRCode url:" + url);
         ///卖方
         Token token = TokenAPI.token(wxAppId, wxAppSecret);
-        if (token.isSuccess()) {
+        logger.info("getQRCode token:" + token);
+        if (!token.isSuccess()) {
+            logger.info("getQRCode is fail.");
             return new Response(Code.API_USER_AUTH_ERROR);
         }
-
         JSONObject jsonObject = SnsAPI.getQRInfo(token.getAccess_token(),url);
+        logger.info("getQRCode jsonObject:" + JSONObject.toJSONString(jsonObject));
         return new Response(jsonObject);
     }
 
