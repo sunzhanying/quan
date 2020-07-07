@@ -142,7 +142,7 @@ public class ApiSpController {
         Map<String, Object> returnMap = fileUploadService.uploadFile(params);
         if(returnMap != null){
             for(Map.Entry<String,Object> entry: returnMap.entrySet()){
-                logger.info("return key:" + entry.getValue() + "; value:" + entry.getValue());
+                logger.info("return key:" + entry.getKey() + "; value:" + entry.getValue());
             }
         }
         logger.info("打印 returnMap：" + returnMap);
