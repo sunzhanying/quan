@@ -1,6 +1,12 @@
 package com.jeesite.API.controller.bright;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.zxing.BinaryBitmap;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatReader;
+import com.google.zxing.Result;
+import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
+import com.google.zxing.common.HybridBinarizer;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.util.RedisTemplateUtils;
@@ -37,7 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.*;
 
 @Api(description = "关于权益券的接口")
@@ -81,6 +90,30 @@ public class ApiSpController {
 
     private final Log logger = LogFactory.getLog(getClass());
 
+    @RequestMapping("/testQR")
+    @ResponseBody
+    public Map testQR(@RequestParam String url) throws Exception {
+        MultiFormatReader formatReader = new MultiFormatReader();
+        File file = new File(url);
+
+        BufferedImage image = ImageIO.read(file);
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+
+        //定义二维码的参数
+        HashMap hints = new HashMap();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+
+        Result result = formatReader.decode(binaryBitmap, hints);
+
+        logger.info("二维码解析结果：" + result.toString());
+        logger.info("二维码的格式：" + result.getBarcodeFormat());
+        logger.info("二维码的文本内容：" + result.getText());
+
+        Map map = new HashMap();
+        map.put("text",result.getText());
+        return map;
+    }
+
     //识别二维码
     @RequestMapping(value = "/getQRCode",method = RequestMethod.POST)
     public Response getQRCode(@RequestParam String url) {
@@ -106,7 +139,14 @@ public class ApiSpController {
         params.setFileName(params.getFile().getOriginalFilename());
         logger.info("打印参数 params getFileMd5：" + params.getFileMd5());
         logger.info("打印参数 params setFileName：" + params.getFileName());
-        return fileUploadService.uploadFile(params);
+        Map<String, Object> returnMap = fileUploadService.uploadFile(params);
+        if(returnMap != null){
+            for(Map.Entry<String,Object> entry: returnMap.entrySet()){
+                logger.info("return key:" + entry.getValue() + "; value:" + entry.getValue());
+            }
+        }
+        logger.info("打印 returnMap：" + returnMap);
+        return returnMap;
     }
 
     @ApiOperation(value = "getSpTypeAll", notes = "获取所有权益券类型", httpMethod = "GET")
