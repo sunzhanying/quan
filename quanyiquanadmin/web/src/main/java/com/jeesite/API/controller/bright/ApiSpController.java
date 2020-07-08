@@ -23,6 +23,7 @@ import com.jeesite.modules.bright.sp.service.sptype.SpTypeService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.collect.entity.Collect;
 import com.jeesite.modules.collect.service.CollectService;
+import com.jeesite.modules.file.entity.FileEntity;
 import com.jeesite.modules.file.entity.FileUpload;
 import com.jeesite.modules.file.entity.FileUploadParams;
 import com.jeesite.modules.file.service.FileUploadService;
@@ -138,54 +139,51 @@ public class ApiSpController {
     //上传文件，不可删除
     @RequestMapping({"upload"})
     public Map<String, Object> upload(FileUploadParams params) {
-        logger.info("打印上传  upload begin");
+        logger.info("进入上传  upload begin");
         params.setFileMd5(UUID.randomUUID().toString());
         //params.setFileName(params.getFile().getName());
         params.setFileName(params.getFile().getOriginalFilename());
-        logger.info("打印参数 params getFileMd5：" + params.getFileMd5());
-        logger.info("打印参数 params setFileName：" + params.getFileName());
+        //logger.info("打印参数 params getFileMd5：" + params.getFileMd5());
+        //logger.info("打印参数 params setFileName：" + params.getFileName());
         Map<String, Object> returnMap = fileUploadService.uploadFile(params);
         //根据文件id，获取文件路径，然后获取二维码值
         getAndSetTextById(returnMap);
-        if(returnMap != null){
+        /*if(returnMap != null){
             for(Map.Entry<String,Object> entry: returnMap.entrySet()){
                 logger.info("return key:" + entry.getKey() + "; value:" + entry.getValue());
             }
-        }
-        logger.info("打印 returnMap：" + returnMap);
+        }*/
+        logger.info("最终返回map打印 returnMap：" + returnMap);
         return returnMap;
     }
 
     private void getAndSetTextById(Map<String, Object> returnMap) {
+        logger.info("进入方法 getAndSetTextById returnMap：" + returnMap);
         try{
             if(returnMap == null || returnMap.isEmpty()){
                 return;
             }
-            String id = (String)returnMap.get("fileUpload");
-            Page<FileUpload> fileUploadPage = new Page<>();
-            fileUploadPage.setPageNo(1);
-            fileUploadPage.setPageSize(1);
-            FileUpload fileUpload = new FileUpload();
-            fileUpload.setPage(fileUploadPage);
-            fileUpload.setId(id);
-            Page<FileUpload> list = fileUploadService.findPage(fileUpload);
-            if(list == null || list.getList() == null || list.getList().isEmpty()){
+            FileUpload fileUpload = (FileUpload)returnMap.get("fileUpload");
+            if(fileUpload == null){
                 return;
             }
-            FileUpload fileUpload1 = list.getList().get(0);
-            if(fileUpload1 == null){
+            FileEntity fileEntity = fileUpload.getFileEntity();
+            logger.info("打印fileEntity：" + fileEntity);
+            if(fileEntity == null){
                 return;
             }
             StringBuffer sb = new StringBuffer();//线程安全
             sb.append("/root/jeesite/userfiles/fileupload/");
-            sb.append(fileUpload1.getFileEntity().getFilePath());
-            sb.append(fileUpload1.getFileEntity().getFileId());
+            sb.append(fileEntity.getFilePath());
+            sb.append(fileEntity.getFileId());
             sb.append(".jpg");
             //     /root/jeesite/userfiles/fileupload/202007/1280510819048443905.jpg
+            logger.info("解析服务器图片路径：" + sb.toString());
             String text = getQrCodeByUrl(sb.toString());
+            logger.info("二维码解析出的文本内容 text：" + text);
             returnMap.put("text",text);
         }catch (Exception e){
-             logger.error("getAndSetTextById error",e);
+             logger.error("解析二维码图片失败，getAndSetTextById error：",e);
         }
     }
 
