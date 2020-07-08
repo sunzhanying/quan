@@ -23,6 +23,7 @@ import com.jeesite.modules.bright.sp.service.sptype.SpTypeService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.collect.entity.Collect;
 import com.jeesite.modules.collect.service.CollectService;
+import com.jeesite.modules.file.entity.FileUpload;
 import com.jeesite.modules.file.entity.FileUploadParams;
 import com.jeesite.modules.file.service.FileUploadService;
 import com.jeesite.modules.order.entity.Order;
@@ -93,6 +94,13 @@ public class ApiSpController {
     @RequestMapping("/testQR")
     @ResponseBody
     public Map testQR(@RequestParam String url) throws Exception {
+        String text = getQrCodeByUrl(url);
+        Map map = new HashMap();
+        map.put("text",text);
+        return map;
+    }
+
+    private String getQrCodeByUrl(String url) throws Exception{
         MultiFormatReader formatReader = new MultiFormatReader();
         File file = new File(url);
 
@@ -108,10 +116,7 @@ public class ApiSpController {
         logger.info("二维码解析结果：" + result.toString());
         logger.info("二维码的格式：" + result.getBarcodeFormat());
         logger.info("二维码的文本内容：" + result.getText());
-
-        Map map = new HashMap();
-        map.put("text",result.getText());
-        return map;
+        return result.getText();
     }
 
     //识别二维码
@@ -140,6 +145,8 @@ public class ApiSpController {
         logger.info("打印参数 params getFileMd5：" + params.getFileMd5());
         logger.info("打印参数 params setFileName：" + params.getFileName());
         Map<String, Object> returnMap = fileUploadService.uploadFile(params);
+        //根据文件id，获取文件路径，然后获取二维码值
+        getAndSetTextById(returnMap);
         if(returnMap != null){
             for(Map.Entry<String,Object> entry: returnMap.entrySet()){
                 logger.info("return key:" + entry.getKey() + "; value:" + entry.getValue());
@@ -147,6 +154,39 @@ public class ApiSpController {
         }
         logger.info("打印 returnMap：" + returnMap);
         return returnMap;
+    }
+
+    private void getAndSetTextById(Map<String, Object> returnMap) {
+        try{
+            if(returnMap == null || returnMap.isEmpty()){
+                return;
+            }
+            String id = (String)returnMap.get("fileUpload");
+            Page<FileUpload> fileUploadPage = new Page<>();
+            fileUploadPage.setPageNo(1);
+            fileUploadPage.setPageSize(1);
+            FileUpload fileUpload = new FileUpload();
+            fileUpload.setPage(fileUploadPage);
+            fileUpload.setId(id);
+            Page<FileUpload> list = fileUploadService.findPage(fileUpload);
+            if(list == null || list.getList() == null || list.getList().isEmpty()){
+                return;
+            }
+            FileUpload fileUpload1 = list.getList().get(0);
+            if(fileUpload1 == null){
+                return;
+            }
+            StringBuffer sb = new StringBuffer();//线程安全
+            sb.append("/root/jeesite/userfiles/fileupload/");
+            sb.append(fileUpload1.getFileEntity().getFilePath());
+            sb.append(fileUpload1.getFileEntity().getFileId());
+            sb.append(".jpg");
+            //     /root/jeesite/userfiles/fileupload/202007/1280510819048443905.jpg
+            String text = getQrCodeByUrl(sb.toString());
+            returnMap.put("text",text);
+        }catch (Exception e){
+             logger.error("getAndSetTextById error",e);
+        }
     }
 
     @ApiOperation(value = "getSpTypeAll", notes = "获取所有权益券类型", httpMethod = "GET")
