@@ -159,6 +159,7 @@ public class ApiSpController {
 
     private void getAndSetTextById(Map<String, Object> returnMap) {
         logger.info("进入方法 getAndSetTextById returnMap：" + returnMap);
+        returnMap.put("sunzy","0711");
         try{
             if(returnMap == null || returnMap.isEmpty()){
                 return;
@@ -176,7 +177,9 @@ public class ApiSpController {
             sb.append("/root/jeesite/userfiles/fileupload/");
             sb.append(fileEntity.getFilePath());
             sb.append(fileEntity.getFileId());
-            sb.append(".jpg");
+            sb.append(".");
+            sb.append(fileEntity.getFileExtension());
+            //sb.append(".jpg");
             //     /root/jeesite/userfiles/fileupload/202007/1280510819048443905.jpg
             logger.info("解析服务器图片路径：" + sb.toString());
             String text = getQrCodeByUrl(sb.toString());
