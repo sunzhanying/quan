@@ -12,6 +12,7 @@
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<a href="#" class="btn btn-default" id="downloadclick" title="${text('批量下载')}"><i class="fa fa-check"></i> ${text('批量下载')}</a>
+				<a href="#" class="btn btn-default" id="backclick" title="${text('批量拒绝')}"><i class="fa fa-close"></i> ${text('批量拒绝')}</a>
 			</div>
 		</div>
 		<div class="box-body">
@@ -70,7 +71,13 @@
 		multiselectWidth: 30,   // 复选框的宽度
         columnModel: [
             {header:'${text("状态")}', name:'zt', index:'a.zt', width:50, align:"center", formatter: function(val, obj, row, act){
-                return val > 1?'已审核':'待审核';
+                if(val == 2){
+					return '无效券';
+				}else if(val > 2 ){
+					return '已审核';
+				}else{
+					return '待审核';
+				}
             }},
             {header:'${text("类型")}', name:'type', index:'a.type', width:50, align:"center", formatter: function(val, obj, row, act){
                 return js.getDictLabel(${@DictUtils.getDictListJson('qyq_type')}, val, '${text("未知")}', true);
@@ -131,6 +138,24 @@
 					$('#dataGrid').dataGrid('reloadGrid');
 				}
 			}, 'json', true, '批量下载中...');*/
+		}
+	})
+
+	//批量拒绝
+	$("#backclick").click(function(){
+		var str = [];
+		console.log($('#dataGrid').dataGrid('getSelectRows'));
+		str = $('#dataGrid').dataGrid('getSelectRows');
+		console.log(str.length);
+		if (str.length == 0){
+			js.showMessage("请选择券");
+		}else {
+			js.confirm('确认批量拒绝券吗？', '${ctx}/qyhsmx/qyhsMx/updateTgOrTh', {"str": str.join(",") , "type":"22"}, function (data) {
+				js.showMessage(data.message);
+				if(data.result == Global.TRUE){
+					$('#dataGrid').dataGrid('reloadGrid');
+				}
+			}, 'json', true, '正在拒绝...');
 		}
 	})
 </script>

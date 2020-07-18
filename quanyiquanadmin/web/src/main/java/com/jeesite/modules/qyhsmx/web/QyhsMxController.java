@@ -216,10 +216,17 @@ public class QyhsMxController extends BaseController {
 	@ResponseBody
 	public String updateTgOrTh(String str, String type) {
 		//System.out.println("type: " + type + "\tstr:" + str);
-		qyhsMxService.updateTgOrTh(str, type);
+		if("22".equals(type)){
+			qyhsMxService.updateTgOrTh(str, "2");
+		}else{
+			qyhsMxService.updateTgOrTh(str, type);
+		}
+
 		if ("1".equals(type)){
 			return renderResult(Global.TRUE, text("券已成功批量通过！"));
-		}else {
+		}else if("22".equals(type)){
+			return renderResult(Global.TRUE, text("券已成功批量拒绝！"));
+		}else{
 			return renderResult(Global.TRUE, text("券已成功批量退回！"));
 		}
 	}
