@@ -221,7 +221,7 @@ public class ApiKhxxController {
         //可提现收益
         QyhsMx qyhsMx1 = new QyhsMx();
         qyhsMx1.setKhid(khXx.getId());
-        qyhsMx1.getSqlMap().getWhere().and("jszt", QueryType.LT, QyhsMx.STATUS_JS_YJS);
+        qyhsMx1.getSqlMap().getWhere().and("jszt", QueryType.LT, QyhsMx.STATUS_JS_YJS);// LT 小于的意思
         String extColumn1 = "SUM(a.sy) AS \"sum\"";
         qyhsMx1.getSqlMap().add("extColumn", extColumn1);
         QyhsMx qyhsMx3 = qyhsMxDao.getByEntity(qyhsMx1);
