@@ -9,6 +9,7 @@ import com.jeesite.API.weixin.bean.sns.SnsToken;
 import com.jeesite.modules.bright.banner.entity.Banner;
 import com.jeesite.modules.bright.banner.service.BannerService;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
+import com.jeesite.modules.order.service.ExpireService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -51,6 +52,9 @@ public class ApiAuthController {
     @Autowired
     private TokenUtils tokenUtils;
 
+    @Autowired
+    private ExpireService expireService;
+
     /*@GetMapping(value = "setString")
     public Response setString(){
         redisUtils.set("")
@@ -66,6 +70,11 @@ public class ApiAuthController {
         //System.out.println(redisUtils.hget("userId","SpXxId"));
         //用户获取所有spxx缓存
         return new Response("hello test");
+
+    }
+    @GetMapping(value = "expire")
+    public Response expire(){
+        return expireService.expireCard();
 
     }
 

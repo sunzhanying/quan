@@ -2,6 +2,7 @@ package com.jeesite.modules.bright.util;
 
 import com.jeesite.common.lang.DateUtils;
 import com.jeesite.modules.order.entity.Order;
+import com.jeesite.modules.order.service.ExpireService;
 import com.jeesite.modules.order.service.OrderService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,10 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,6 +30,9 @@ public class OrderManager {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private ExpireService expireService;
+
     private static Map<String,Object> ordermap = new LinkedHashMap<>();
 
     /**
@@ -47,9 +49,11 @@ public class OrderManager {
         }
         //创建一个定长线程池，支持定时及周期性任务执行——定期执行
         ScheduledExecutorService scheduledThreadPool = Executors.newScheduledThreadPool(5);
-        //延迟1秒后每3秒执行一次
+        //延迟5秒后每15秒执行一次
         scheduledThreadPool.scheduleAtFixedRate(new Runnable() {
             public void run() {
+                //处理卖家卡券过期失效，
+                expireCard();
                 //循环map
                 Iterator<Map.Entry<String,Object>> it = ordermap.entrySet().iterator();
                 while (it.hasNext()){
@@ -64,6 +68,18 @@ public class OrderManager {
                 }
             }
         }, 5, 15, TimeUnit.SECONDS);
+    }
+
+    private void expireCard() {
+        //在凌晨00点到00:10:00才去执行
+        SimpleDateFormat sf = new SimpleDateFormat("HHmmss");
+        String s = sf.format(new Date());
+        log.info("当前时间s:" + s);
+        if(s.compareTo("000300") < 0){//当前时间小于凌晨3分钟,字符串000300
+            log.info("进入方法修改卡券失效方法。");
+            //查询表a_qyhs_mx，状态是3，出售中的卡券，如果失效时间已过，则设置成2、审核失败
+            expireService.expireCard();
+        }
     }
 
     /**
