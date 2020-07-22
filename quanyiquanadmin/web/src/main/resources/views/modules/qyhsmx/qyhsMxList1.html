@@ -12,7 +12,7 @@
 			<div class="box-tools pull-right">
 				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
 				<a href="#" class="btn btn-default" id="downloadclick" title="${text('批量下载')}"><i class="fa fa-check"></i> ${text('批量下载')}</a>
-				<a href="#" class="btn btn-default" id="backclick" title="${text('批量拒绝')}"><i class="fa fa-close"></i> ${text('批量拒绝')}</a>
+				<a href="#" class="btn btn-default" id="backclick" title="${text('批量退回')}"><i class="fa fa-close"></i> ${text('批量退回')}</a>
 			</div>
 		</div>
 		<div class="box-body">
@@ -150,12 +150,12 @@
 		if (str.length == 0){
 			js.showMessage("请选择券");
 		}else {
-			js.confirm('确认批量拒绝券吗？', '${ctx}/qyhsmx/qyhsMx/updateTgOrTh', {"str": str.join(",") , "type":"22"}, function (data) {
+			js.confirm('确认批量退回券吗？', '${ctx}/qyhsmx/qyhsMx/updateTgOrTh', {"str": str.join(",") , "type":"22"}, function (data) {
 				js.showMessage(data.message);
 				if(data.result == Global.TRUE){
 					$('#dataGrid').dataGrid('reloadGrid');
 				}
-			}, 'json', true, '正在拒绝...');
+			}, 'json', true, '正在退回...');
 		}
 	})
 </script>

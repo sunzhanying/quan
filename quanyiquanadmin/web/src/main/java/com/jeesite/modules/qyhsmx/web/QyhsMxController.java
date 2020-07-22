@@ -225,7 +225,7 @@ public class QyhsMxController extends BaseController {
 		if ("1".equals(type)){
 			return renderResult(Global.TRUE, text("券已成功批量通过！"));
 		}else if("22".equals(type)){
-			return renderResult(Global.TRUE, text("券已成功批量拒绝！"));
+			return renderResult(Global.TRUE, text("券已成功批量退回！"));
 		}else{
 			return renderResult(Global.TRUE, text("券已成功批量退回！"));
 		}
