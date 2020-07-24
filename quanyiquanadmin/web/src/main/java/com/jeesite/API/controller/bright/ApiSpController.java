@@ -333,7 +333,7 @@ public class ApiSpController {
             qyhsMx.getSqlMap().add("extColumn", extColumn);
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
         }
-        if ("3".equals(type)){
+        if ("3".equals(type)){//查询已售出
             qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
             String extColumn = "count(a.id) AS \"count\"";
             qyhsMx.getSqlMap().add("extColumn", extColumn);
@@ -348,7 +348,7 @@ public class ApiSpController {
         qyhsMx.setPage(qyhsMxPage);
         List<QyhsMx> qyhsMxList = qyhsMxService.findList(qyhsMx);
         Qyjg qyjg = new Qyjg();
-        qyhsMxList.forEach(item ->{
+        for(QyhsMx item :qyhsMxList){
             if ("1".equals(type) || "2".equals(type)){
                 //价格
                 qyjg.setQyqId(item.getQyqId());
@@ -360,7 +360,7 @@ public class ApiSpController {
             if ("3".equals(type)){
                 item.setOrder(orderService.get(item.getOrderId()));
             }
-        });
+        }
         //按照提交时间倒序排列
         Collections.sort(qyhsMxList, new Comparator<QyhsMx>(){//先按照成绩从小到大排序，如果成绩相等则按照年龄从小到大 如果是String则用 String类的compareTo方法
             public int compare(QyhsMx o1, QyhsMx o2) {

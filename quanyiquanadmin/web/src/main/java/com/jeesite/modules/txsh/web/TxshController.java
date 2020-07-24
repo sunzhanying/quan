@@ -128,4 +128,25 @@ public class TxshController extends BaseController {
 		}
 		return renderResult(Global.TRUE, text(response.getMessage()));
 	}*/
+
+	/**
+	 * 批量通过或退回
+	 * type 1 通过 2 退回
+	 * @return
+	 */
+	@RequestMapping(value = "updateTxsh")
+	@ResponseBody
+	public String updateTgOrTh(String str, String type) {
+		//System.out.println("type: " + type + "\tstr:" + str);
+		String[] strings = str.split(",");
+		//条件
+		for (String string : strings) {
+			Txsh txshTemp = new Txsh(string);
+			txshTemp.setZt(type);
+			txshService.update(txshTemp);
+		}
+
+		return renderResult(Global.TRUE, text("批量不通过操作成功！"));
+
+	}
 }

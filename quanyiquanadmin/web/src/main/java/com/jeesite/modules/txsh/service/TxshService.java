@@ -166,5 +166,15 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	public void delete(Txsh txsh) {
 		super.delete(txsh);
 	}
+
+	/**
+	 * 更新状态
+	 * @param txsh
+	 */
+	@Override
+	@Transactional(readOnly=false)
+	public void update(Txsh txsh) {
+		super.update(txsh);
+	}
 	
 }

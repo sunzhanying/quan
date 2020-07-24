@@ -94,7 +94,7 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
             }
             // X-Auth-Token携带确认
             final String authHeader = request.getHeader(tokenHeader);
-            System.out.println("Bearer " + tokenUtils.generateToken("1161566266154573824" ,""));
+            System.out.println("Bearer " + tokenUtils.generateToken("1277927056823746560" ,""));
             log.info("Auth Header: " + authHeader);
             if ((authHeader == null || !authHeader.startsWith("Bearer "))) {
                 response.setContentType("application/json;charset=UTF-8");
