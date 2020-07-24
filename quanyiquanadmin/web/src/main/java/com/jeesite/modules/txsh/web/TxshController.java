@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.jeesite.API.service.Response;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
+import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,8 @@ import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.TxshService;
 
+import java.util.List;
+
 /**
  * 提现审核Controller
  * @author 马晓亮
@@ -35,6 +38,9 @@ public class TxshController extends BaseController {
 
 	@Autowired
 	private TxshService txshService;
+
+	@Autowired
+	private QyhsMxService qyhsMxService;
 	
 	/**
 	 * 获取数据
@@ -130,8 +136,8 @@ public class TxshController extends BaseController {
 	}*/
 
 	/**
-	 * 批量通过或退回
-	 * type 1 通过 2 退回
+	 * 批量提现审核不通过、根据提现审核主键，查询出提现审核表中订单号，关联更新出卖券计算状态
+	 * type 3
 	 * @return
 	 */
 	@RequestMapping(value = "updateTxsh")
@@ -144,6 +150,25 @@ public class TxshController extends BaseController {
 			Txsh txshTemp = new Txsh(string);
 			txshTemp.setZt(type);
 			txshService.update(txshTemp);
+
+			//根据提现审核主键查询出订单号
+			Txsh txshTempForOrder = new Txsh(string);
+			txshTempForOrder = txshService.get(txshTempForOrder);
+			//根据订单号更新卖券表状态
+			if(txshTempForOrder == null){
+				continue;
+			}
+			String orderId = txshTempForOrder.getOrderId();
+			if(orderId == null || "".equals(orderId)){
+				continue;
+			}
+			QyhsMx qyhsMx = new QyhsMx();
+			qyhsMx.setOrderId(orderId);
+			List<QyhsMx> list = qyhsMxService.findList(qyhsMx);
+			for(QyhsMx qyhsMx1 :list){
+				qyhsMx1.setJszt(QyhsMx.STATUS_JS_SHBTG);//审核不通过
+				qyhsMxService.update(qyhsMx1);
+			}
 		}
 
 		return renderResult(Global.TRUE, text("批量不通过操作成功！"));

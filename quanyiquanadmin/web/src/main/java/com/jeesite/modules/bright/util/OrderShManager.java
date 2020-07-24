@@ -44,7 +44,7 @@ public class OrderShManager {
                 List<Txsh> txshList = txshService.findList(txsh);
                 //自动提现
                 txshList.forEach(item ->{
-                    txshService.txsh(item);
+                    //txshService.txsh(item); todo 暂时不提现，20200724，提现失败的不应该再提现，现在已经可以手动设置 3提现审核不通过
                 });
             }
         }, 0, 30, TimeUnit.MINUTES);

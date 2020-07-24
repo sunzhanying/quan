@@ -66,6 +66,7 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 	public static final String STATUS_JS_WJS = "1";   //未结算
 	public static final String STATUS_JS_JSZ = "2";   //结算中
 	public static final String STATUS_JS_YJS = "3";   //已结算
+	public static final String STATUS_JS_SHBTG = "4";   //审核不通过，对应表提现审核表a_txsh，zt=3，审核不通过，页面也可操作
 
 	private static final long serialVersionUID = 1L;
 	private String qyhsId;		// 权益回收id
