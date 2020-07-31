@@ -53,7 +53,7 @@ public class OrderManager {
         scheduledThreadPool.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 //处理卖家卡券过期失效，
-                //expireCard();
+                expireCard();
                 //循环map
                 Iterator<Map.Entry<String,Object>> it = ordermap.entrySet().iterator();
                 while (it.hasNext()){
@@ -71,11 +71,11 @@ public class OrderManager {
     }
 
     private void expireCard() {
-        //在凌晨00点到00:10:00才去执行
+        //在凌晨00点到00:02:00才去执行
         SimpleDateFormat sf = new SimpleDateFormat("HHmmss");
         String s = sf.format(new Date());
         log.info("当前时间s:" + s);
-        if(s.compareTo("000300") < 0){//当前时间小于凌晨3分钟,字符串000300
+        if(s.compareTo("000200") < 0){//当前时间小于凌晨2分钟,字符串000200
             log.info("进入方法修改卡券失效方法。");
             //查询表a_qyhs_mx，状态是3，出售中的卡券，如果失效时间已过，则设置成2、审核失败
             expireService.expireCard();
