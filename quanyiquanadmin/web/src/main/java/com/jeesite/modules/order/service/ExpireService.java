@@ -41,20 +41,19 @@ public class ExpireService extends CrudService<OrderDao, Order> {
 			qyhsMx.setZt(QyhsMx.STATUS_CSZ);
 			List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
 			int count = 0;
+			//获取当前时间的前一天
+			Date date = new Date();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			calendar.add(Calendar.DAY_OF_MONTH, -1);
+			Date beforeOneDay = calendar.getTime();
 			for(QyhsMx item : qyhsMxList){
 				if(item != null && item.getYxqDate() != null){
-					//获取当前时间的前一天
-					Date date = new Date();
-					Calendar calendar = Calendar.getInstance();
-					calendar.setTime(date);
-					calendar.add(Calendar.DAY_OF_MONTH, -1);
-					Date beforeOneDay = calendar.getTime();
 					if(item.getYxqDate().before(beforeOneDay)){//如果失效时间小于当前时间的前一天，则失效
 						item.setZt(QyhsMx.STATUS_TH);
 						qyhsMxDao.update(item);
 						count = count + 1;
 						logger.info("定时归档失效券：" + item.getId());
-
 					}
 				}
 			}
