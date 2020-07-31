@@ -53,7 +53,7 @@ public class OrderManager {
         scheduledThreadPool.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 //处理卖家卡券过期失效，
-                expireCard();
+                //expireCard();
                 //循环map
                 Iterator<Map.Entry<String,Object>> it = ordermap.entrySet().iterator();
                 while (it.hasNext()){

@@ -73,8 +73,12 @@
             {header:'${text("状态")}', name:'zt', index:'a.zt', width:50, align:"center", formatter: function(val, obj, row, act){
                 if(val == 2){
 					return '无效券';
-				}else if(val > 2 ){
-					return '已审核';
+				}else if(val == 3 ){
+					return '出售中';
+				}else if(val == 4){
+					return '待付款';
+				}else if(val == 5){
+					return '已付款';
 				}else{
 					return '待审核';
 				}
