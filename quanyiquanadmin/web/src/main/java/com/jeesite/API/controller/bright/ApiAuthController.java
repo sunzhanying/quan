@@ -10,6 +10,8 @@ import com.jeesite.modules.bright.banner.entity.Banner;
 import com.jeesite.modules.bright.banner.service.BannerService;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.order.service.ExpireService;
+import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.TxshService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -55,6 +57,9 @@ public class ApiAuthController {
     @Autowired
     private ExpireService expireService;
 
+    @Autowired
+    private TxshService txshService;
+
     /*@GetMapping(value = "setString")
     public Response setString(){
         redisUtils.set("")
@@ -75,6 +80,21 @@ public class ApiAuthController {
     @GetMapping(value = "expire")
     public Response expire(){
         return expireService.expireCard();
+
+    }
+
+    /**
+     *根据提现审核表a_txsh，主键 测试商户付款到零钱功能
+     * @param txshId
+     * @return
+     */
+    @PostMapping(value = "mchPay")
+    public Response mchPay(String txshId){
+        Txsh txsh = new Txsh();
+        txsh.setId(txshId);
+        Txsh txshDb = txshService.get(txsh);
+        txshService.txsh(txshDb);
+        return new Response("finish");
 
     }
 
@@ -102,7 +122,6 @@ public class ApiAuthController {
      * 微信用户登录
      *
      * @param code 微信授权后获取的code
-     * @param tjrid   推荐人id
      * @return 授权结果，返回包含JWT的字符串
      */
     @ApiOperation(value = "微信登录",httpMethod ="POST")
