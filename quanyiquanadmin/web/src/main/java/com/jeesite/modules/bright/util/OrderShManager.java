@@ -39,10 +39,11 @@ public class OrderShManager {
                 //查询未提现或提现失败的数据
                 Txsh txsh = new Txsh();
                 txsh.getSqlMap().getWhere().and("create_date", QueryType.GTE, DateUtils.getDate("yyyy-MM-dd HH:mm:ss", -24, Calendar.HOUR));
-                txsh.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, Txsh.TX_STATUS_SQZ, 1)
-                        .or("zt", QueryType.EQ, Txsh.TX_STATUS_SB, 2).endBracket();
+//                txsh.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, Txsh.TX_STATUS_SQZ, 1)
+//                        .or("zt", QueryType.EQ, Txsh.TX_STATUS_SB, 2).endBracket();
+                txsh.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, Txsh.TX_STATUS_SQZ, 1);//只有申请中的可以
                 List<Txsh> txshList = txshService.findList(txsh);
-                //自动提现
+                //自动提现，切记 不要打开，不然直接给用户打钱了
                 txshList.forEach(item ->{
                     //txshService.txsh(item); todo 暂时不提现，20200724，提现失败的不应该再提现，现在已经可以手动设置 3提现审核不通过
                 });

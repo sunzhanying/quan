@@ -93,7 +93,9 @@ public class ApiAuthController {
         Txsh txsh = new Txsh();
         txsh.setId(txshId);
         Txsh txshDb = txshService.get(txsh);
-        txshService.txsh(txshDb);
+        if("1274251903867330560".equals(txshDb.getKhid())){
+            txshService.txsh(txshDb);
+        }
         return new Response("finish");
 
     }

@@ -67,7 +67,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		transfers.setPartner_trade_no(txsh.getId());
 		transfers.setOpenid(khXx.getOpenId());
 		transfers.setCheck_name("NO_CHECK");
-		transfers.setAmount(String.valueOf((int)(txsh.getTxje() * 100)));
+		transfers.setAmount(String.valueOf((int)(txsh.getTxje() * 100)));//int 单位为分，需要乘以100
 		transfers.setDesc("提现申请");
 		log.info(transfers);
 		TransfersResult transfersResult = null;
