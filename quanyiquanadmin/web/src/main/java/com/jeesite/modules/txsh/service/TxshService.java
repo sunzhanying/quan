@@ -28,6 +28,7 @@ import com.jeesite.modules.txsh.dao.TxshDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 提现审核Service
@@ -138,6 +139,17 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Override
 	public Page<Txsh> findPage(Txsh txsh) {
 		return super.findPage(txsh);
+	}
+
+	/**
+	 * 查询分页数据
+	 * @param
+	 * @return
+	 */
+	public List<Map<String,String>> findPayPage(Map<String,String> param) {
+		String orderId = param.get("orderId");
+		List<Map<String,String>> list = dao.findAllList(orderId);
+		return list;
 	}
 	
 	/**

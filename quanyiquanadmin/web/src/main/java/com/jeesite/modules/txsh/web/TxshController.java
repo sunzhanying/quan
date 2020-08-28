@@ -3,12 +3,14 @@
  */
 package com.jeesite.modules.txsh.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.jeesite.API.service.Response;
+import com.github.pagehelper.PageHelper;
+import com.jeesite.common.config.Global;
+import com.jeesite.common.entity.Page;
+import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
+import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.TxshService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,13 +21,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.jeesite.common.config.Global;
-import com.jeesite.common.entity.Page;
-import com.jeesite.common.web.BaseController;
-import com.jeesite.modules.txsh.entity.Txsh;
-import com.jeesite.modules.txsh.service.TxshService;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 提现审核Controller
@@ -81,6 +81,23 @@ public class TxshController extends BaseController {
 	public Page<Txsh> listData(Txsh txsh, HttpServletRequest request, HttpServletResponse response) {
 		txsh.setPage(new Page<>(request, response));
 		Page<Txsh> page = txshService.findPage(txsh);
+		return page;
+	}
+
+	/**
+	 * 查询账单列表
+	 */
+	@RequiresPermissions("txsh:txsh:view")
+	@RequestMapping(value = "listPayData")
+	@ResponseBody
+	public Page<Map<String,String>> listPayData(Txsh txsh, HttpServletRequest request, HttpServletResponse response) {
+		Page pageFront = new Page<>(request, response);
+		Page<Map<String,String>> page = new Page<Map<String,String>>();
+		Map<String,String> param = new HashMap<>();
+		param.put("orderId",txsh.getOrderId());
+		PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
+		List<Map<String,String>> list = txshService.findPayPage(param);
+		page.setList(list);
 		return page;
 	}
 
