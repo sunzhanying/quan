@@ -22,10 +22,10 @@ public interface TxshDao extends CrudDao<Txsh> {
 
     //显示个人优惠券
     @Select("<script>" +
-            "SELECT a.`create_date`,a.`order_id`,c.`spmc`,								" +
+            "SELECT a.id,a.`create_date`,a.`order_id`,c.`spmc`,								" +
             "b.`user_id`,b.buyName,a.`khid`,a.sellName,a.`txje`,a.`zt`                  " +
             "FROM (                                                                     " +
-            "SELECT m.create_date,m.order_id,m.txje,m.khid,m.zt,n.`wxnc` AS sellName    " +
+            "SELECT m.id,m.create_date,m.order_id,m.txje,m.khid,m.zt,n.`wxnc` AS sellName    " +
             "FROM a_txsh m INNER JOIN t_kh_xx n ON m.khid = n.id                        " +
             ") a INNER JOIN                                                             " +
             "(                                                                          " +
@@ -36,7 +36,10 @@ public interface TxshDao extends CrudDao<Txsh> {
             "<if test='orderId != null and orderId != &quot;&quot;'> " +
             "  AND  a.`order_id` = #{orderId} " +
             "  </if> " +
+            "<if test='id != null and id != &quot;&quot;'> " +
+            "  AND  a.`id` = #{id} " +
+            "  </if> " +
             "</script>")
-    List<Map<String,String>> findAllList(@Param("orderId") String orderId);
+    List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id);
 	
 }

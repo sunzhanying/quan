@@ -58,7 +58,8 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	 * @param txsh
 	 */
 	@Transactional(readOnly=false)
-	public void txsh(Txsh txsh){
+	public boolean txsh(Txsh txsh){
+		boolean boo = false;
 		KhXx khXx = khXxDao.get(new KhXx(txsh.getKhid()));
 		//企业付款
 		Transfers transfers = new Transfers();
@@ -94,6 +95,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 			QyhsMx qyhsMx1 = new QyhsMx();
 			qyhsMx1.setSqdh(txsh.getId());
 			qyhsMxDao.updateByEntity(qyhsMx, qyhsMx1);
+			boo = true;
 			//return new Response(Code.SUCCESS);
 		} else {
 			///return new Response(10000,transfersResult.getReturn_msg(), null);
@@ -102,6 +104,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 			txsh.setZt(Txsh.TX_STATUS_FAIL);
 			dao.update(txsh);
 		}
+		return boo;
 	}
 
 	//生成提现单
@@ -148,7 +151,8 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	 */
 	public List<Map<String,String>> findPayPage(Map<String,String> param) {
 		String orderId = param.get("orderId");
-		List<Map<String,String>> list = dao.findAllList(orderId);
+		String id = param.get("id");
+		List<Map<String,String>> list = dao.findAllList(orderId,id);
 		return list;
 	}
 	

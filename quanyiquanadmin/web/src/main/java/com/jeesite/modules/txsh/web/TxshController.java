@@ -42,7 +42,7 @@ public class TxshController extends BaseController {
 
 	@Autowired
 	private QyhsMxService qyhsMxService;
-	
+
 	/**
 	 * 获取数据
 	 */
@@ -92,25 +92,6 @@ public class TxshController extends BaseController {
 	public Page<Txsh> listData(Txsh txsh, HttpServletRequest request, HttpServletResponse response) {
 		txsh.setPage(new Page<>(request, response));
 		Page<Txsh> page = txshService.findPage(txsh);
-		return page;
-	}
-
-	/**
-	 * 查询账单列表
-	 */
-	@RequiresPermissions("txsh:txsh:view")
-	@RequestMapping(value = "listPayData")
-	@ResponseBody
-	public Page<Map<String,String>> listPayData(Txsh txsh, HttpServletRequest request, HttpServletResponse response) {
-		Page pageFront = new Page<>(request, response);
-		Page<Map<String,String>> page = new Page<Map<String,String>>();
-		Map<String,String> param = new HashMap<>();
-		param.put("orderId",txsh.getOrderId());
-		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
-		List<Map<String,String>> list = txshService.findPayPage(param);
-		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据
-		page.setCount(list.size());
-		page.setList(paper.getDataList());
 		return page;
 	}
 
@@ -203,5 +184,72 @@ public class TxshController extends BaseController {
 
 		return renderResult(Global.TRUE, text("批量不通过操作成功！"));
 
+	}
+
+	/**
+	 * 查询账单列表
+	 */
+	@RequiresPermissions("txsh:txsh:view")
+	@RequestMapping(value = "listPayData")
+	@ResponseBody
+	public Page<Map<String,String>> listPayData(Txsh txsh, HttpServletRequest request, HttpServletResponse response) {
+		Page pageFront = new Page<>(request, response);
+		Page<Map<String,String>> page = new Page<Map<String,String>>();
+		Map<String,String> param = new HashMap<>();
+		param.put("orderId",txsh.getOrderId());
+		param.put("id",txsh.getId());
+		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
+		List<Map<String,String>> list = txshService.findPayPage(param);
+		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据
+		page.setCount(list.size());
+		page.setList(paper.getDataList());
+		return page;
+	}
+
+	/**
+	 * 立即提现或者中止
+	 * 状态1：结算中，
+	 * 状态2：已结算，
+	 * 状态3：批量审核不通过（收益扣除）,
+	 * 状态4：已中止，
+	 * 状态5：程序打款失败
+	 * @return
+	 */
+	@RequestMapping(value = "updatePay")
+	@ResponseBody
+	public String updatePay(String str, String type) {
+		//System.out.println("type: " + type + "\tstr:" + str);
+		String[] strings = str.split(",");
+		//中止
+		if("4".equals(type)){
+			for (String string : strings) {
+				Txsh txshTemp = new Txsh(string);
+				txshTemp.setZt(type);
+				txshService.update(txshTemp);
+			}
+			return renderResult(Global.TRUE, text("批量中止操作成功！"));
+		}else if("2".equals(type)){//打款
+			boolean boo = true;
+			String failId = "";
+			for (String string : strings) {
+				Txsh txsh = new Txsh();
+				txsh.setId(string);
+				Txsh txshDb = txshService.get(txsh);
+				boolean booResult = txshService.txsh(txshDb);
+				if(!booResult){//如果有一个失败就中止打款
+					boo = false;
+					failId = string;
+					break;
+				}
+			}
+			if(boo){
+				return renderResult(Global.TRUE, text("已调用商户付款成功！"));
+			}else{
+				return renderResult(Global.TRUE, text("打款失败！失败id：" + failId));
+			}
+
+		}else{
+			return renderResult(Global.TRUE, text("无效操作！"));
+		}
 	}
 }
