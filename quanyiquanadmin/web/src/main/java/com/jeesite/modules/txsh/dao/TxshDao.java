@@ -22,7 +22,7 @@ public interface TxshDao extends CrudDao<Txsh> {
 
     //显示个人优惠券
     @Select("<script>" +
-            "SELECT a.id,a.`create_date`,a.`order_id`,c.`spmc`,								" +
+            "SELECT a.id,DATE_FORMAT(a.`create_date`,\"%Y-%m-%d %T\") as create_date,a.`order_id`,c.`spmc`,	" +
             "b.`user_id`,b.buyName,a.`khid`,a.sellName,a.`txje`,a.`zt`                  " +
             "FROM (                                                                     " +
             "SELECT m.id,m.create_date,m.order_id,m.txje,m.khid,m.zt,n.`wxnc` AS sellName    " +
