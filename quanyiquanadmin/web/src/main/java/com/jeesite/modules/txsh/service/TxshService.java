@@ -6,6 +6,7 @@ package com.jeesite.modules.txsh.service;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.weixin.api.PayMchAPI;
+import com.jeesite.API.weixin.api.TwoPayMchAPI;
 import com.jeesite.API.weixin.bean.paymch.Transfers;
 import com.jeesite.API.weixin.bean.paymch.TransfersResult;
 import com.jeesite.API.weixin.util.IdGen;
@@ -48,6 +49,11 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Value("${weixin.Mch_key}")
 	private String key;
 
+	@Value("${weixin.Mch_pay_id}")
+	private String Mch_pay_id;
+	@Value("${weixin.Mch_pay_key}")
+	private String payKey;
+
 	@Autowired
 	private QyhsMxDao qyhsMxDao;
 	@Autowired
@@ -64,7 +70,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		//企业付款
 		Transfers transfers = new Transfers();
 		transfers.setMch_appid(wxAppId);
-		transfers.setMchid(Mch_id);
+		transfers.setMchid(Mch_pay_id);
 		transfers.setNonce_str(IdGen.wxRandom(32));
 		transfers.setPartner_trade_no(txsh.getId());
 		transfers.setOpenid(khXx.getOpenId());
@@ -74,7 +80,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		log.info(transfers);
 		TransfersResult transfersResult = null;
 		try {
-			transfersResult = PayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, key);
+			transfersResult = TwoPayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, payKey);
 		}catch (Exception e){
 			e.printStackTrace();
 			//return new Response(10000, "向用户付款出现错误", null);
