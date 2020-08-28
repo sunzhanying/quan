@@ -11,6 +11,7 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.TxshService;
+import com.jeesite.utils.Paper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -95,9 +96,11 @@ public class TxshController extends BaseController {
 		Page<Map<String,String>> page = new Page<Map<String,String>>();
 		Map<String,String> param = new HashMap<>();
 		param.put("orderId",txsh.getOrderId());
-		PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
+		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
 		List<Map<String,String>> list = txshService.findPayPage(param);
-		page.setList(list);
+		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据
+		page.setCount(list.size());
+		page.setList(paper.getDataList());
 		return page;
 	}
 
