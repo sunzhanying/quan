@@ -235,6 +235,11 @@ public class TxshController extends BaseController {
 				Txsh txsh = new Txsh();
 				txsh.setId(string);
 				Txsh txshDb = txshService.get(txsh);
+				if(!"1".equals(txshDb.getZt())){//非审核中状态不能打款
+					boo = false;
+					failId = string;
+					break;
+				}
 				boolean booResult = txshService.txsh(txshDb);
 				if(!booResult){//如果有一个失败就中止打款
 					boo = false;
