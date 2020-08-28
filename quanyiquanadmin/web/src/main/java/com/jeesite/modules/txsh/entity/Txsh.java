@@ -37,9 +37,11 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 	}, orderBy="a.update_date DESC"
 )
 public class Txsh extends DataEntity<Txsh> {
-	public static final String TX_STATUS_SQZ = "1";   //申请中
-	public static final String TX_STATUS_TG = "2";   //审核通过
-	public static final String TX_STATUS_SB = "3";   //审核失败
+	public static final String TX_STATUS_SQZ = "1";   //结算中
+	public static final String TX_STATUS_TG = "2";   //已结算
+	public static final String TX_STATUS_SB = "3";   //批量审核不通过（收益扣除）卖方收益查询页面有操作
+	public static final String TX_STATUS_ZZ = "4";   //已中止（人为操作）
+	public static final String TX_STATUS_FAIL = "5";   //程序打款失败
 
 	private static final long serialVersionUID = 1L;
 	private String khid;		// 客户id

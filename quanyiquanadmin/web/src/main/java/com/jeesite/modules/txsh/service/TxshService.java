@@ -97,6 +97,9 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		} else {
 			///return new Response(10000,transfersResult.getReturn_msg(), null);
 			log.info("付款状态返回： " + transfersResult.getReturn_msg());
+			//更新申请单状态为：程序提现失败
+			txsh.setZt(Txsh.TX_STATUS_FAIL);
+			dao.update(txsh);
 		}
 	}
 
