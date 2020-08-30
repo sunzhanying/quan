@@ -209,7 +209,7 @@ public class ApiKhxxController {
         qyhsMx.setZt(QyhsMx.STATUS_TH);
         map.put("wxq", qyhsMxService.findCount(qyhsMx));
         //已到账收益
-        qyhsMx.setJszt(QyhsMx.STATUS_JS_YJS);
+        /*qyhsMx.setJszt(QyhsMx.STATUS_JS_YJS);
         String extColumn = "SUM(a.sy) AS \"sum\"";
         qyhsMx.getSqlMap().add("extColumn", extColumn);
         QyhsMx qyhsMx2 = qyhsMxDao.getByEntity(qyhsMx);
@@ -217,9 +217,20 @@ public class ApiKhxxController {
             map.put("ydz", qyhsMx2.getSum());
         }else {
             map.put("ydz", 0.0);
+        }*/
+
+        //已到账新方法
+        Double ydzMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_TG);
+        if (ydzMoney != null){
+            /*String s1 = String.format("%.2f", ydzMoney);
+            map.put("ydz", s1);*/
+            map.put("ydz", ydzMoney);
+        }else {
+            map.put("ydz", 0.0);
         }
+
         //可提现收益
-        QyhsMx qyhsMx1 = new QyhsMx();
+        /*QyhsMx qyhsMx1 = new QyhsMx();
         qyhsMx1.setKhid(khXx.getId());
         qyhsMx1.getSqlMap().getWhere().and("jszt", QueryType.LT, QyhsMx.STATUS_JS_YJS);// LT 小于的意思
         String extColumn1 = "SUM(a.sy) AS \"sum\"";
@@ -229,7 +240,15 @@ public class ApiKhxxController {
             map.put("ktx", qyhsMx3.getSum());
         }else {
             map.put("ktx", 0.0);
+        }*/
+        //已到账新方法
+        Double ktxMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_SQZ);
+        if (ydzMoney != null){
+            map.put("ktx", ktxMoney);
+        }else {
+            map.put("ktx", 0.0);
         }
+
         return new Response(map);
     }
 

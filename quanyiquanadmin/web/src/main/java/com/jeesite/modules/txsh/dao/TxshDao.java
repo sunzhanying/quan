@@ -41,5 +41,20 @@ public interface TxshDao extends CrudDao<Txsh> {
             "  </if> " +
             "</script>")
     List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id);
+
+
+    @Select("<script>" +
+            "SELECT SUM(txje) FROM a_txsh "+
+            " where 1 = 1" +
+            "<if test='khid != null and khid != &quot;&quot;'> " +
+            "  AND  khid = #{khid} " +
+            "  </if> " +
+            "<if test='zt != null and zt != &quot;&quot;'> " +
+            "  AND  zt = #{zt} " +
+            "  </if> " +
+            "</script>")
+    Double findYdz(@Param("khid") String khid,@Param("zt") String zt);
+
+
 	
 }

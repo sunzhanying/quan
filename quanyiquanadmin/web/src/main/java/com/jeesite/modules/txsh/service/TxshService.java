@@ -150,18 +150,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		return super.findPage(txsh);
 	}
 
-	/**
-	 * 查询分页数据
-	 * @param
-	 * @return
-	 */
-	public List<Map<String,String>> findPayPage(Map<String,String> param) {
-		String orderId = param.get("orderId");
-		String id = param.get("id");
-		List<Map<String,String>> list = dao.findAllList(orderId,id);
-		return list;
-	}
-	
+
 	/**
 	 * 保存数据（插入或更新）
 	 * @param txsh
@@ -200,6 +189,28 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Transactional(readOnly=false)
 	public void update(Txsh txsh) {
 		super.update(txsh);
+	}
+
+	/**
+	 * 查询分页数据
+	 * @param
+	 * @return
+	 */
+	public List<Map<String,String>> findPayPage(Map<String,String> param) {
+		String orderId = param.get("orderId");
+		String id = param.get("id");
+		List<Map<String,String>> list = dao.findAllList(orderId,id);
+		return list;
+	}
+
+	/**
+	 * 查询已到账收益
+	 * @param
+	 * @return
+	 */
+	public Double findYdz(String khid,String zt) {
+		Double ydz = dao.findYdz(khid,zt);
+		return ydz;
 	}
 	
 }
