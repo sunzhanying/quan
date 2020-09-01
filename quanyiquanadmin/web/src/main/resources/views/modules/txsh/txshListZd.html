@@ -76,13 +76,13 @@ $('#dataGrid').dataGrid({
         {header:'${text("审核状态")}', name:'zt', index:'zt', width:150, align:"center", formatter: function(val, obj, row, act){
             return js.getDictLabel(${@DictUtils.getDictListJson('txsq_status')}, val, '${text("未知")}', true);
         }},
-		{header:'${text("todo")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
 			<% if(hasPermi('txsh:txsh:edit')){ %>
-				actions.push('<a href="javascript:" onclick=txqy("'+ row.id +'") class="" title="${text("未做")}"><i class="fa fa-pencil"></i></a>&nbsp;');
-				/*if (row.zt == 1){
-                    actions.push('<a href="${ctx}/txsh/txsh/tssq?id='+row.id+'" class="btnList" title="${text("通过审核")}" data-confirm="${text("确认要通过该提现申请吗？")}"><i class="fa fa-server"></i></a>&nbsp;');
-				}*/
+				if (row.zt == 1){
+					actions.push('<a href="javascript:" onclick=abortOne("'+ row.id +'") class="" title="${text("操作")}">中止</a>&nbsp;&nbsp;');
+				}
+				actions.push('<a href="javascript:" onclick=exeOne("'+ row.id +'") class="" title="${text("操作")}">执行</a>&nbsp;');
 			<% } %>
 			return actions.join('');
 		}}
@@ -94,18 +94,27 @@ $('#dataGrid').dataGrid({
 	}
 });
 
-//提现申请中的权益
-function txqy(id,khid,qyqId) {
+//中止
+function abortOne(id) {
     console.log(id);
-	alert("功能暂时未做");
-    /*layer.open({
-        type: 2,
-        maxmin: true,
-        shadeClose: true,
-        title :'提现明细',
-        area: ['1000px', '500px'],
-        content: '${ctx}/txsh/txsh/qyhsMxTxList?sqdh=' + id  //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-    });*/
+	//alert("功能暂时未做");
+	js.confirm('确认中止打款吗？', '${ctx}/txsh/txsh/updatePay', {"str": id , "type":"4"}, function (data) {
+		js.showMessage(data.message);
+		if(data.result == Global.TRUE){
+			$('#dataGrid').dataGrid('reloadGrid');
+		}
+	}, 'json', true, '正在中止...');
+}
+//执行
+function exeOne(id) {
+	//console.log(id);
+	//alert("功能暂时未做");
+	js.confirm('确认立即打款给卖家吗？', '${ctx}/txsh/txsh/updatePay', {"str":id , "type":"2"}, function (data) {
+		js.showMessage(data.message);
+		if(data.result == Global.TRUE){
+			$('#dataGrid').dataGrid('reloadGrid');
+		}
+	}, 'json', true, '正在打款...');
 }
 
 // 状态1：结算中，
