@@ -1,0 +1,171 @@
+<% layout('/layouts/default.html', {title: '历史账单', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-notebook"></i> ${text('历史账单')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<!--<% if(hasPermi('txsh:txsh:edit')){ %>
+					<a href="${ctx}/txsh/txsh/form" class="btn btn-default btnTool" title="${text('新增体现审核')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+				<% } %>-->
+				<!--<a href="#" class="btn btn-default" id="tx_abort" title="${text('批量中止')}"><i class="fa fa-close"></i> ${text('批量中止')}</a>-->
+				<a href="#" class="btn btn-default" id="tx_pay" title="${text('批量执行打款')}"><i class="fa fa-close"></i> ${text('批量执行打款')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${txsh}" action="${ctx}/txsh/txsh/listPayData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<!--<div class="form-group">
+					<label class="control-label">${text('提现状态')}：</label>
+					<div class="control-inline width-120">
+						<#form:select path="zt" dictType="txsq_status" blankOption="true" class="form-control"/>
+					</div>
+				</div>-->
+				<div class="form-group">
+					<label class="control-label">${text('申请单号')}：</label>
+					<div class="control-inline">
+						<#form:input path="id" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('相关订单号')}：</label>
+					<div class="control-inline">
+						<#form:input path="orderId" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">时间：</label>
+					<div class="control-inline">
+						<#form:input path="yxqDate_gte" readonly="readonly" maxlength="20" class="form-control Wdate-date"
+						dataFormat="date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,onpicked:function(){createDate_lte.click()}});"/>
+						&nbsp;--&nbsp;
+						<#form:input path="yxqDate_lte" readonly="readonly" maxlength="20" class="form-control Wdate-date"
+						dataFormat="date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
+					</div>
+				</div>
+				<!--<div class="form-group">
+					<label class="control-label">${text('手机')}：</label>
+					<div class="control-inline">
+						<#form:input path="khXx.sj" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('姓名')}：</label>
+					<div class="control-inline">
+						<#form:input path="khXx.xm" class="form-control width-120"/>
+					</div>
+				</div>-->
+
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text("申请单号")}', name:'id', index:'id', width:200, align:"left"},
+        {header:'${text("订单日期")}', name:'create_date', index:'create_date', width:160, align:"left"},
+        {header:'${text("订单号")}', name:'order_id', index:'a.order_id', width:160, align:"left"},
+		{header:'${text("券标题")}', name:'spmc', index:'spmc', width:150, align:"left"},
+		{header:'${text("买方微信名")}', name:'buyName', index:'buyName', width:150, align:"left"},
+		{header:'${text("卖方微信名")}', name:'sellName', index:'sellName', width:150, align:"left"},
+		{header:'${text("提现金额")}', name:'txje', index:'txje', width:150, align:"center", formatter: function(val, obj, row, act){
+				return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
+			}},
+        {header:'${text("审核状态")}', name:'zt', index:'zt', width:150, align:"center", formatter: function(val, obj, row, act){
+            return js.getDictLabel(${@DictUtils.getDictListJson('txsq_status')}, val, '${text("未知")}', true);
+        }},
+		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			<% if(hasPermi('txsh:txsh:edit')){ %>
+				/*if (row.zt == 1){
+					actions.push('<a href="javascript:" onclick=abortOne("'+ row.id +'") class="" title="${text("操作")}">中止</a>&nbsp;&nbsp;');
+				}*/
+				actions.push('<a href="javascript:" onclick=exeOne("'+ row.id +'") class="" title="${text("操作")}">执行</a>&nbsp;');
+			<% } %>
+			return actions.join('');
+		}}
+	],
+	showCheckbox: true,    // 是否显示复选框
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+
+//中止
+function abortOne(id) {
+    console.log(id);
+	//alert("功能暂时未做");
+	js.confirm('确认中止打款吗？', '${ctx}/txsh/txsh/updatePay', {"str": id , "type":"4"}, function (data) {
+		js.showMessage(data.message);
+		if(data.result == Global.TRUE){
+			$('#dataGrid').dataGrid('reloadGrid');
+		}
+	}, 'json', true, '正在中止...');
+}
+//执行
+function exeOne(id) {
+	//console.log(id);
+	//alert("功能暂时未做");
+	js.confirm('确认立即打款给卖家吗？', '${ctx}/txsh/txsh/updatePay', {"str":id , "type":"2"}, function (data) {
+		js.showMessage(data.message);
+		if(data.result == Global.TRUE){
+			$('#dataGrid').dataGrid('reloadGrid');
+		}
+	}, 'json', true, '正在打款...');
+}
+
+// 状态1：结算中，
+// 状态2：已结算，
+// 状态3：批量审核不通过（收益扣除）,
+// 状态4：已中止，
+// 状态5：程序打款失败
+
+//批量中止
+$("#tx_abort").click(function(){
+	var str = [];
+	console.log($('#dataGrid').dataGrid('getSelectRows'));
+	str = $('#dataGrid').dataGrid('getSelectRows');
+	console.log(str.length);
+	if (str.length == 0){
+		js.showMessage("请选订单信息！");
+	}else {
+		js.confirm('确认中止打款吗？', '${ctx}/txsh/txsh/updatePay', {"str": str.join(",") , "type":"4"}, function (data) {
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				$('#dataGrid').dataGrid('reloadGrid');
+			}
+		}, 'json', true, '正在中止...');
+	}
+})
+
+//批量打款
+$("#tx_pay").click(function(){
+	var str = [];
+	console.log($('#dataGrid').dataGrid('getSelectRows'));
+	str = $('#dataGrid').dataGrid('getSelectRows');
+	console.log(str.length);
+	if (str.length == 0){
+		js.showMessage("请选订单信息！");
+	}else {
+		js.confirm('确认立即打款给卖家吗？', '${ctx}/txsh/txsh/updatePay', {"str": str.join(",") , "type":"2"}, function (data) {
+			js.showMessage(data.message);
+			if(data.result == Global.TRUE){
+				$('#dataGrid').dataGrid('reloadGrid');
+			}
+		}, 'json', true, '正在打款...');
+	}
+})
+</script>

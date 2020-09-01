@@ -72,6 +72,16 @@ public class TxshController extends BaseController {
 	}
 
 	/**
+	 * 查询账单核对列表
+	 */
+	@RequiresPermissions("txsh:txsh:view")
+	@RequestMapping(value = {"txshListZd2", ""})
+	public String txshListZd2(Txsh txsh, Model model) {
+		model.addAttribute("txsh", txsh);
+		return "modules/txsh/txshListZd2";
+	}
+
+	/**
 	 * 到提现页面
 	 * @param qyhsMx
 	 * @param model
