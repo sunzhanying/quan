@@ -206,13 +206,20 @@ public class TxshController extends BaseController {
 		Page pageFront = new Page<>(request, response);
 		Page<Map<String,String>> page = new Page<Map<String,String>>();
 		Map<String,String> param = new HashMap<>();
+		if(txsh == null){
+			return page;
+		}
+
 		param.put("orderId",txsh.getOrderId());
 		param.put("id",txsh.getId());
+		param.put("wxnc",txsh.getKhXx().getWxnc());
 		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
 		List<Map<String,String>> list = txshService.findPayPage(param);
 		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据
 		page.setCount(list.size());
 		page.setList(paper.getDataList());
+		page.setPageNo(pageFront.getPageNo());
+		page.setPageSize(pageFront.getPageSize());
 		return page;
 	}
 
