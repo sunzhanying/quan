@@ -199,7 +199,8 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	public List<Map<String,String>> findPayPage(Map<String,String> param) {
 		String orderId = param.get("orderId");
 		String id = param.get("id");
-		List<Map<String,String>> list = dao.findAllList(orderId,id);
+		String wxnc = param.get("wxnc");
+		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc);
 		return list;
 	}
 

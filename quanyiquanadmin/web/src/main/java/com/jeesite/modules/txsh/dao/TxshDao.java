@@ -39,8 +39,11 @@ public interface TxshDao extends CrudDao<Txsh> {
             "<if test='id != null and id != &quot;&quot;'> " +
             "  AND  a.`id` = #{id} " +
             "  </if> " +
+            "<if test='wxnc != null and wxnc != &quot;&quot;'> " +
+            "  AND  a.`sellName` like concat('%',#{wxnc},'%') " +
+            "  </if> " +
             "</script>")
-    List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id);
+    List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id,@Param("wxnc") String wxnc);
 
 
     @Select("<script>" +
