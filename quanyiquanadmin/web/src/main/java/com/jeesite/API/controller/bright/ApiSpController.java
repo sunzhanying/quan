@@ -496,6 +496,9 @@ public class ApiSpController {
             return new Response(Code.API_CHECK_NULL);
         }
         KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || khXx.getId() == null){
+            return new Response(Code.API_CHECK_NULL);
+        }
         SpLog spLog = new SpLog();
         spLog.setKhid(khXx.getId());
         spLog.setSpid(spId);
