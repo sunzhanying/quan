@@ -200,7 +200,35 @@ public class ApiSpController {
     public Response getSpTypeAll() {
         SpType spType = new SpType();
         spType.setSxj(SpType.SPTYPE_DISPLAY_YES);
-        return new Response(spTypeService.findList(spType));
+        //全部，包括1级和2级
+        List<SpType> list = spTypeService.findList(spType);
+        List<SpType> listForReturn = new ArrayList<>();
+        //遍历出1级
+        for(SpType spTypeTemp:list){
+            if(spTypeTemp == null){
+                continue;
+            }
+            if(spTypeTemp.getParent() != null && !"".equals(spTypeTemp.getParent())){//必须二级parent为空
+                continue;
+            }
+            listForReturn.add(spTypeTemp);
+        }
+        //新增二级目录
+        for(SpType spTypeTemp:listForReturn){
+            String parentIdTemp = spTypeTemp.getId();
+            List<SpType> innerList = new ArrayList<>();
+            for(SpType spTypeAll:list){//遍历全部的类型
+                if(spTypeAll == null){
+                    continue;
+                }
+                if(parentIdTemp.equals(spTypeAll.getParent())){//如果1级目录id与二级目录parent相同，则保留
+                    innerList.add(spTypeAll);
+                }
+            }
+            spTypeTemp.setInnerList(innerList);
+        }
+
+        return new Response(listForReturn);
     }
 
     @ApiOperation(value = "getSpAll", notes = "获取所有权益券", httpMethod = "GET")
