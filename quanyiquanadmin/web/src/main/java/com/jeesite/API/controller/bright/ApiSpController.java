@@ -433,4 +433,51 @@ public class ApiSpController {
         }
         return new Response(order);
     }
+
+
+    /**
+     * 获取商品名称下拉提示列表
+     */
+    @RequestMapping(value = "/getSpNames", method = RequestMethod.GET)
+    public Page<SpXx> getSpNames(HttpServletRequest request, @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                               @RequestParam(required = false, value = "size", defaultValue = "10") Integer size,
+                               String typeid, String name) {
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        Page<SpXx> spXxPage = new Page<>();
+        spXxPage.setPageSize(size);
+        spXxPage.setPageNo(page);
+        SpXx spXx = new SpXx();
+        spXx.setPage(spXxPage);
+        spXx.setSplx(typeid);
+        spXx.getSqlMap().getWhere().andBracket("spmc", QueryType.LIKE, name)
+                .or("spfmc", QueryType.LIKE, name).endBracket();
+        List<SpXx> spXxes = spXxService.findList(spXx);
+        Qyjg qyjg = new Qyjg();
+
+        Collect collect = new Collect();
+        collect.setKhid(khXx.getId());
+        spXxes.forEach(item ->{
+            //价格
+            qyjg.setQyqId(item.getId());
+            qyjg.setPageSize(1);
+            item.setQyjg(qyjgService.findList(qyjg).get(0));
+            QyhsMx qyhsMx = new QyhsMx();
+            qyhsMx.setZt(QyhsMx.STATUS_CSZ);
+            //库存
+            qyhsMx.setQyqId(item.getId());
+            item.setKc((int) qyhsMxService.findCount(qyhsMx));
+            //成交量
+            qyhsMx.setZt("");
+            qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            item.setCjl(qyhsMxService.findCount(qyhsMx));
+            //是否收藏
+            collect.setSpId(item.getId());
+            if (collectService.findCount(collect) > 0){
+                item.setIssc(true);
+            }else {
+                item.setIssc(false);
+            }
+        });
+        return spXxPage.setList(spXxes);
+    }
 }
