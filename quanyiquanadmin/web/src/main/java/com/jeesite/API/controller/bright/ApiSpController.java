@@ -17,8 +17,10 @@ import com.jeesite.common.entity.Page;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 import com.jeesite.modules.bright.setfocus.dao.tag.TagDao;
 import com.jeesite.modules.bright.sp.entity.SpXx;
+import com.jeesite.modules.bright.sp.entity.sptype.SpLog;
 import com.jeesite.modules.bright.sp.entity.sptype.SpType;
 import com.jeesite.modules.bright.sp.service.SpXxService;
+import com.jeesite.modules.bright.sp.service.sptype.SpLogService;
 import com.jeesite.modules.bright.sp.service.sptype.SpTypeService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.collect.entity.Collect;
@@ -89,6 +91,9 @@ public class ApiSpController {
     private OrderService orderService;
     @Autowired
     private CollectService collectService;
+
+    @Autowired
+    private SpLogService spLogService;
 
     private final Log logger = LogFactory.getLog(getClass());
 
@@ -479,5 +484,23 @@ public class ApiSpController {
             }
         });
         return spXxPage.setList(spXxes);
+    }
+
+    /**
+     * 记录查询日志
+     */
+    @RequestMapping(value = "/saveSpData", method = RequestMethod.POST)
+    public Response saveSpData(HttpServletRequest request,
+                                 String spId, String name) {
+        if(spId == null && name == null){
+            return new Response(Code.API_CHECK_NULL);
+        }
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        SpLog spLog = new SpLog();
+        spLog.setKhid(khXx.getId());
+        spLog.setSpid(spId);
+        spLog.setName(name);
+        spLogService.save(spLog);
+        return new Response("ok");
     }
 }
