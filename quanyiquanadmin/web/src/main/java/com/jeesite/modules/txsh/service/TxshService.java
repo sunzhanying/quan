@@ -200,7 +200,10 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		String orderId = param.get("orderId");
 		String id = param.get("id");
 		String wxnc = param.get("wxnc");
-		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc);
+		String zt = param.get("zt");
+		String startDate = param.get("startDate");
+		String endDate = param.get("endDate");
+		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc,zt,startDate,endDate);
 		return list;
 	}
 

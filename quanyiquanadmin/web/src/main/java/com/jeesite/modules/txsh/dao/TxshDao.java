@@ -42,8 +42,15 @@ public interface TxshDao extends CrudDao<Txsh> {
             "<if test='wxnc != null and wxnc != &quot;&quot;'> " +
             "  AND  a.`sellName` like concat('%',#{wxnc},'%') " +
             "  </if> " +
+            "<if test='zt != null and zt != &quot;&quot;'> " +
+            "  AND  a.`zt` = #{zt}" +
+            "  </if> " +
+            "<if test='startDate != null and startDate != &quot;&quot; and endDate != null and endDate != &quot;&quot;'> " +
+            "  AND  a.create_date &gt;= #{startDate} AND a.create_date &lt;= #{endDate}" +
+            "  </if> " +
             "</script>")
-    List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id,@Param("wxnc") String wxnc);
+    List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id,@Param("wxnc") String wxnc,
+                                         @Param("zt") String zt,@Param("startDate") String startDate,@Param("endDate") String endDate);
 
 
     @Select("<script>" +

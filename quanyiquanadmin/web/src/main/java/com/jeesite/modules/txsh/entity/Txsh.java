@@ -48,6 +48,8 @@ public class Txsh extends DataEntity<Txsh> {
 	private String zt;		// 审核状态 1 审核中  2 审核通过 3 审核不通过
 	private Double txje;		// 体现金额
 	private String orderId;   //相关订单
+	private String startDate;   //开始时间
+	private String endDate;   //结束时间
 
 	private KhXx khXx;
 	
@@ -99,5 +101,21 @@ public class Txsh extends DataEntity<Txsh> {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
 	}
 }

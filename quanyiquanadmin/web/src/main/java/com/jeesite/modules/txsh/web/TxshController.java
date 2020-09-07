@@ -212,7 +212,13 @@ public class TxshController extends BaseController {
 
 		param.put("orderId",txsh.getOrderId());
 		param.put("id",txsh.getId());
-		param.put("wxnc",txsh.getKhXx().getWxnc());
+		if(txsh != null && txsh.getKhXx() != null){
+			param.put("wxnc",txsh.getKhXx().getWxnc());
+		}
+		param.put("zt",txsh.getZt());
+
+		param.put("startDate",txsh.getStartDate());
+		param.put("endDate",txsh.getEndDate());
 		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
 		List<Map<String,String>> list = txshService.findPayPage(param);
 		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据

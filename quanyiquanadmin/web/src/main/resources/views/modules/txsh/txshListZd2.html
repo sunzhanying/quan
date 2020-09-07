@@ -17,12 +17,12 @@
 		<div class="box-body">
 			<#form:form id="searchForm" model="${txsh}" action="${ctx}/txsh/txsh/listPayData" method="post" class="form-inline hide"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
-				<!--<div class="form-group">
+				<div class="form-group">
 					<label class="control-label">${text('提现状态')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="zt" dictType="txsq_status" blankOption="true" class="form-control"/>
 					</div>
-				</div>-->
+				</div>
 				<div class="form-group">
 					<label class="control-label">${text('申请单号')}：</label>
 					<div class="control-inline">
@@ -36,12 +36,18 @@
 					</div>
 				</div>
 				<div class="form-group">
+					<label class="control-label">${text('卖方微信名')}：</label>
+					<div class="control-inline">
+						<#form:input path="khXx.wxnc" maxlength="64" class="form-control width-120"/>
+					</div>
+				</div>
+				<div class="form-group">
 					<label class="control-label">时间：</label>
 					<div class="control-inline">
-						<#form:input path="yxqDate_gte" readonly="readonly" maxlength="20" class="form-control Wdate-date"
+						<#form:input path="startDate" readonly="readonly" maxlength="20" class="form-control Wdate-date"
 						dataFormat="date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true,onpicked:function(){createDate_lte.click()}});"/>
 						&nbsp;--&nbsp;
-						<#form:input path="yxqDate_lte" readonly="readonly" maxlength="20" class="form-control Wdate-date"
+						<#form:input path="endDate" readonly="readonly" maxlength="20" class="form-control Wdate-date"
 						dataFormat="date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:true});"/>
 					</div>
 				</div>
