@@ -252,7 +252,7 @@ public class TxshController extends BaseController {
 				Txsh txsh = new Txsh();
 				txsh.setId(string);
 				Txsh txshDb = txshService.get(txsh);
-				if(!"1".equals(txshDb.getZt())){//非审核中状态不能打款
+				if("2".equals(txshDb.getZt()) || "3".equals(txshDb.getZt()) || "4".equals(txshDb.getZt())){//结算中1、程序打款失败5、的可再次打款
 					boo = false;
 					failId = string;
 					break;

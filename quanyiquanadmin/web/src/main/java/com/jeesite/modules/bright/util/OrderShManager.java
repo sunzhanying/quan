@@ -42,9 +42,9 @@ public class OrderShManager {
                 txsh.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, Txsh.TX_STATUS_SQZ, 1)
                         .or("zt", QueryType.EQ, Txsh.TX_STATUS_SB, 2).endBracket();*/
                 //往前推24小时之后
-                txsh.getSqlMap().getWhere().and("create_date", QueryType.GTE, DateUtils.getDate("yyyy-MM-dd HH:mm:ss", -24, Calendar.HOUR));
+                //txsh.getSqlMap().getWhere().and("create_date", QueryType.GTE, DateUtils.getDate("yyyy-MM-dd HH:mm:ss", -24, Calendar.HOUR));
                 //往前推12小时之前
-                txsh.getSqlMap().getWhere().and("create_date", QueryType.LT, DateUtils.getDate("yyyy-MM-dd HH:mm:ss", -12, Calendar.HOUR));
+                txsh.getSqlMap().getWhere().and("create_date", QueryType.LT, DateUtils.getDate("yyyy-MM-dd HH:mm:ss", -24, Calendar.HOUR));
                 //审核中的
                 txsh.getSqlMap().getWhere().and("zt", QueryType.EQ, Txsh.TX_STATUS_SQZ);
                 List<Txsh> txshList = txshService.findList(txsh);
