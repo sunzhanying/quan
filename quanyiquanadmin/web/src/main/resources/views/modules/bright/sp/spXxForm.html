@@ -214,6 +214,28 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
+								<!--<span class="required ">*</span>--> ${text('最大回收数量')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="maxCount" maxlength="50" class="form-control "/>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<!--<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('长度')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="inLength" maxlength="50" class="form-control "/>
+							</div>
+						</div>-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
 								<span class="required ">*</span> ${text('输入类型')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
 								<#form:select path="inCheck" items="${typeCheck}" itemLabel="name" itemValue="val" class="form-control required" />
