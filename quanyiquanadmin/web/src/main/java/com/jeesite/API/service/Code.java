@@ -29,6 +29,7 @@ public enum Code {
     API_TXJE_NULL(80000, "金额不足，无法提现"),
     API_CHECK_NULL(80001, "入参不合法，有空值"),
     API_CHECK_KM(80002, "请勿重复上传卡券"),
+    API_CHECK_COUNT(80003, "回收券已达到最大回收量"),
     ;
 
     private long code;

@@ -293,25 +293,31 @@ public class ApiSpController {
         if(qyhs == null || qyhs.getQyhsMxes() == null || qyhs.getQyhsMxes().isEmpty()){
             return new Response(Code.API_CHECK_NULL);
         }
-        //先从mx明细表中 校验卡密不能重复
-        QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
-        QyhsMx mxForCheck = new QyhsMx();
-        if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
-            mxForCheck.setKm(mxForSave.getKm());
-        }
-        if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
-            mxForCheck.setKh(mxForSave.getKh());
+        //先从mx明细表中 校验卡密不能重复;校验回收最大数量
+        for(QyhsMx mxForSave : qyhs.getQyhsMxes()){
+            //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
+            QyhsMx mxForCheck = new QyhsMx();
+            if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
+                mxForCheck.setKm(mxForSave.getKm());
+            }
+            if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
+                mxForCheck.setKh(mxForSave.getKh());
+            }
+            long count = qyhsMxService.findCount(mxForCheck);
+            if(count > 0){
+                return new Response(Code.API_CHECK_KM);
+            }
         }
 
-        /*List<String> stringList = new ArrayList<>();
-        stringList.add(QyhsMx.STATUS_DSH);
-        stringList.add(QyhsMx.STATUS_CSZ);
-        stringList.add(QyhsMx.STATUS_DFK);
-        stringList.add(QyhsMx.STATUS_YFK);
-        mxForCheck.getSqlMap().getWhere().and("zt", QueryType.IN, stringList.toArray());*/
-        long count = qyhsMxService.findCount(mxForCheck);
-        if(count > 0){
-            return new Response(Code.API_CHECK_KM);
+        //校验上传最大数量，根据qyq_id，也就是商品id,获取到商品对应的设置数量
+        String qyqIdTemp = qyhs.getQyqId();
+        SpXx spXx = spXxService.get(qyqIdTemp);
+        Long maxCount = spXx.getMaxCount();
+        //根据权益券
+        int count = qyhsService.countByQyqAndZt(qyqIdTemp);
+        count = count + qyhs.getQyhsMxes().size();
+        if(maxCount != null && maxCount > 0 && count > maxCount){
+            return new Response(Code.API_CHECK_COUNT);
         }
 
         KhXx khXx = (KhXx) request.getAttribute("khXx");
