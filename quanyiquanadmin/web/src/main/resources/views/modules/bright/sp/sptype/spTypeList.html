@@ -48,6 +48,20 @@ $('#dataGrid').dataGrid({
             return js.getDictLabel(${@DictUtils.getDictListJson('delivery_way')}, val, '${text("未知")}', true);
         }},*/
 		{header:'${text("排序")}', name:'px', index:'a.px', width:150, align:"left"},
+		{header:'${text("目录层级")}', name:'parent', index:'a.parent', width:100, align:"left", formatter: function(val, obj, row, act){
+				if(row.parent != '' && row.parent != null){
+					return '二级目录';
+				}else{
+					return '一级目录';
+				}
+			}},
+		{header:'${text("图片")}', name:'img', index:'a.img', width:100, align:"left", formatter: function(val, obj, row, act){
+			if(row.img != '' && row.img != null){
+				return '<img style="width: 60px" src='+row.img+'>';
+			}else{
+				return '无图片';
+			}
+			}},
 		{header:'${text("描述")}', name:'ms', index:'a.ms', width:150, align:"left"},
 		{header:'${text("操作")}', name:'actions', width:120, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
