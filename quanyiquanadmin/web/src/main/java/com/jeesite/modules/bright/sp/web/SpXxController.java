@@ -102,6 +102,8 @@ public class SpXxController extends BaseController {
 		}
 		model.addAttribute("spXx", spXx);
 		model.addAttribute("spTypeList", spTypeService.findList(new SpType()));
+		List<Map<String,String>> spTypeList = spTypeService.findTwoSpList("");
+		model.addAttribute("spTypeListTwo", spTypeList);
 		model.addAttribute("yhqList", spYhqService.findList(new SpYhq()));
 		model.addAttribute("labelList", tagService.findList(new Tag()));
 
