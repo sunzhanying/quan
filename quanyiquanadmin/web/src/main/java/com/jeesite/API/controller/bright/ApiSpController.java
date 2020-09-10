@@ -248,9 +248,18 @@ public class ApiSpController {
         spXxPage.setPageNo(page);
         SpXx spXx = new SpXx();
         spXx.setPage(spXxPage);
-        spXx.setSplx(typeid);
+        /*spXx.setSplx(typeid);
         spXx.getSqlMap().getWhere().andBracket("spmc", QueryType.LIKE, name)
-                .or("spfmc", QueryType.LIKE, name).endBracket();
+                .or("spfmc", QueryType.LIKE, name).endBracket();*/
+        if(typeid == null || "".equals(typeid)){//如果不传商品id，则获取全部
+            spXx.getSqlMap().getWhere().andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }else{
+            List<String> stringList = getSplxListByParent(typeid);
+            stringList.add(typeid);//将1级id也加入，兼容买家
+            spXx.getSqlMap().getWhere().and("splx", QueryType.IN, stringList.toArray()).andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }
         List<SpXx> spXxes = spXxService.findList(spXx);
         Qyjg qyjg = new Qyjg();
 
@@ -279,6 +288,11 @@ public class ApiSpController {
             }
         });
         return spXxPage.setList(spXxes);
+    }
+
+    private List<String> getSplxListByParent(String typeid) {
+        List<String> stringList = spTypeService.findTwoIds(typeid);
+        return stringList;
     }
 
     @ApiOperation(value = "addQy",notes = "卖方小程序添加券（json格式）",httpMethod ="POST")

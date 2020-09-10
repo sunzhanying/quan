@@ -86,4 +86,8 @@ public class SpTypeService extends CrudService<SpTypeDao, SpType> {
 	public List<Map<String,String>> findTwoSpList(String parent) {
 		return spTypeDao.findTwoSpList(parent);
 	}
+
+	public List<String> findTwoIds(String parent) {
+		return spTypeDao.findTwoIds(parent);
+	}
 }

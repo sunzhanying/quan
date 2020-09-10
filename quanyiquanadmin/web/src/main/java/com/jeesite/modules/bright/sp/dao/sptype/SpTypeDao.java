@@ -22,11 +22,22 @@ public interface SpTypeDao extends CrudDao<SpType> {
 
     //显示商品列表
     @Select("<script>" +
-            "select id,name,parent,img FROM t_sp_type a " +
+            "select id,name,parent,img FROM t_sp_type " +
             "where parent IS NOT NULL  and parent != ''" +
             "<if test='parent != null and parent != &quot;&quot;'>" +
             " AND parent = #{parent} " +
             "</if>" +
             "</script>")
     List<Map<String,String>> findTwoSpList(@Param("parent") String parent);
+
+
+    @Select("<script>" +
+            "select id FROM t_sp_type " +
+            "where parent IS NOT NULL  and parent != ''" +
+            "<if test='parent != null and parent != &quot;&quot;'>" +
+            " AND parent = #{parent} " +
+            "</if>" +
+            "</script>")
+    List<String> findTwoIds(@Param("parent") String parent);
+
 }
