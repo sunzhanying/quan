@@ -537,9 +537,9 @@ public class ApiSpController {
     /**
      * 记录查询日志
      */
-    @RequestMapping(value = "/saveSpData", method = RequestMethod.POST)
-    public Response saveSpData(HttpServletRequest request,
-                                 String spId, String name) {
+    @RequestMapping(value = "/saveSpLog", method = RequestMethod.POST)
+    public Response saveSpLog(HttpServletRequest request,
+                                 String spId,String type, String name) {
         if(spId == null && name == null){
             return new Response(Code.API_CHECK_NULL);
         }
@@ -547,11 +547,35 @@ public class ApiSpController {
         if(khXx == null || khXx.getId() == null){
             return new Response(Code.API_CHECK_NULL);
         }
-        SpLog spLog = new SpLog();
-        spLog.setKhid(khXx.getId());
-        spLog.setSpid(spId);
-        spLog.setName(name);
-        spLogService.save(spLog);
+        SpLog spLogOld = spLogService.getLogsByKhidAndSpid(khXx.getId(),spId);
+        if(spLogOld == null || spLogOld.getId() == null || "".equals(spLogOld.getId())){
+            //新增
+            SpLog spLog = new SpLog();
+            spLog.setKhid(khXx.getId());
+            spLog.setSpid(spId);
+            spLog.setType(type);
+            spLog.setName(name);
+            spLogService.save(spLog);
+        }else{
+            //修改
+            spLogOld.setCreateDate(new Date());
+            spLogOld.setType(type);
+            spLogOld.setName(name);
+            spLogService.save(spLogOld);
+        }
         return new Response("ok");
+    }
+
+    /**
+     * 记录查询日志
+     */
+    @RequestMapping(value = "/getSpLog", method = RequestMethod.GET)
+    public Response getSpLog(HttpServletRequest request) {
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || khXx.getId() == null){
+            return new Response(Code.API_CHECK_NULL);
+        }
+        List<SpLog> list = spLogService.getLogs(khXx.getId());
+        return new Response(list);
     }
 }

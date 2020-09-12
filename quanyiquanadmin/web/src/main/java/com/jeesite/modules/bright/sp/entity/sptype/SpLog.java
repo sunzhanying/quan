@@ -18,9 +18,10 @@ import javax.validation.constraints.NotBlank;
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="khid", attrName="khid", label="客户id", isQuery=false),
 		@Column(name="spid", attrName="spid", label="商品id", isQuery=false),
+		@Column(name="type", attrName="type", label="商品id", isQuery=false),
 		@Column(name="name", attrName="name", label="名称", queryType=QueryType.LIKE),
 		@Column(name="ms", attrName="ms", label="描述", isQuery=false),
-		@Column(name="create_date", attrName="createDate", label="创建时间", isUpdate=false, isQuery=false),
+		@Column(name="create_date", attrName="createDate", label="创建时间", isUpdate=true, isQuery=false),
 	}, orderBy="a.create_date ASC"
 )
 public class SpLog extends DataEntity<SpLog> {
@@ -29,6 +30,7 @@ public class SpLog extends DataEntity<SpLog> {
 
 	private String khid;
 	private String spid;
+	private String type;
 	private String name;		// 名称
 	private String ms;		// 描述
 
@@ -74,5 +76,13 @@ public class SpLog extends DataEntity<SpLog> {
 
 	public void setSpid(String spid) {
 		this.spid = spid;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
