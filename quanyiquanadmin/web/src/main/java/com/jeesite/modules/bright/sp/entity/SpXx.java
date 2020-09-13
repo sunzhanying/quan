@@ -56,6 +56,7 @@ import java.util.List;
 		@Column(name="type", attrName="type", label="类型"),
 		@Column(name="source", attrName="source", label="来源"),
 		@Column(name="maxCount", attrName="maxCount", label="最大数量"),
+		/*@Column(name="maxCountFlag", attrName="maxCountFlag", label="最大数量"),*/
 		@Column(name="inCheck", attrName="inCheck", label="校验"),
 		@Column(name="inLength", attrName="inLength", label="输入长度"),
 		@Column(name="sysm", attrName="sysm", label="使用说明"),
@@ -105,6 +106,7 @@ public class SpXx extends DataEntity<SpXx> {
 	private Boolean issc;     //是否收藏
 	private String sysm;      //使用说明
 	private Long maxCount;      //最大回收数量
+	private Long maxCountFlag; //最大数量，1 不可继续上传
 	private String inCheck;      //校验
 	private Long inLength;      //长度
 
@@ -396,6 +398,14 @@ public class SpXx extends DataEntity<SpXx> {
 
 	public void setMaxCount(Long maxCount) {
 		this.maxCount = maxCount;
+	}
+
+	public Long getMaxCountFlag() {
+		return maxCountFlag;
+	}
+
+	public void setMaxCountFlag(Long maxCountFlag) {
+		this.maxCountFlag = maxCountFlag;
 	}
 
 	public String getInCheck() {

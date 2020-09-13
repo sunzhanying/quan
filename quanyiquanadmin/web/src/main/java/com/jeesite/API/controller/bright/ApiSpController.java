@@ -279,6 +279,14 @@ public class ApiSpController {
             qyhsMx.setZt("");
             qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
             item.setCjl(qyhsMxService.findCount(qyhsMx));
+
+            //是否允许上传，1 不允许
+            int count = qyhsService.countByQyqAndZt(item.getId());
+            if(item.getMaxCount() != null && item.getMaxCount() > 0 && count >= item.getMaxCount()){
+                item.setMaxCountFlag(1L);
+            }else{
+                item.setMaxCountFlag(0L);
+            }
             //是否收藏
             collect.setSpId(item.getId());
             if (collectService.findCount(collect) > 0){
