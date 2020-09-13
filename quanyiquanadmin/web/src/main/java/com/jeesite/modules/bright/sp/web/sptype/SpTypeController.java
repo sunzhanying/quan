@@ -109,7 +109,7 @@ public class SpTypeController extends BaseController {
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated SpType spType) {
-		if(spType.getId().equals(spType.getParent())){
+		if(spType != null && spType.getId() != null && !"".equals(spType.getId()) && spType.getId().equals(spType.getParent())){
 			return renderResult(Global.TRUE, text("不能选择即为一级目录又是二级目录！"));
 		}
 		spTypeService.save(spType);
