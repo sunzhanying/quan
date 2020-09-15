@@ -3,33 +3,16 @@
  */
 package com.jeesite.modules.sale.service;
 
-import com.jeesite.API.service.Code;
-import com.jeesite.API.service.Response;
-import com.jeesite.API.weixin.api.PayMchAPI;
-import com.jeesite.API.weixin.api.TwoPayMchAPI;
-import com.jeesite.API.weixin.bean.paymch.Transfers;
-import com.jeesite.API.weixin.bean.paymch.TransfersResult;
-import com.jeesite.API.weixin.util.IdGen;
-import com.jeesite.API.weixin.util.PayUtil;
-import com.jeesite.modules.bright.t.dao.khxx.KhXxDao;
-import com.jeesite.modules.bright.t.entity.khxx.KhXx;
-import com.jeesite.modules.qyhsmx.dao.QyhsMxDao;
-import com.jeesite.modules.qyhsmx.entity.QyhsMx;
+import com.jeesite.common.entity.Page;
+import com.jeesite.common.service.CrudService;
 import com.jeesite.modules.sale.dao.SaleDao;
 import com.jeesite.modules.sale.entity.Sale;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.jeesite.common.entity.Page;
-import com.jeesite.common.service.CrudService;
-import com.jeesite.modules.txsh.entity.Txsh;
-import com.jeesite.modules.txsh.dao.TxshDao;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
