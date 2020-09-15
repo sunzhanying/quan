@@ -38,4 +38,8 @@ public interface KhXxDao extends CrudDao<KhXx> {
     //更新crmz账号id
     @Update("update t_kh_xx set crmid = #{crmid} where id = #{id}")
     int updateCrmid(@Param("id") String id, @Param("crmid") Long crmid);
+
+    //根据邀请码查询
+    @Select("select id from t_kh_xx where code = #{0} limit 1")
+    String getUserIdByCode(String code);
 }

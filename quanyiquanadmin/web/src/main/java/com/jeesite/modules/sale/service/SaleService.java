@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-
 /**
  * 提现审核Service
  * @author 马晓亮
@@ -78,21 +75,8 @@ public class SaleService extends CrudService<SaleDao, Sale> {
 	}
 
 
-	/**
-	 * 查询分页数据
-	 * @param
-	 * @return
-	 */
-	public List<Map<String,String>> findPayPage(Map<String,String> param) {
-		String orderId = param.get("orderId");
-		String id = param.get("id");
-		String wxnc = param.get("wxnc");
-		String zt = param.get("zt");
-		String startDate = param.get("startDate");
-		String endDate = param.get("endDate");
-		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc,zt,startDate,endDate);
-		return list;
+	public String getParentOne(String khid) {
+		return saleDao.getParentOne(khid);
 	}
-
 
 }

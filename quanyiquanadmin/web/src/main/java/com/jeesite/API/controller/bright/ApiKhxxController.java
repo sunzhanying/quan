@@ -19,6 +19,7 @@ import com.jeesite.modules.bright.khyhq.dao.KhYhqDao;
 import com.jeesite.modules.bright.sms.dao.SmsRecordDao;
 import com.jeesite.modules.bright.sms.entity.SmsRecord;
 import com.jeesite.modules.bright.sms.service.SmsRecordService;
+import com.jeesite.modules.bright.t.dao.khxx.KhXxDao;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.bright.util.AES;
@@ -32,6 +33,8 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.sale.entity.Sale;
+import com.jeesite.modules.sale.service.SaleService;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.TxshService;
 import io.swagger.annotations.Api;
@@ -39,6 +42,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +96,10 @@ public class ApiKhxxController {
     private TxshService txshService;
     @Autowired
     private QyhsMxDao qyhsMxDao;
+    @Autowired
+    private SaleService saleService;
+    @Autowired
+    private KhXxDao khXxDao;
 
      /**
      * 微信用户登录
@@ -326,10 +334,13 @@ public class ApiKhxxController {
             @ApiImplicitParam(name="name",value = "姓名",required = true),
             @ApiImplicitParam(name="phone",value = "手机号",required = true),
             @ApiImplicitParam(name="code",value = "验证码",required = true),
+            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = false),
     })
     @RequestMapping(value = "/saveNamePhone",method = RequestMethod.POST)
     public Response saveNamePhone(HttpServletRequest request, @RequestParam String name, @RequestParam String phone
-                                  ,@RequestParam String code) {
+                                  ,@RequestParam String code,
+                                  @RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode
+                                  ) {
         //验证手机号
         SmsRecord record = new SmsRecord();
         record.setPhone(phone);
@@ -351,7 +362,26 @@ public class ApiKhxxController {
         khXx.setSj(phone);
         khXx.setXm(name);
         khXxService.update(khXx);
+        if(!StringUtils.isEmpty(inviteCode)){
+            //如果邀请码不为空 则关联分销信息
+            checkInviteCode(inviteCode,khXx);
+        }
         return new Response(Code.SUCCESS);
+    }
+
+    private void checkInviteCode(String inviteCode, KhXx khXx) {
+        //根据邀请码查询父1级
+        String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
+        //根据父1级查询父2级
+        String khidParentTwo = saleService.getParentOne(khidParentOne);
+        Sale sale = new Sale();
+        sale.setKhid(khXx.getId());
+        sale.setParentOne(khidParentOne);
+        sale.setParentTwo(khidParentTwo);
+        saleService.save(sale);
+        //此时t_kh_sale表中该注册用户的前两级数据就确定了，
+        //将该用户更新到父级的子级上 todo
+
     }
 
 
