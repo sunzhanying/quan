@@ -18,9 +18,9 @@ import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="khid", attrName="khid", label="客户id"),
 		@Column(name="parent_one", attrName="parentOne", label="父1级"),
-		@Column(name="parent_two", attrName="parentTwo", label="父2级"),
+		//@Column(name="parent_two", attrName="parentTwo", label="父2级"),
 		@Column(name="child_one", attrName="childOne", label="子1级"),
-		@Column(name="child_two", attrName="childTwo", label="子2级"),
+		//@Column(name="child_two", attrName="childTwo", label="子2级"),
 		@Column(includeEntity=DataEntity.class),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=KhXx.class, attrName="khXx", alias="k",
@@ -38,9 +38,9 @@ public class Sale extends DataEntity<Sale> {
 	private static final long serialVersionUID = 1L;
 	private String khid;		// 客户id
 	private String parentOne;
-	private String parentTwo;
+	//private String parentTwo;
 	private String childOne;
-	private String childTwo;
+	//private String childTwo;
 
 	private KhXx khXx;
 	
@@ -68,13 +68,13 @@ public class Sale extends DataEntity<Sale> {
 		this.parentOne = parentOne;
 	}
 
-	public String getParentTwo() {
+	/*public String getParentTwo() {
 		return parentTwo;
 	}
 
 	public void setParentTwo(String parentTwo) {
 		this.parentTwo = parentTwo;
-	}
+	}*/
 
 	public String getChildOne() {
 		return childOne;
@@ -84,13 +84,13 @@ public class Sale extends DataEntity<Sale> {
 		this.childOne = childOne;
 	}
 
-	public String getChildTwo() {
+	/*public String getChildTwo() {
 		return childTwo;
 	}
 
 	public void setChildTwo(String childTwo) {
 		this.childTwo = childTwo;
-	}
+	}*/
 
 	public KhXx getKhXx() {
 		return khXx;

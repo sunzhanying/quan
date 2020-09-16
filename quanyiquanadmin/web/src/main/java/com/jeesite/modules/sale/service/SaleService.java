@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * 提现审核Service
  * @author 马晓亮
@@ -77,6 +79,10 @@ public class SaleService extends CrudService<SaleDao, Sale> {
 
 	public String getParentOne(String khid) {
 		return saleDao.getParentOne(khid);
+	}
+
+	public List<Sale> getSaleListByKhid(String khid) {
+		return saleDao.getSaleListByKhid(khid);
 	}
 
 }

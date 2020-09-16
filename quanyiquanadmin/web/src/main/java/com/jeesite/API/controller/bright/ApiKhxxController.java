@@ -364,26 +364,49 @@ public class ApiKhxxController {
         khXxService.update(khXx);
         if(!StringUtils.isEmpty(inviteCode)){
             //如果邀请码不为空 则关联分销信息
-            checkInviteCode(inviteCode,khXx);
+            Response response = checkInviteCode(inviteCode,khXx);
+            return response;
         }
         return new Response(Code.SUCCESS);
     }
 
-    private void checkInviteCode(String inviteCode, KhXx khXx) {
+    private Response checkInviteCode(String inviteCode, KhXx khXx) {
         //根据邀请码查询父1级
         String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
-        //根据父1级查询父2级
-        String khidParentTwo = saleService.getParentOne(khidParentOne);
+        if(StringUtils.isEmpty(khidParentOne)){
+            return new Response(Code.API_PARENT_ONE);
+        }
+        //根据父1级设置子1级
+        List<Sale> list = saleService.getSaleListByKhid(khidParentOne);
+        String khidParentTwo = "";
+        Sale saleForParentOne = new Sale();
+        if(list != null && !list.isEmpty()){
+            for(Sale saleEntity :list){
+                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
+                    khidParentTwo = saleEntity.getParentOne();
+                    saleForParentOne = saleEntity;
+                    break;
+                }
+            }
+        }
         Sale sale = new Sale();
         sale.setKhid(khXx.getId());
         sale.setParentOne(khidParentOne);
-        sale.setParentTwo(khidParentTwo);
+        //sale.setParentTwo(khidParentTwo);父二级不管，根据父一级的关联关系去找
         saleService.save(sale);
         //此时t_kh_sale表中该注册用户的前两级数据就确定了，
-        //将该用户更新到父级的子级上 todo
-
+        //如果根据邀请码可以找到父1级，则将该用户新增或更新到父1级的子1级上
+        if(saleForParentOne != null && !StringUtils.isEmpty(saleForParentOne.getId())){
+            saleForParentOne.setChildOne(khXx.getId());
+            saleService.save(saleForParentOne);//更新
+        }else{//保存
+            saleForParentOne.setKhid(khidParentOne);
+            saleForParentOne.setChildOne(khXx.getId());
+            saleForParentOne.setParentOne(khidParentTwo);
+            saleService.save(saleForParentOne);
+        }
+        return new Response(Code.SUCCESS);
     }
-
 
     //发送验证码 2买家 1卖家
     @ApiOperation(value = "send-register-sms",notes = "发送验证码",httpMethod ="POST")
