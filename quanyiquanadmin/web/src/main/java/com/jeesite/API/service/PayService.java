@@ -36,8 +36,11 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.sale.entity.Sale;
+import com.jeesite.modules.sale.service.SaleService;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.TxshService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +91,8 @@ public class PayService {
     private QyhsMxService qyhsMxService;
     @Autowired
     private TxshService txshService;
+    @Autowired
+    private SaleService saleService;
 
     String product_id = "";
     String body = "";
@@ -223,6 +228,8 @@ public class PayService {
                         txsh.setOrderId(order.getId());
                         txshService.saveTxd(txsh);
                     });
+                    //二级分销分利润
+                    //doSaleInfo(order);
                 }
 
                 MchBaseResult baseResult = new MchBaseResult();
@@ -236,6 +243,49 @@ public class PayService {
                 response.getOutputStream().write(XMLConverUtil.convertToXML(baseResult).getBytes());
             }
         }
+    }
+
+    //处理二级分销分利润
+    private void doSaleInfo(Order order) {
+        String buyerId = order.getUserId();
+        //根据买家id，获取父1级khid
+        List<Sale> list = saleService.getSaleListByKhid(buyerId);
+        String parentOne = "";
+        if(list != null && !list.isEmpty()){
+            for(Sale saleEntity :list){
+                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
+                    parentOne = saleEntity.getParentOne();
+                    break;//上家只能有一个
+                }
+            }
+        }else{
+            return;//没有父1级直接返回
+        }
+        //将父1级收益保存到提现表中，提现记录
+        if(StringUtils.isEmpty(parentOne)){
+            return;//没有父1级直接返回
+        }
+        //todo 保存
+
+        //根据父1级找父2级
+        List<Sale> list2 = saleService.getSaleListByKhid(parentOne);
+        String parentTwo = "";
+        if(list2 != null && !list2.isEmpty()){
+            for(Sale saleEntity :list2){
+                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
+                    parentTwo = saleEntity.getParentOne();
+                    break;//上家只能有一个
+                }
+            }
+        }else{
+            return;//没有父1级直接返回
+        }
+        //将父1级收益保存到提现表中，提现记录
+        if(StringUtils.isEmpty(parentTwo)){
+            return;//没有父1级直接返回
+        }
+        //todo 保存
+
     }
 
     //支付成功调用
