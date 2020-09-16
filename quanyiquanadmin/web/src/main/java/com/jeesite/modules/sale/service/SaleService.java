@@ -7,6 +7,7 @@ import com.jeesite.common.entity.Page;
 import com.jeesite.common.service.CrudService;
 import com.jeesite.modules.sale.dao.SaleDao;
 import com.jeesite.modules.sale.entity.Sale;
+import com.jeesite.modules.sale.entity.SaleDto;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,10 @@ public class SaleService extends CrudService<SaleDao, Sale> {
 
 	public List<Sale> getSaleListByKhid(String khid) {
 		return saleDao.getSaleListByKhid(khid);
+	}
+
+	public List<SaleDto> getSaleListAll(String khid) {
+		return saleDao.getSaleListAll(khid);
 	}
 
 }
