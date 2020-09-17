@@ -226,6 +226,7 @@ public class PayService {
                         txsh.setTxje(item.getSum());
                         txsh.setZt(Txsh.TX_STATUS_SQZ);
                         txsh.setOrderId(order.getId());
+                        txsh.setType(Txsh.TX_TYPE_SELL);
                         txshService.saveTxd(txsh);
                     });
                     //二级分销分利润
@@ -249,43 +250,42 @@ public class PayService {
     private void doSaleInfo(Order order) {
         String buyerId = order.getUserId();
         //根据买家id，获取父1级khid
+        Double txje = 2.0;
+        String parentTemp = doWithIncome(order,buyerId, txje);//处理父1级
+        if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
+            return;
+        }
+        Double txje2 = 1.0;
+        doWithIncome(order,parentTemp, txje2);//处理父2级
+    }
+
+    //处理上一级收益
+    private String doWithIncome(Order order, String buyerId, Double txje) {
+        String parentTemp = "";//上一级khid
         List<Sale> list = saleService.getSaleListByKhid(buyerId);
-        String parentOne = "";
         if(list != null && !list.isEmpty()){
             for(Sale saleEntity :list){
                 if(!StringUtils.isEmpty(saleEntity.getParentOne())){
-                    parentOne = saleEntity.getParentOne();
+                    parentTemp = saleEntity.getParentOne();
                     break;//上家只能有一个
                 }
             }
         }else{
-            return;//没有父1级直接返回
+            return parentTemp;//没有父1级直接返回
         }
         //将父1级收益保存到提现表中，提现记录
-        if(StringUtils.isEmpty(parentOne)){
-            return;//没有父1级直接返回
+        if(StringUtils.isEmpty(parentTemp)){
+            return parentTemp;//没有父1级直接返回
         }
-        //todo 保存
-
-        //根据父1级找父2级
-        List<Sale> list2 = saleService.getSaleListByKhid(parentOne);
-        String parentTwo = "";
-        if(list2 != null && !list2.isEmpty()){
-            for(Sale saleEntity :list2){
-                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
-                    parentTwo = saleEntity.getParentOne();
-                    break;//上家只能有一个
-                }
-            }
-        }else{
-            return;//没有父1级直接返回
-        }
-        //将父1级收益保存到提现表中，提现记录
-        if(StringUtils.isEmpty(parentTwo)){
-            return;//没有父1级直接返回
-        }
-        //todo 保存
-
+        //生成父1级提现申请单
+        Txsh txsh = new Txsh();
+        txsh.setKhid(parentTemp);
+        txsh.setTxje(txje);
+        txsh.setZt(Txsh.TX_STATUS_SQZ);
+        txsh.setOrderId(order.getId());
+        txsh.setType(Txsh.TX_TYPE_BUY);
+        txshService.save(txsh);
+        return parentTemp;
     }
 
     //支付成功调用

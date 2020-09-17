@@ -24,6 +24,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 		@Column(name="zt", attrName="zt", label="审核状态 1 审核中  2 审核通过 3 审核不通过"),
 		@Column(name="txje", attrName="txje", label="体现金额"),
 		@Column(name="order_id", attrName="orderId", label="相关订单"),
+		@Column(name="type", attrName="type", label="收益类型"),
 		@Column(includeEntity=DataEntity.class),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=KhXx.class, attrName="khXx", alias="k",
@@ -43,6 +44,9 @@ public class Txsh extends DataEntity<Txsh> {
 	public static final String TX_STATUS_ZZ = "4";   //已中止（人为操作）
 	public static final String TX_STATUS_FAIL = "5";   //程序打款失败
 
+	public static final String TX_TYPE_SELL = "1";   //卖家收益
+	public static final String TX_TYPE_BUY = "2";   //买家收益
+
 	private static final long serialVersionUID = 1L;
 	private String khid;		// 客户id
 	private String zt;		// 审核状态 1 审核中  2 审核通过 3 审核不通过
@@ -50,6 +54,7 @@ public class Txsh extends DataEntity<Txsh> {
 	private String orderId;   //相关订单
 	private String startDate;   //开始时间
 	private String endDate;   //结束时间
+	private String type;   //收益类型
 
 	private KhXx khXx;
 	
@@ -117,5 +122,13 @@ public class Txsh extends DataEntity<Txsh> {
 
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }
