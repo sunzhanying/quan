@@ -36,6 +36,7 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.sale.entity.IncomeConf;
 import com.jeesite.modules.sale.entity.Sale;
 import com.jeesite.modules.sale.service.SaleService;
 import com.jeesite.modules.txsh.entity.Txsh;
@@ -250,12 +251,20 @@ public class PayService {
     private void doSaleInfo(Order order) {
         String buyerId = order.getUserId();
         //根据买家id，获取父1级khid
-        Double txje = 2.0;
+        IncomeConf incomeConfOne = saleService.getConf(IncomeConf.CONF_PARENT_ONE);
+        if(incomeConfOne == null || StringUtils.isEmpty(incomeConfOne.getId())){
+            return;
+        }
+        Double txje = incomeConfOne.getMoney();
         String parentTemp = doWithIncome(order,buyerId, txje);//处理父1级
         if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
             return;
         }
-        Double txje2 = 1.0;
+        IncomeConf incomeConfTwo = saleService.getConf(IncomeConf.CONF_PARENT_TWO);
+        if(incomeConfTwo == null || StringUtils.isEmpty(incomeConfTwo.getId())){
+            return;
+        }
+        Double txje2 = incomeConfTwo.getMoney();
         doWithIncome(order,parentTemp, txje2);//处理父2级
     }
 

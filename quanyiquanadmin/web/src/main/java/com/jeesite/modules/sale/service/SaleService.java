@@ -5,7 +5,9 @@ package com.jeesite.modules.sale.service;
 
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.service.CrudService;
+import com.jeesite.modules.sale.dao.IncomeConfDao;
 import com.jeesite.modules.sale.dao.SaleDao;
+import com.jeesite.modules.sale.entity.IncomeConf;
 import com.jeesite.modules.sale.entity.Sale;
 import com.jeesite.modules.sale.entity.SaleDto;
 import org.apache.commons.logging.Log;
@@ -30,6 +32,8 @@ public class SaleService extends CrudService<SaleDao, Sale> {
 	@Autowired
 	private SaleDao saleDao;
 
+	@Autowired
+	private IncomeConfDao incomeConfDao;
 
 	/**
 	 * 获取单条数据
@@ -88,6 +92,11 @@ public class SaleService extends CrudService<SaleDao, Sale> {
 
 	public List<SaleDto> getSaleListAll(String khid) {
 		return saleDao.getSaleListAll(khid);
+	}
+
+	public IncomeConf getConf(String parentLevel) {
+
+		return incomeConfDao.getConf(parentLevel);
 	}
 
 }
