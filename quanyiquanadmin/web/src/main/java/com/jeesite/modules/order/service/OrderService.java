@@ -69,8 +69,9 @@ public class OrderService extends CrudService<OrderDao, Order> {
 				QyhsMx qyhsMx = new QyhsMx();
 				qyhsMx.setQyqId(order.getSpId());
 				qyhsMx.setZt(QyhsMx.STATUS_CSZ);
-				qyhsMx.setOrderBy("a.create_date ASC");
-				//qyhsMx.setOrderBy("a.yxq_date ASC"); todo 快到期的先卖
+				//qyhsMx.setOrderBy("a.create_date ASC");
+				//快到期的先卖
+				qyhsMx.setOrderBy("a.yxq_date ASC");
 				qyhsMx.setPageSize(order.getSl().intValue());
 				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
 				qyhsMxList.forEach(item ->{
@@ -92,9 +93,9 @@ public class OrderService extends CrudService<OrderDao, Order> {
 				QyhsMx qyhsMx = new QyhsMx();
 				qyhsMx.setQyqId(order.getSpId());
 				qyhsMx.setZt(QyhsMx.STATUS_CSZ);
-				qyhsMx.setOrderBy("a.create_date ASC");
-				//qyhsMx.setOrderBy("a.yxq_date ASC"); todo 快到期的先卖
-				qyhsMx.setPageSize(order.getSl().intValue());
+				//qyhsMx.setOrderBy("a.create_date ASC");
+				//快到期的先卖
+				qyhsMx.setOrderBy("a.yxq_date ASC");
 				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
 				for(QyhsMx item :qyhsMxList){
 					item.setOrderId(order.getId());
