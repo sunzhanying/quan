@@ -208,7 +208,7 @@ public class PayService {
                     qyhsMxList.forEach(item ->{
                         item.setZt(QyhsMx.STATUS_YFK);
                         item.setJszt(QyhsMx.STATUS_JS_WJS);
-                        item.setSy(order.getHsj());
+                        item.setSy(order.getHsj());//todo 注释掉
                         qyhsMxService.update(item);
                     });
                     //分单，向提现表中添加数据

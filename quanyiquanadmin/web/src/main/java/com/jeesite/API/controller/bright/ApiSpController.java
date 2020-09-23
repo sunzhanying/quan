@@ -315,6 +315,12 @@ public class ApiSpController {
         if(qyhs == null || qyhs.getQyhsMxes() == null || qyhs.getQyhsMxes().isEmpty()){
             return new Response(Code.API_CHECK_NULL);
         }
+        String qyqIdTemp = qyhs.getQyqId();
+        //新增逻辑，卖家券上传时候确定收益
+        /*Qyjg qyjg = new Qyjg();
+        qyjg.setQyqId(qyqIdTemp);
+        qyjg.setPageSize(1);
+        Qyjg qyjg1 = qyjgService.findList(qyjg).get(0);*/
         //先从mx明细表中 校验卡密不能重复;校验回收最大数量
         for(QyhsMx mxForSave : qyhs.getQyhsMxes()){
             //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
@@ -329,10 +335,10 @@ public class ApiSpController {
             if(count > 0){
                 return new Response(Code.API_CHECK_KM);
             }
+            //mxForSave.setSy(qyjg1.getHsj());
         }
 
         //校验上传最大数量，根据qyq_id，也就是商品id,获取到商品对应的设置数量
-        String qyqIdTemp = qyhs.getQyqId();
         SpXx spXx = spXxService.get(qyqIdTemp);
         Long maxCount = spXx.getMaxCount();
         //根据权益券
