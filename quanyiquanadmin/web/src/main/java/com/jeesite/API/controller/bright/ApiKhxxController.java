@@ -14,7 +14,6 @@ import com.jeesite.API.weixin.bean.user.Phone;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 import com.jeesite.modules.bright.khvipcard.dao.KhVipcardDao;
-import com.jeesite.modules.bright.khvipcard.entity.KhVipcard;
 import com.jeesite.modules.bright.khyhq.dao.KhYhqDao;
 import com.jeesite.modules.bright.sms.dao.SmsRecordDao;
 import com.jeesite.modules.bright.sms.entity.SmsRecord;
@@ -33,8 +32,6 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
-import com.jeesite.modules.sale.entity.Sale;
-import com.jeesite.modules.sale.service.SaleService;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.TxshService;
 import io.swagger.annotations.Api;
@@ -47,7 +44,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -96,8 +96,6 @@ public class ApiKhxxController {
     private TxshService txshService;
     @Autowired
     private QyhsMxDao qyhsMxDao;
-    @Autowired
-    private SaleService saleService;
     @Autowired
     private KhXxDao khXxDao;
 
@@ -361,51 +359,30 @@ public class ApiKhxxController {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
         khXx.setSj(phone);
         khXx.setXm(name);
+        //通过短信验证后，就将当前用户的邀请码生成，然后保存、返回给前端
+        String codeOnly = getOnlyCode();
+        khXx.setCode(codeOnly);
         khXxService.update(khXx);
         if(!StringUtils.isEmpty(inviteCode)){
-            //如果邀请码不为空 则关联分销信息
-            Response response = checkInviteCode(inviteCode,khXx);
+            //如果邀请码不为空 则关联上级分销信息
+            Response response = khXxService.checkInviteCode(inviteCode,khXx);
             return response;
         }
         return new Response(Code.SUCCESS);
     }
 
-    private Response checkInviteCode(String inviteCode, KhXx khXx) {
-        //根据邀请码查询父1级
-        String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
+    /**
+     * 获取唯一6位邀请码
+     * @return
+     */
+    private String getOnlyCode() {
+        String temp = RandomUtils.getRandomString(6);
+        String khidParentOne = khXxDao.getUserIdByCode(temp);
         if(StringUtils.isEmpty(khidParentOne)){
-            return new Response(Code.API_PARENT_ONE);
+            return khidParentOne;//如果不存在，直接返回
+        }else{
+            return getOnlyCode();
         }
-        //根据父1级设置子1级
-        List<Sale> list = saleService.getSaleListByKhid(khidParentOne);
-        String khidParentTwo = "";
-        Sale saleForParentOne = new Sale();
-        if(list != null && !list.isEmpty()){
-            for(Sale saleEntity :list){
-                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
-                    khidParentTwo = saleEntity.getParentOne();
-                    saleForParentOne = saleEntity;
-                    break;
-                }
-            }
-        }
-        Sale sale = new Sale();
-        sale.setKhid(khXx.getId());
-        sale.setParentOne(khidParentOne);
-        //sale.setParentTwo(khidParentTwo);父二级不管，根据父一级的关联关系去找
-        saleService.save(sale);
-        //此时t_kh_sale表中该注册用户的前两级数据就确定了，
-        //如果根据邀请码可以找到父1级，则将该用户新增或更新到父1级的子1级上
-        if(saleForParentOne != null && !StringUtils.isEmpty(saleForParentOne.getId())){
-            saleForParentOne.setChildOne(khXx.getId());
-            saleService.save(saleForParentOne);//更新
-        }else{//保存
-            saleForParentOne.setKhid(khidParentOne);
-            saleForParentOne.setChildOne(khXx.getId());
-            saleForParentOne.setParentOne(khidParentTwo);
-            saleService.save(saleForParentOne);
-        }
-        return new Response(Code.SUCCESS);
     }
 
     //发送验证码 2买家 1卖家
@@ -519,4 +496,20 @@ public class ApiKhxxController {
 
         return new Response(Code.SUCCESS);
     }*/
+
+    @ApiOperation(value = "绑定邀请码",httpMethod ="POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = true),
+    })
+    @RequestMapping(value = "/saveInviteCode",method = RequestMethod.POST)
+    public Response saveInviteCode(HttpServletRequest request,
+                                  @RequestParam(required = true, value = "inviteCode", defaultValue = "") String inviteCode){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return new Response(Code.API_NULL_AUTH);
+        }
+        //如果邀请码不为空 则关联上级分销信息
+        return khXxService.checkInviteCode(inviteCode,khXx);
+    }
+
 }

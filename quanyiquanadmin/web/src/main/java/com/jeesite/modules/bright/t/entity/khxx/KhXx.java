@@ -54,6 +54,7 @@ import java.util.List;
 		@Column(name="create_date", attrName="createDate", label="创建时间", isUpdate=false, isQuery=false),
 		@Column(name="update_date", attrName="updateDate", label="更新时间", isQuery=false),
 		@Column(name="remarks", attrName="remarks", label="备注信息", queryType=QueryType.LIKE),
+		@Column(name="code", attrName="code", label="邀请码"),
 		@Column(name="salesroom", attrName="salesroom", label="传播渠道/门店"),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=WxConfig.class, alias="o",
@@ -101,6 +102,7 @@ public class KhXx extends DataEntity<KhXx> {
 	private String checked;  //是否选中
 	private WxConfig wxConfig;		//
 	private Source source;		//
+	private String code;		//邀请码
 
 	public String getWxConfigId() {
 		return wxConfigId;
@@ -394,5 +396,13 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setHyksl(Integer hyksl) {
 		this.hyksl = hyksl;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 }
