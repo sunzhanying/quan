@@ -124,7 +124,7 @@ public class PayService {
             order.setActualPayment(qyjg1.getCsj()*order.getSl());
             order.setPayment(qyjg1.getCsj()*order.getSl());
             order.setJgid(qyjg1.getId());
-            order.setHsj(qyjg1.getHsj());
+            order.setHsj(qyjg1.getHsj());//该回收价为最新回收价，不准确，改为根据上传时的回收价，在卖券中
             order.setScj(qyjg1.getCsj());
             order.setZt(Order.PAY_STATUS_DZF);
             order.preInsert();
@@ -189,7 +189,7 @@ public class PayService {
             if (SignatureUtil.validateSign(mapData, key)) {
                 expireKey.add(payNotify.getTransaction_id());
 
-                Order order = orderService.get(payNotify.getOut_trade_no());
+                Order order = orderService.get(payNotify.getOut_trade_no());//付款完回调时传递订单id
                 System.out.println("回调数据："+payNotify.toString());
 
                 //未支付成功时走业务
@@ -208,7 +208,8 @@ public class PayService {
                     qyhsMxList.forEach(item ->{
                         item.setZt(QyhsMx.STATUS_YFK);
                         item.setJszt(QyhsMx.STATUS_JS_WJS);
-                        item.setSy(order.getHsj());//todo 注释掉
+                        //item.setSy(order.getHsj());//回收价以用户上传时的价格为准
+                        item.setSellPrice(order.getScj());//售出价以下单时的价格为准，赋值给具体的卖券,方便后期计算收益
                         qyhsMxService.update(item);
                     });
                     //分单，向提现表中添加数据

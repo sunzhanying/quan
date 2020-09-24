@@ -72,30 +72,6 @@ public class OrderService extends CrudService<OrderDao, Order> {
 				//qyhsMx.setOrderBy("a.create_date ASC");
 				//快到期的先卖
 				qyhsMx.setOrderBy("a.yxq_date ASC");
-				qyhsMx.setPageSize(order.getSl().intValue());
-				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
-				qyhsMxList.forEach(item ->{
-					item.setOrderId(order.getId());
-					item.setZt(QyhsMx.STATUS_DFK);
-					qyhsMxDao.update(item);
-					//添加订单明细
-					OrderMx orderMx = new OrderMx();
-					orderMx.setOrderId(order.getId());
-					orderMx.setQymxId(item.getId());
-					orderMx.preInsert();
-					orderMxDao.insert(orderMx);
-				});
-
-				/*Double syForOrder = 0.0;
-				//生成订单 todo 放开
-				//dao.insert(order);
-				//修改权益明细为待支付状态
-				QyhsMx qyhsMx = new QyhsMx();
-				qyhsMx.setQyqId(order.getSpId());
-				qyhsMx.setZt(QyhsMx.STATUS_CSZ);
-				//qyhsMx.setOrderBy("a.create_date ASC");
-				//快到期的先卖
-				qyhsMx.setOrderBy("a.yxq_date ASC");
 				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
 				for(QyhsMx item :qyhsMxList){
 					item.setOrderId(order.getId());
@@ -107,13 +83,7 @@ public class OrderService extends CrudService<OrderDao, Order> {
 					orderMx.setQymxId(item.getId());
 					orderMx.preInsert();
 					orderMxDao.insert(orderMx);
-					syForOrder = syForOrder + item.getSy();
 				}
-				//修改回收价和收益等信息
-				//order.setHsj(syForOrder);
-				order.setActualPayment(syForOrder);
-				order.setPayment(syForOrder);
-				dao.insert(order);*/
 			}
 		}catch (Exception e){
 			return new Response(Code.API_ORDER_ERROR);
