@@ -203,7 +203,8 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		String zt = param.get("zt");
 		String startDate = param.get("startDate");
 		String endDate = param.get("endDate");
-		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc,zt,startDate,endDate);
+		String type = param.get("type");
+		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc,zt,startDate,endDate,type);
 		return list;
 	}
 

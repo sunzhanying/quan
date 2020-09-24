@@ -23,9 +23,9 @@ public interface TxshDao extends CrudDao<Txsh> {
     //显示个人优惠券
     @Select("<script>" +
             "SELECT a.id,DATE_FORMAT(a.`create_date`,\"%Y-%m-%d %T\") as create_date,a.`order_id`,c.`spmc`,	" +
-            "b.`user_id`,b.buyName,a.`khid`,a.sellName,a.`txje`,a.`zt`                  " +
+            "b.`user_id`,b.buyName,a.`khid`,a.sellName,a.`txje`,a.`zt` ,a.type                 " +
             "FROM (                                                                     " +
-            "SELECT m.id,m.create_date,m.order_id,m.txje,m.khid,m.zt,n.`wxnc` AS sellName    " +
+            "SELECT m.id,m.create_date,m.order_id,m.txje,m.khid,m.zt,n.`wxnc` AS sellName,m.type as type    " +
             "FROM a_txsh m INNER JOIN t_kh_xx n ON m.khid = n.id                        " +
             ") a INNER JOIN                                                             " +
             "(                                                                          " +
@@ -45,12 +45,16 @@ public interface TxshDao extends CrudDao<Txsh> {
             "<if test='zt != null and zt != &quot;&quot;'> " +
             "  AND  a.`zt` = #{zt}" +
             "  </if> " +
+            "<if test='type != null and type != &quot;&quot;'> " +
+            "  AND  a.`type` = #{type}" +
+            "  </if> " +
             "<if test='startDate != null and startDate != &quot;&quot; and endDate != null and endDate != &quot;&quot;'> " +
             "  AND  a.create_date &gt;= #{startDate} AND a.create_date &lt;= #{endDate}" +
             "  </if> " +
             "</script>")
     List<Map<String,String>> findAllList(@Param("orderId") String orderId,@Param("id") String id,@Param("wxnc") String wxnc,
-                                         @Param("zt") String zt,@Param("startDate") String startDate,@Param("endDate") String endDate);
+                                         @Param("zt") String zt,@Param("startDate") String startDate,@Param("endDate") String endDate
+                                        ,@Param("type") String type);
 
 
     @Select("<script>" +

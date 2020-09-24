@@ -219,6 +219,7 @@ public class TxshController extends BaseController {
 
 		param.put("startDate",txsh.getStartDate());
 		param.put("endDate",txsh.getEndDate());
+		param.put("type",txsh.getType());
 		//PageHelper.startPage(pageFront.getPageNo(),pageFront.getPageSize());
 		List<Map<String,String>> list = txshService.findPayPage(param);
 		Paper<Map<String,String>> paper = new Paper<Map<String,String>>(pageFront.getPageNo(),pageFront.getPageSize(),list);//paper.getDataList()就是子数组数据
