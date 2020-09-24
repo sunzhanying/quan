@@ -263,6 +263,49 @@
 						</div>
 					</div>
 				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('一级粉丝分润设置')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="incomeTypeOne" items="${incomeTypeSelect}" itemLabel="name" itemValue="val" class="form-control number" />
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('一级固定金额(元)')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="moneyOne" maxlength="50" class="form-control number"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('二级粉丝分润设置')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="incomeTypeTwo" items="${incomeTypeSelect}" itemLabel="name" itemValue="val" class="form-control number" />
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('二级固定金额(元)')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="moneyTwo" maxlength="50" class="form-control  number"/>
+							</div>
+						</div>
+					</div>
+				</div>
 
 				<!--<div class="row">
 					<div class="col-xs-6">

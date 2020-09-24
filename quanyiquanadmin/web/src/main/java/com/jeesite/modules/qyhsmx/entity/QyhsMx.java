@@ -41,10 +41,6 @@ import java.util.Date;
 		@Column(name="jszt", attrName="jszt", label="结算状态 1 未结算 2 已结算"),
 		@Column(name="sy", attrName="sy", label="sy"),
 		@Column(name="sell_price", attrName="sellPrice", label="sy"),
-		@Column(name="parent_level", attrName="parentLevel", label="父级数"),
-		@Column(name="income_type", attrName="incomeType", label="收益方式"),
-		@Column(name="money", attrName="money", label="固定金额值"),
-		@Column(name="ratio", attrName="ratio", label="百分比"),
 		@Column(name="sqdh", attrName="sqdh", label="申请单号"),
 		@Column(name="zt", attrName="zt", label="状态 1 待审核 2 审核失败 3 出售中 4 待付款 5 已出售"),
 		@Column(includeEntity=DataEntity.class),
@@ -90,10 +86,6 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 	private String jszt;   //结算状态 1 未结算 2 已结算
 	private Double sy;   //收益
 	private Double sellPrice;   //售出价
-	private String parentLevel;
-	private String incomeType;
-	private Double money;		// 体现金额
-	private Double ratio;		// 比例
 
 	private String sqdh;   //申请单号
 	private Double sum;    //收益
@@ -286,38 +278,6 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 
 	public void setSellPrice(Double sellPrice) {
 		this.sellPrice = sellPrice;
-	}
-
-	public String getParentLevel() {
-		return parentLevel;
-	}
-
-	public void setParentLevel(String parentLevel) {
-		this.parentLevel = parentLevel;
-	}
-
-	public String getIncomeType() {
-		return incomeType;
-	}
-
-	public void setIncomeType(String incomeType) {
-		this.incomeType = incomeType;
-	}
-
-	public Double getMoney() {
-		return money;
-	}
-
-	public void setMoney(Double money) {
-		this.money = money;
-	}
-
-	public Double getRatio() {
-		return ratio;
-	}
-
-	public void setRatio(Double ratio) {
-		this.ratio = ratio;
 	}
 
 	public String getSqdh() {

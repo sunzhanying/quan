@@ -11,32 +11,17 @@ import com.jeesite.API.weixin.bean.paymch.UnifiedorderResult;
 import com.jeesite.API.weixin.support.ExpireKey;
 import com.jeesite.API.weixin.support.expirekey.DefaultExpireKey;
 import com.jeesite.API.weixin.util.*;
-import com.jeesite.API.zyapi.ZyAPI;
-import com.jeesite.modules.bright.formid.entity.FormId;
-import com.jeesite.modules.bright.formid.service.FormIdService;
-import com.jeesite.modules.bright.hykjl.entity.VipcardJl;
-import com.jeesite.modules.bright.hykjl.service.VipcardJlService;
-import com.jeesite.modules.bright.khvipcard.entity.KhVipcard;
-import com.jeesite.modules.bright.khvipcard.service.KhVipcardService;
-import com.jeesite.modules.bright.khyhq.entity.KhYhq;
-import com.jeesite.modules.bright.khyhq.service.KhYhqService;
-import com.jeesite.modules.bright.points.entity.pointsconfig.PointsConfig;
-import com.jeesite.modules.bright.points.service.pointsconfig.PointsConfigService;
-import com.jeesite.modules.bright.points.service.pointslog.PointsLogService;
+import com.jeesite.modules.bright.sp.entity.SpXx;
 import com.jeesite.modules.bright.sp.service.SpXxService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
-import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.bright.util.KhXwUtil;
 import com.jeesite.modules.bright.util.OrderManager;
 import com.jeesite.modules.order.entity.Order;
-import com.jeesite.modules.order.entity.OrderMx;
 import com.jeesite.modules.order.service.OrderService;
-import com.jeesite.modules.qyhsmx.dao.QyhsMxDao;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
-import com.jeesite.modules.sale.entity.IncomeConf;
 import com.jeesite.modules.sale.entity.Sale;
 import com.jeesite.modules.sale.service.SaleService;
 import com.jeesite.modules.txsh.entity.Txsh;
@@ -47,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,7 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 支付Service
@@ -231,8 +218,8 @@ public class PayService {
                         txsh.setType(Txsh.TX_TYPE_SELL);
                         txshService.saveTxd(txsh);
                     });
-                    //二级分销分利润
-                    //doSaleInfo(order);
+                    //二级分销分利润,根据券类型表a_qyhs_mx 中获取固定收益，或者百分比，百分比的话需要查询出关联的卖券
+                    doSaleInfo(order);
                 }
 
                 MchBaseResult baseResult = new MchBaseResult();
@@ -250,23 +237,26 @@ public class PayService {
 
     //处理二级分销分利润
     private void doSaleInfo(Order order) {
-        String buyerId = order.getUserId();
-        //根据买家id，获取父1级khid
-        IncomeConf incomeConfOne = saleService.getConf(IncomeConf.CONF_PARENT_ONE);
-        if(incomeConfOne == null || StringUtils.isEmpty(incomeConfOne.getId())){
-            return;
+        try{
+            String buyerId = order.getUserId();
+            SpXx spXx = spXxService.get(order.getSpId());
+            //根据买家id，获取父1级khid
+            Double txjeOne = spXx.getMoneyOne();
+            if(txjeOne == null || txjeOne <= 0){
+                return;//如果没有设置分润则直接返回
+            }
+            String parentTemp = doWithIncome(order,buyerId, txjeOne);//处理父1级
+            if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
+                return;
+            }
+            Double txjeTwo = spXx.getMoneyTwo();
+            if(txjeTwo == null || txjeTwo <= 0){
+                return;//如果没有设置分润则直接返回
+            }
+            doWithIncome(order,parentTemp, txjeTwo);//处理父2级
+        }catch (Exception e){
+            log.error("下单后封装分销收益报错,order id =" + order.getId(),e);
         }
-        Double txje = incomeConfOne.getMoney();
-        String parentTemp = doWithIncome(order,buyerId, txje);//处理父1级
-        if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
-            return;
-        }
-        IncomeConf incomeConfTwo = saleService.getConf(IncomeConf.CONF_PARENT_TWO);
-        if(incomeConfTwo == null || StringUtils.isEmpty(incomeConfTwo.getId())){
-            return;
-        }
-        Double txje2 = incomeConfTwo.getMoney();
-        doWithIncome(order,parentTemp, txje2);//处理父2级
     }
 
     //处理上一级收益
