@@ -379,7 +379,7 @@ public class ApiKhxxController {
         String temp = RandomUtils.getRandomString(6);
         String khidParentOne = khXxDao.getUserIdByCode(temp);
         if(StringUtils.isEmpty(khidParentOne)){
-            return khidParentOne;//如果不存在，直接返回
+            return temp;//如果不存在，直接返回
         }else{
             return getOnlyCode();
         }
@@ -512,4 +512,19 @@ public class ApiKhxxController {
         return khXxService.checkInviteCode(inviteCode,khXx);
     }
 
+    //初始化所有已有用户邀请码 todo 生成之后立马注释掉，不然就乱了
+    /*@RequestMapping(value = "/initCode",method = RequestMethod.POST)
+    public Response initCode(HttpServletRequest request){
+        KhXx khXxTemp = new KhXx();
+        List<KhXx> list = khXxService.findList(khXxTemp);
+        for (KhXx khXx:list) {
+            if(!StringUtils.isEmpty(khXx.getCode())){
+                continue;
+            }
+            String codeOnly = getOnlyCode();
+            khXx.setCode(codeOnly);
+            khXxService.update(khXx);
+        }
+        return new Response(Code.SUCCESS);
+    }*/
 }
