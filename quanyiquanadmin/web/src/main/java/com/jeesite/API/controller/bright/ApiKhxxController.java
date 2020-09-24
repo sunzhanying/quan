@@ -332,12 +332,13 @@ public class ApiKhxxController {
             @ApiImplicitParam(name="name",value = "姓名",required = true),
             @ApiImplicitParam(name="phone",value = "手机号",required = true),
             @ApiImplicitParam(name="code",value = "验证码",required = true),
-            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = false),
+            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = true),
     })
     @RequestMapping(value = "/saveNamePhone",method = RequestMethod.POST)
     public Response saveNamePhone(HttpServletRequest request, @RequestParam String name, @RequestParam String phone
                                   ,@RequestParam String code,
-                                  @RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode
+                                  @RequestParam String inviteCode
+                                  /*@RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode*/
                                   ) {
         //验证手机号
         SmsRecord record = new SmsRecord();
@@ -512,8 +513,8 @@ public class ApiKhxxController {
         return khXxService.checkInviteCode(inviteCode,khXx);
     }
 
-    //初始化所有已有用户邀请码 todo 生成之后立马注释掉，不然就乱了
-    /*@RequestMapping(value = "/initCode",method = RequestMethod.POST)
+    //初始化所有已有用户邀请码 todo 生成之后立马注释掉
+    @RequestMapping(value = "/initCode",method = RequestMethod.POST)
     public Response initCode(HttpServletRequest request){
         KhXx khXxTemp = new KhXx();
         List<KhXx> list = khXxService.findList(khXxTemp);
@@ -526,5 +527,5 @@ public class ApiKhxxController {
             khXxService.update(khXx);
         }
         return new Response(Code.SUCCESS);
-    }*/
+    }
 }

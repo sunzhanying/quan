@@ -239,13 +239,14 @@ public class PayService {
     private void doSaleInfo(Order order) {
         try{
             String buyerId = order.getUserId();
+            Long sl = order.getSl();//单个固定收益要乘以数量才行
             SpXx spXx = spXxService.get(order.getSpId());
             //根据买家id，获取父1级khid
             Double txjeOne = spXx.getMoneyOne();
             if(txjeOne == null || txjeOne <= 0){
                 return;//如果没有设置分润则直接返回
             }
-            String parentTemp = doWithIncome(order,buyerId, txjeOne);//处理父1级
+            String parentTemp = doWithIncome(order,buyerId, txjeOne * sl);//处理父1级
             if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
                 return;
             }
@@ -253,7 +254,7 @@ public class PayService {
             if(txjeTwo == null || txjeTwo <= 0){
                 return;//如果没有设置分润则直接返回
             }
-            doWithIncome(order,parentTemp, txjeTwo);//处理父2级
+            doWithIncome(order,parentTemp, txjeTwo * sl);//处理父2级
         }catch (Exception e){
             log.error("下单后封装分销收益报错,order id =" + order.getId(),e);
         }
@@ -279,7 +280,7 @@ public class PayService {
         }
         //生成父1级提现申请单
         Txsh txsh = new Txsh();
-        txsh.setKhid(parentTemp);
+        txsh.setKhid(parentTemp);//todo 目前前端展示的是关联卖家的昵称信息，order中是买家
         txsh.setTxje(txje);
         txsh.setZt(Txsh.TX_STATUS_SQZ);
         txsh.setOrderId(order.getId());
