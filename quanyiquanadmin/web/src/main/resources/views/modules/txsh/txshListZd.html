@@ -17,12 +17,12 @@
 		<div class="box-body">
 			<#form:form id="searchForm" model="${txsh}" action="${ctx}/txsh/txsh/listPayData" method="post" class="form-inline hide"
 					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
-				<div class="form-group">
+				<!--<div class="form-group">
 					<label class="control-label">${text('收益类型')}：</label>
 					<div class="control-inline width-120">
 						<#form:select path="type" dictType="income_type" blankOption="true" class="form-control"/>
 					</div>
-				</div>
+				</div>-->
 				<div class="form-group">
 					<label class="control-label">${text('提现状态')}：</label>
 					<div class="control-inline width-120">
@@ -85,9 +85,9 @@ $('#dataGrid').dataGrid({
 		{header:'${text("提现金额")}', name:'txje', index:'txje', width:150, align:"center", formatter: function(val, obj, row, act){
 				return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
 			}},
-		{header:'${text("类型")}', name:'type', index:'type', width:150, align:"center", formatter: function(val, obj, row, act){
+		/*{header:'${text("类型")}', name:'type', index:'type', width:150, align:"center", formatter: function(val, obj, row, act){
 				return js.getDictLabel(${@DictUtils.getDictListJson('income_type')}, val, '${text("未知")}', true);
-			}},
+			}},*/
         {header:'${text("审核状态")}', name:'zt', index:'zt', width:150, align:"center", formatter: function(val, obj, row, act){
             return js.getDictLabel(${@DictUtils.getDictListJson('txsq_status')}, val, '${text("未知")}', true);
         }},

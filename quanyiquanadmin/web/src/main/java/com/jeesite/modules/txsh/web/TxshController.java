@@ -3,13 +3,14 @@
  */
 package com.jeesite.modules.txsh.web;
 
-import com.github.pagehelper.PageHelper;
 import com.jeesite.common.config.Global;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
+import com.jeesite.modules.txsh.entity.Sell;
 import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.SellService;
 import com.jeesite.modules.txsh.service.TxshService;
 import com.jeesite.utils.Paper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -42,6 +43,9 @@ public class TxshController extends BaseController {
 
 	@Autowired
 	private QyhsMxService qyhsMxService;
+
+	@Autowired
+	private SellService sellService;
 
 	/**
 	 * 获取数据
@@ -265,6 +269,81 @@ public class TxshController extends BaseController {
 					break;
 				}
 				boolean booResult = txshService.txsh(txshDb);
+				if(!booResult){//如果有一个失败就中止打款
+					boo = false;
+					failId = string;
+					break;
+				}
+			}
+			if(boo){
+				return renderResult(Global.TRUE, text("已调用商户付款成功！"));
+			}else{
+				return renderResult(Global.TRUE, text("打款失败！失败id：" + failId));
+			}
+
+		}else{
+			return renderResult(Global.TRUE, text("无效操作！"));
+		}
+	}
+
+	// ------------------ 分销 -----------------------------
+	/**
+	 * 查询列表
+	 */
+	@RequiresPermissions("txsh:txsh:view")
+	@RequestMapping(value = {"listSell", ""})
+	public String listSell(Sell sell, Model model) {
+		model.addAttribute("sell", sell);
+		return "modules/txsh/txshListSell";
+	}
+
+	/**
+	 * 分销list界面
+	 */
+	@RequiresPermissions("txsh:txsh:view")
+	@RequestMapping(value = "listDataSell")
+	@ResponseBody
+	public Page<Sell> listDataSell(Sell sell, HttpServletRequest request, HttpServletResponse response) {
+		sell.setPage(new Page<>(request, response));
+		Page<Sell> page = sellService.findPage(sell);
+		return page;
+	}
+
+	/**
+	 * 立即提现或者中止
+	 * 状态1：结算中，
+	 * 状态2：已结算，
+	 * 状态3：批量审核不通过（收益扣除）,
+	 * 状态4：已中止，
+	 * 状态5：程序打款失败
+	 * @return
+	 */
+	@RequestMapping(value = "updateSellPay")
+	@ResponseBody
+	public String updateSellPay(String str, String type) {
+		//System.out.println("type: " + type + "\tstr:" + str);
+		String[] strings = str.split(",");
+		//中止
+		if("4".equals(type)){
+			for (String string : strings) {
+				Sell sellTemp = new Sell(string);
+				sellTemp.setZt(type);
+				sellService.update(sellTemp);
+			}
+			return renderResult(Global.TRUE, text("批量中止操作成功！"));
+		}else if("2".equals(type)){//打款
+			boolean boo = true;
+			String failId = "";
+			for (String string : strings) {
+				Sell sell = new Sell();
+				sell.setId(string);
+				Sell sellDb = sellService.get(sell);
+				if("2".equals(sellDb.getZt()) || "3".equals(sellDb.getZt()) || "4".equals(sellDb.getZt())){//结算中1、程序打款失败5、的可再次打款
+					boo = false;
+					failId = string;
+					break;
+				}
+				boolean booResult = sellService.sellTxsh(sellDb);
 				if(!booResult){//如果有一个失败就中止打款
 					boo = false;
 					failId = string;
