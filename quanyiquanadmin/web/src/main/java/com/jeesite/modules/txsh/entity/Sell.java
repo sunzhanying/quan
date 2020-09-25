@@ -42,6 +42,14 @@ import org.hibernate.validator.constraints.Length;
 						@Column(name="xm", attrName="xm", label="姓名", queryType = QueryType.LIKE),
 						@Column(name="sj", attrName="sj", label="手机", queryType = QueryType.LIKE),
 				}),
+		@JoinTable(type= Type.LEFT_JOIN, entity=KhXx.class, attrName="khParent", alias="n",
+				on="n.id = a.khid_show_one",
+				columns={
+						@Column(name="wxtx", attrName="wxtx", label="微信头像"),
+						@Column(name="wxnc", attrName="wxnc", label="微信昵称"),
+						@Column(name="xm", attrName="xm", label="姓名", queryType = QueryType.LIKE),
+						@Column(name="sj", attrName="sj", label="手机", queryType = QueryType.LIKE),
+				}),
 	}, orderBy="a.update_date DESC"
 )
 public class Sell extends DataEntity<Sell> {
@@ -68,7 +76,7 @@ public class Sell extends DataEntity<Sell> {
 
 	private KhXx khXx;
 	private KhXx khBuy;
-
+	private KhXx khParent;
 	public Sell() {
 		this(null);
 	}
@@ -165,5 +173,13 @@ public class Sell extends DataEntity<Sell> {
 
 	public void setKhBuy(KhXx khBuy) {
 		this.khBuy = khBuy;
+	}
+
+	public KhXx getKhParent() {
+		return khParent;
+	}
+
+	public void setKhParent(KhXx khParent) {
+		this.khParent = khParent;
 	}
 }
