@@ -70,9 +70,21 @@ $('#dataGrid').dataGrid({
         {header:'${text("审核状态")}', name:'zt', index:'a.zt', width:150, align:"center", formatter: function(val, obj, row, act){
             return js.getDictLabel(${@DictUtils.getDictListJson('txsq_status')}, val, '${text("未知")}', true);
         }},
-		{header:'${text("上家收益者")}', name:'khXx.wxtx', index:'k.wxtx', width:150, align:"left", formatter: function(val, obj, row, act){
+		{header:'${text("买家")}', name:'khBuy.wxtx', index:'m.wxtx', width:150, align:"left", formatter: function(val, obj, row, act){
+				return '<img style="width: 60px" src='+val+'>  ' + row.khBuy.wxnc;
+			}},
+		{header:'${text("收益者")}', name:'khXx.wxtx', index:'k.wxtx', width:150, align:"left", formatter: function(val, obj, row, act){
             return '<img style="width: 60px" src='+val+'>  ' + row.khXx.wxnc;
         }},
+		{header:'${text("收益级别")}', name:'type', index:'a.type', width:150, align:"left", formatter: function(val, obj, row, act){
+			if(row.type && row.type == '1'){
+				return '一级收益';
+			}
+			if(row.type && row.type == '2'){
+				return '二级收益，上家客户id为：' + row.khidShowOne;
+			}
+			return '未知类型：' + row.type;
+			}},
 		{header:'${text("提现金额")}', name:'txje', index:'a.txje', width:150, align:"center", formatter: function(val, obj, row, act){
 			return js.formatNumber(val, 2, false, ''); // 数值类型格式化 (原始数值, 小数位数, 是否千分位, 默认值，金额情况下设置0.00);
 		}},

@@ -34,6 +34,14 @@ import org.hibernate.validator.constraints.Length;
 						@Column(name="xm", attrName="xm", label="姓名", queryType = QueryType.LIKE),
 						@Column(name="sj", attrName="sj", label="手机", queryType = QueryType.LIKE),
 				}),
+		@JoinTable(type= Type.LEFT_JOIN, entity=KhXx.class, attrName="khBuy", alias="m",
+				on="m.id = a.buyid",
+				columns={
+						@Column(name="wxtx", attrName="wxtx", label="微信头像"),
+						@Column(name="wxnc", attrName="wxnc", label="微信昵称"),
+						@Column(name="xm", attrName="xm", label="姓名", queryType = QueryType.LIKE),
+						@Column(name="sj", attrName="sj", label="手机", queryType = QueryType.LIKE),
+				}),
 	}, orderBy="a.update_date DESC"
 )
 public class Sell extends DataEntity<Sell> {
@@ -42,6 +50,9 @@ public class Sell extends DataEntity<Sell> {
 	public static final String SELL_STATUS_SB = "3";   //批量审核不通过（收益扣除）卖方收益查询页面有操作
 	public static final String SELL_STATUS_ZZ = "4";   //已中止（人为操作）
 	public static final String SELL_STATUS_FAIL = "5";   //程序打款失败
+
+	public static final String SELL_TYPE_ONE = "1";   //1级收益
+	public static final String SELL_TYPE_TWO = "2";   //2级收益
 
 	private static final long serialVersionUID = 1L;
 	private String buyid;		// 买家客户id
@@ -56,6 +67,7 @@ public class Sell extends DataEntity<Sell> {
 
 
 	private KhXx khXx;
+	private KhXx khBuy;
 
 	public Sell() {
 		this(null);
@@ -145,5 +157,13 @@ public class Sell extends DataEntity<Sell> {
 
 	public void setKhidShowOne(String khidShowOne) {
 		this.khidShowOne = khidShowOne;
+	}
+
+	public KhXx getKhBuy() {
+		return khBuy;
+	}
+
+	public void setKhBuy(KhXx khBuy) {
+		this.khBuy = khBuy;
 	}
 }
