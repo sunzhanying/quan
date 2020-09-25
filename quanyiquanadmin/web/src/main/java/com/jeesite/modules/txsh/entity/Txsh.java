@@ -21,7 +21,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 @Table(name="a_txsh", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="khid", attrName="khid", label="客户id"),
-		@Column(name="zt", attrName="zt", label="审核状态 1 审核中  2 审核通过 3 审核不通过"),
+		@Column(name="zt", attrName="zt", label="审核状态 1 结算中  2 已结算 3 批量审核不通过 4 已中止 5 程序打款失败"),
 		@Column(name="txje", attrName="txje", label="体现金额"),
 		@Column(name="order_id", attrName="orderId", label="相关订单"),
 		@Column(name="type", attrName="type", label="收益类型"),

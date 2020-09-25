@@ -210,6 +210,10 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 		if(StringUtils.isEmpty(khidParentOne)){
 			return new Response(Code.API_PARENT_ONE);
 		}
+		//校验当前用户不能绑定自己
+		if(khidParentOne.equals(khXx.getId())){
+			return new Response("不能绑定属于自己的邀请码！");
+		}
 		//校验当前用户是否已经绑定过上家，如果绑定过直接返回
 		List<Sale> listCurrent = saleService.getSaleListByKhid(khXx.getId());
 		if(listCurrent != null && !listCurrent.isEmpty()){
