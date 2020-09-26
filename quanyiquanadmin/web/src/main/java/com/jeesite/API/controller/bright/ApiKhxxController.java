@@ -517,6 +517,7 @@ public class ApiKhxxController {
     @RequestMapping(value = "/initCode",method = RequestMethod.POST)
     public Response initCode(HttpServletRequest request){
         KhXx khXxTemp = new KhXx();
+        khXxTemp.setType("2");
         List<KhXx> list = khXxService.findList(khXxTemp);
         for (KhXx khXx:list) {
             if(!StringUtils.isEmpty(khXx.getCode())){
