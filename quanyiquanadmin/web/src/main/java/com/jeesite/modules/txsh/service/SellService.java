@@ -3,7 +3,7 @@
  */
 package com.jeesite.modules.txsh.service;
 
-import com.jeesite.API.weixin.api.TwoPayMchAPI;
+import com.jeesite.API.weixin.api.PayMchAPI;
 import com.jeesite.API.weixin.bean.paymch.Transfers;
 import com.jeesite.API.weixin.bean.paymch.TransfersResult;
 import com.jeesite.API.weixin.util.IdGen;
@@ -32,7 +32,7 @@ public class SellService extends CrudService<SellDao, Sell> {
 
 	private final Log log = LogFactory.getLog(getClass());
 
-	@Value("${weixin.appid}")
+	@Value("${weixin.appidA}")
 	private String wxAppId;
 	@Value("${weixin.Mch_id}")
 	private String Mch_id;
@@ -57,7 +57,7 @@ public class SellService extends CrudService<SellDao, Sell> {
 		//企业付款
 		Transfers transfers = new Transfers();
 		transfers.setMch_appid(wxAppId);
-		transfers.setMchid(Mch_pay_id);
+		transfers.setMchid(Mch_id);
 		transfers.setNonce_str(IdGen.wxRandom(32));
 		transfers.setPartner_trade_no(sell.getId());
 		transfers.setOpenid(khXx.getOpenId());
@@ -67,7 +67,7 @@ public class SellService extends CrudService<SellDao, Sell> {
 		log.info(transfers);
 		TransfersResult transfersResult = null;
 		try {
-			transfersResult = TwoPayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, payKey);
+			transfersResult = PayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, key);
 		}catch (Exception e){
 			e.printStackTrace();
 			//return new Response(10000, "向用户付款出现错误", null);
