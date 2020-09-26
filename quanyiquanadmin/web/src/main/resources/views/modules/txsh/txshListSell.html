@@ -148,7 +148,7 @@ $("#sell_pay").click(function(){
 	if (str.length == 0){
 		js.showMessage("请选订单信息！");
 	}else {
-		js.confirm('确认立即打款给卖家吗？', '${ctx}/txsh/txsh/updateSellPay', {"str": str.join(",") , "type":"2"}, function (data) {
+		js.confirm('确认立即打款给上家吗？', '${ctx}/txsh/txsh/updateSellPay', {"str": str.join(",") , "type":"2"}, function (data) {
 			js.showMessage(data.message);
 			if(data.result == Global.TRUE){
 				$('#dataGrid').dataGrid('reloadGrid');

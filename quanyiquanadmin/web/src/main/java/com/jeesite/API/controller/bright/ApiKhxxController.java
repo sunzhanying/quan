@@ -361,12 +361,14 @@ public class ApiKhxxController {
         khXx.setSj(phone);
         khXx.setXm(name);
         //通过短信验证后，就将当前用户的邀请码生成，然后保存、返回给前端
-        String codeOnly = getOnlyCode();
-        khXx.setCode(codeOnly);
-        khXxService.update(khXx);
+        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，才生成
+            String codeOnly = getOnlyCode();
+            khXx.setCode(codeOnly);
+            khXxService.update(khXx);
+        }
         if(!StringUtils.isEmpty(inviteCode)){
             //如果邀请码不为空 则关联上级分销信息
-            Response response = khXxService.checkInviteCode(inviteCode,khXx);
+            Response response = khXxService.checkInviteCode(inviteCode,khXx,"");
             return response;
         }
         return new Response(Code.SUCCESS);
@@ -510,7 +512,7 @@ public class ApiKhxxController {
             return new Response(Code.API_NULL_AUTH);
         }
         //如果邀请码不为空 则关联上级分销信息
-        return khXxService.checkInviteCode(inviteCode,khXx);
+        return khXxService.checkInviteCode(inviteCode,khXx,"onlyCode");
     }
 
     //初始化所有已有用户邀请码 todo 生成之后立马注释掉

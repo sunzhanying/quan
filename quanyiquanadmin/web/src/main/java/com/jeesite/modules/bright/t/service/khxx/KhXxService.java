@@ -280,11 +280,15 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 	 * @return
 	 */
 	@Transactional(readOnly=false)
-	public Response checkInviteCode(String inviteCode, KhXx khXx) {
+	public Response checkInviteCode(String inviteCode, KhXx khXx,String flag) {
 		//根据邀请码查询父1级
 		String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
 		if(StringUtils.isEmpty(khidParentOne)){
-			return new Response(Code.API_PARENT_ONE);//邀请码无效，请前往[我的推广-绑定邀请]重新绑定
+			if("onlyCode".equals(flag)){
+				return new Response("邀请码无效，请重新输入！");
+			}else{
+				return new Response(Code.API_PARENT_ONE);//邀请码无效，请前往[我的推广-绑定邀请]重新绑定
+			}
 		}
 		if(!StringUtils.isEmpty(khXx.getParentid())){
 			return new Response("当前用户已经绑定过邀请码，请勿重复绑定！");
