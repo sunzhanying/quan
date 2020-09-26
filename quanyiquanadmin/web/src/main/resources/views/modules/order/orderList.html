@@ -61,7 +61,11 @@ $('#dataGrid').dataGrid({
             return js.getDictLabel(${@DictUtils.getDictListJson('order_status')}, val, '${text("未知")}', true);
         }},
 		{header:'${text("买方")}', name:'khXx.wxtx', index:'k.wxtx', width:150, align:"left", formatter: function(val, obj, row, act){
-            return '<img style="width: 60px" src='+val+'>  ' + row.khXx.wxnc + '/' + row.khXx.sj;
+            if(row && row.khXx){
+				return '<img style="width: 60px" src='+val+'>  ' + row.khXx.wxnc + '/' + row.khXx.sj;
+			}else{
+				return '测试数据';
+			}
         }},
 		{header:'${text("标题")}', name:'spXx.spmc', index:'', width:150, align:"left", formatter: function(val, obj, row, act){
             return val;
