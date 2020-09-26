@@ -151,8 +151,8 @@ public class SpXxController extends BaseController {
 		/*Map<String,String> mapIncome2 = new HashMap<>();
 		mapIncome2.put("name","固定比例");
 		mapIncome2.put("val","2");
-		listIncome.add(mapIncome2);
-		model.addAttribute("incomeTypeSelect", listIncome);*/
+		listIncome.add(mapIncome2);*/
+		model.addAttribute("incomeTypeSelect", listIncome);
 		return "modules/bright/sp/spXxForm";
 	}
 
