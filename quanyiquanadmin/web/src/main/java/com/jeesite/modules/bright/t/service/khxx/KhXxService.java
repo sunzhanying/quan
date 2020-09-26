@@ -197,18 +197,22 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 		return baseResult;
 	}
 
+
 	/**
 	 * 保存上级和上上级粉丝信息
 	 * @param inviteCode
 	 * @param khXx
 	 * @return
 	 */
-	@Transactional(readOnly=false)
+	/*@Transactional(readOnly=false)
 	public Response checkInviteCode(String inviteCode, KhXx khXx) {
 		//根据邀请码查询父1级
 		String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
 		if(StringUtils.isEmpty(khidParentOne)){
-			return new Response(Code.API_PARENT_ONE);
+			return new Response(Code.API_PARENT_ONE);//邀请码无效，请前往[我的推广-绑定邀请]重新绑定
+		}
+		if(!StringUtils.isEmpty(khXx.getParentid())){
+			return new Response("当前用户已经绑定过邀请码，请勿重复绑定！");
 		}
 		//校验当前用户不能绑定自己
 		if(khidParentOne.equals(khXx.getId())){
@@ -220,11 +224,15 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 			return new Response("当前用户已经绑定过邀请码，请勿重复绑定！");
 		}
 
-		//如果找到父1级，则保存父1级与当前用户关系，以当前用户为中间节点
+		//如果找到父1级，则保存父1级与当前用户关系，(当前用户为中间节点)
 		Sale sale = new Sale();
 		sale.setKhid(khXx.getId());
 		sale.setParentOne(khidParentOne);
 		saleService.save(sale);
+
+		//如果找到父1级，将父1级邀请码更新到当前用户
+		khXx.setParentid(inviteCode);
+		khXxService.update(khXx);
 
 		//根据父1级找父2级
 		List<Sale> list = saleService.getSaleListByKhid(khidParentOne);
@@ -240,7 +248,7 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 			}
 		}
 
-		//如果父2级找不到，直接保存当前用户为父1级的子1级
+		//如果父2级找不到，直接保存当前用户为父1级的子1级,(当父1级为中间节点)
 		if(saleForParentOne == null || StringUtils.isEmpty(saleForParentOne.getId())){
 			saleForParentOne.setKhid(khidParentOne);
 			saleForParentOne.setChildOne(khXx.getId());
@@ -253,8 +261,47 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 		if(saleForParentOne != null && !StringUtils.isEmpty(saleForParentOne.getId()) && StringUtils.isEmpty(saleForParentOne.getChildOne())){
 			saleForParentOne.setChildOne(khXx.getId());
 			saleService.save(saleForParentOne);//更新
+			return new Response(Code.API_SUCCESS_REGISTER);
 		}
 
+		//如果根据邀请码可以找到父1级，并且子级上有数据，则新增一条记录
+		if(saleForParentOne != null && !StringUtils.isEmpty(saleForParentOne.getId()) && StringUtils.isEmpty(saleForParentOne.getChildOne())){
+			saleForParentOne.setChildOne(khXx.getId());
+			saleService.save(saleForParentOne);//更新
+			return new Response(Code.API_SUCCESS_REGISTER);
+		}
+		return new Response(Code.API_SUCCESS_REGISTER);
+	}*/
+
+	/**
+	 * 保存上级信息
+	 * @param inviteCode
+	 * @param khXx
+	 * @return
+	 */
+	@Transactional(readOnly=false)
+	public Response checkInviteCode(String inviteCode, KhXx khXx) {
+		//根据邀请码查询父1级
+		String khidParentOne = khXxDao.getUserIdByCode(inviteCode);
+		if(StringUtils.isEmpty(khidParentOne)){
+			return new Response(Code.API_PARENT_ONE);//邀请码无效，请前往[我的推广-绑定邀请]重新绑定
+		}
+		if(!StringUtils.isEmpty(khXx.getParentid())){
+			return new Response("当前用户已经绑定过邀请码，请勿重复绑定！");
+		}
+		//校验当前用户不能绑定自己
+		if(khidParentOne.equals(khXx.getId())){
+			return new Response("不能绑定属于自己的邀请码！");
+		}
+		//校验当前用户是否已经绑定过上家，如果绑定过直接返回
+		/*List<Sale> listCurrent = saleService.getSaleListByKhid(khXx.getId());
+		if(listCurrent != null && !listCurrent.isEmpty()){
+			return new Response("当前用户已经绑定过邀请码，请勿重复绑定！");
+		}*/
+
+		//如果找到父1级，将父1级邀请码更新到当前用户
+		khXx.setParentid(khidParentOne);
+		khXxService.update(khXx);
 		return new Response(Code.API_SUCCESS_REGISTER);
 	}
 }

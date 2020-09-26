@@ -55,6 +55,7 @@ import java.util.List;
 		@Column(name="update_date", attrName="updateDate", label="更新时间", isQuery=false),
 		@Column(name="remarks", attrName="remarks", label="备注信息", queryType=QueryType.LIKE),
 		@Column(name="code", attrName="code", label="邀请码"),
+		@Column(name="parentid", attrName="parentid", label="上家邀请码"),
 		@Column(name="salesroom", attrName="salesroom", label="传播渠道/门店"),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=WxConfig.class, alias="o",
@@ -103,6 +104,7 @@ public class KhXx extends DataEntity<KhXx> {
 	private WxConfig wxConfig;		//
 	private Source source;		//
 	private String code;		//邀请码
+	private String parentid;
 
 	public String getWxConfigId() {
 		return wxConfigId;
@@ -355,8 +357,6 @@ public class KhXx extends DataEntity<KhXx> {
 	public void setQdrq(Date qdrq) {
 		this.qdrq = qdrq;
 	}
-	
-
 
 	public Integer getYhqsl() {
 		return yhqsl;
@@ -404,5 +404,13 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public String getParentid() {
+		return parentid;
+	}
+
+	public void setParentid(String parentid) {
+		this.parentid = parentid;
 	}
 }

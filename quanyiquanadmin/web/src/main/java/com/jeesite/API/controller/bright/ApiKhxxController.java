@@ -337,8 +337,8 @@ public class ApiKhxxController {
     @RequestMapping(value = "/saveNamePhone",method = RequestMethod.POST)
     public Response saveNamePhone(HttpServletRequest request, @RequestParam String name, @RequestParam String phone
                                   ,@RequestParam String code,
-                                  @RequestParam String inviteCode
-                                  /*@RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode*/
+                                  /*@RequestParam String inviteCode*/
+                                  @RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode
                                   ) {
         //验证手机号
         SmsRecord record = new SmsRecord();

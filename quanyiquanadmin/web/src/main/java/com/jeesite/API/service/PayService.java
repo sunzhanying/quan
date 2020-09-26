@@ -14,6 +14,7 @@ import com.jeesite.API.weixin.util.*;
 import com.jeesite.modules.bright.sp.entity.SpXx;
 import com.jeesite.modules.bright.sp.service.SpXxService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
+import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.bright.util.KhXwUtil;
 import com.jeesite.modules.bright.util.OrderManager;
 import com.jeesite.modules.order.entity.Order;
@@ -85,6 +86,8 @@ public class PayService {
     private SaleService saleService;
     @Autowired
     private SellService sellService;
+    @Autowired
+    private KhXxService khXxService;
 
     String product_id = "";
     String body = "";
@@ -241,7 +244,6 @@ public class PayService {
     //处理二级分销分利润
     private void doSaleInfo(Order order) {
         try{
-            String buyerId = order.getUserId();
             Long sl = order.getSl();//单个固定收益要乘以数量才行
             SpXx spXx = spXxService.get(order.getSpId());
             //根据买家id，获取父1级khid
@@ -249,22 +251,22 @@ public class PayService {
             if(txjeOne == null || txjeOne <= 0){
                 return;//如果没有设置分润则直接返回
             }
-            String parentTemp = doWithIncomeOne(order,buyerId, txjeOne * sl);//处理父1级
-            if(StringUtils.isEmpty(parentTemp)){//如果父2级不存在
+            String parentTemp = doWithIncomeOne(order, txjeOne * sl);//处理父1级
+            if(StringUtils.isEmpty(parentTemp)){//如果父1级不存在，直接返回
                 return;
             }
             Double txjeTwo = spXx.getMoneyTwo();
             if(txjeTwo == null || txjeTwo <= 0){
                 return;//如果没有设置分润则直接返回
             }
-            doWithIncomeTwo(order,parentTemp, txjeTwo * sl,parentTemp);//处理父2级
+            doWithIncomeTwo(order,parentTemp, txjeTwo * sl);//处理父2级
         }catch (Exception e){
             log.error("下单后封装分销收益报错,order id =" + order.getId(),e);
         }
     }
 
     //处理上一级收益
-    private String doWithIncomeOne(Order order, String buyerId, Double txje) {
+    /*private String doWithIncomeOne(Order order, String buyerId, Double txje) {
         String parentTemp = "";//上一级khid
         List<Sale> list = saleService.getSaleListByKhid(buyerId);
         if(list != null && !list.isEmpty()){
@@ -291,10 +293,51 @@ public class PayService {
         sell.setBuyid(buyerId);//设置买家
         sellService.save(sell);
         return parentTemp;
+    }*/
+
+    //处理上一级收益
+    private String doWithIncomeOne(Order order, Double txje) {
+        String buyerId = order.getUserId();
+        KhXx khXx = khXxService.get(buyerId);
+        String parentTemp = khXx.getParentid();//上一级khid
+        if(StringUtils.isEmpty(parentTemp)){//如果父级为空，直接返回
+            return "";
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        sell.setType(Sell.SELL_TYPE_ONE);
+        sell.setBuyid(buyerId);//设置买家
+        sellService.save(sell);
+        return parentTemp;
+    }
+
+    //处理2级收益
+    private String doWithIncomeTwo(Order order,String parentId , Double txje) {
+        KhXx khXxTwo = khXxService.get(parentId);//根据父1级找父2级
+        String parentTemp = khXxTwo.getParentid();//上一级khid
+        if(StringUtils.isEmpty(parentTemp)){//如果父级为空，直接返回
+            return "";
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        //表示当前处理的是二级上家收益，需要保存一级上家信息
+        sell.setKhidShowOne(parentId);
+        sell.setType(Sell.SELL_TYPE_TWO);
+        sell.setBuyid(order.getUserId());
+        sellService.save(sell);
+        return parentTemp;
     }
 
     //处理上一级收益
-    private String doWithIncomeTwo(Order order, String buyerId, Double txje,String parentId) {
+    /*private String doWithIncomeTwo(Order order, String buyerId, Double txje,String parentId) {
         String parentTemp = "";//上一级khid
         List<Sale> list = saleService.getSaleListByKhid(buyerId);
         if(list != null && !list.isEmpty()){
@@ -323,7 +366,7 @@ public class PayService {
         sell.setBuyid(order.getUserId());
         sellService.save(sell);
         return parentTemp;
-    }
+    }*/
 
     //支付成功调用
    /* public void paySuccess(Order order){
