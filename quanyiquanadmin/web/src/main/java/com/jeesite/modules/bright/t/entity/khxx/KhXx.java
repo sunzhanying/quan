@@ -56,6 +56,7 @@ import java.util.List;
 		@Column(name="remarks", attrName="remarks", label="备注信息", queryType=QueryType.LIKE),
 		@Column(name="code", attrName="code", label="邀请码"),
 		@Column(name="parentid", attrName="parentid", label="上家邀请码"),
+		@Column(name="qr", attrName="qr", label="邀请码二维码"),
 		@Column(name="salesroom", attrName="salesroom", label="传播渠道/门店"),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=WxConfig.class, alias="o",
@@ -105,6 +106,7 @@ public class KhXx extends DataEntity<KhXx> {
 	private Source source;		//
 	private String code;		//邀请码
 	private String parentid;
+	private String qr;
 
 	public String getWxConfigId() {
 		return wxConfigId;
@@ -412,5 +414,13 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setParentid(String parentid) {
 		this.parentid = parentid;
+	}
+
+	public String getQr() {
+		return qr;
+	}
+
+	public void setQr(String qr) {
+		this.qr = qr;
 	}
 }

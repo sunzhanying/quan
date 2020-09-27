@@ -553,6 +553,13 @@ public class ApiKhxxController {
     @RequestMapping(value = "/getUnlimited",method = RequestMethod.GET)
     public Response getUnlimited(HttpServletRequest request){
         KhXx khXx = (KhXx)request.getAttribute("khXx");
+        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，不能生成二维码
+            return new Response("需要注册后生成自己的邀请码，才能获取邀请二维码！");
+        }
+        if(!StringUtils.isEmpty(khXx.getQr())){
+            return new Response("已经获取过邀请二维码！");
+        }
+
         Token token = TokenAPI.token(wxAppIdBuyer, wxAppSecretBuyer);
         if (!token.isSuccess()) {
             log.info("getUnlimited is fail.");
@@ -590,6 +597,9 @@ public class ApiKhxxController {
                 e.printStackTrace();
             }
         }
+        //更新到个人信息中
+        khXx.setQr(filePath);
+        khXxService.update(khXx);
         return new Response(filePath);
     }
 }
