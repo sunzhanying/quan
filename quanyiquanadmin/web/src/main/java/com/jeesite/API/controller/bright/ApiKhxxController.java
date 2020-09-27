@@ -550,7 +550,7 @@ public class ApiKhxxController {
 
 
     //获取小程序二维码
-    @RequestMapping(value = "/getUnlimited",method = RequestMethod.GET)
+    @RequestMapping(value = "/getUnlimited",method = RequestMethod.POST)
     public Response getUnlimited(HttpServletRequest request){
         KhXx khXx = (KhXx)request.getAttribute("khXx");
         if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，不能生成二维码
@@ -601,5 +601,37 @@ public class ApiKhxxController {
         khXx.setQr(filePath);
         khXxService.update(khXx);
         return new Response(filePath);
+    }
+
+    @RequestMapping(value = "/getMyExtend",method = RequestMethod.POST)
+    public Response getMyExtend(HttpServletRequest request){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return new Response(Code.API_NULL_AUTH);
+        }
+        Map<String,Object> map = new HashMap<>();
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        //一级粉丝个数
+        int childOneSize = 0;
+        //二级粉丝个数
+        int childTwoSize = 0;
+        if(oneList != null && !oneList.isEmpty()){
+            childOneSize = oneList.size();
+            for(KhXx khXx2 : oneList){
+                KhXx khXxTemp = new KhXx();
+                khXxTemp.setParentid(khXxTemp.getId());
+                List<KhXx> twoListTemp = khXxService.findList(khXxTemp);
+                if(twoListTemp == null || twoListTemp.isEmpty()){
+                    continue;
+                }
+                childTwoSize = childTwoSize + twoListTemp.size();
+            }
+        }
+
+        map.put("childOneSize", childOneSize);
+        map.put("childTwoSize", childTwoSize);
+        return new Response(map);
     }
 }
