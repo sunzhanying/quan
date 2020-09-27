@@ -1,6 +1,7 @@
 package com.jeesite.API.controller.bright;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.jeesite.API.service.Code;
@@ -9,7 +10,10 @@ import com.jeesite.API.util.RandomUtils;
 import com.jeesite.API.util.RedisTemplateUtils;
 import com.jeesite.API.util.aliyun.SmsUtil;
 import com.jeesite.API.weixin.api.SnsAPI;
+import com.jeesite.API.weixin.api.TokenAPI;
+import com.jeesite.API.weixin.api.UnlimitAPI;
 import com.jeesite.API.weixin.bean.sns.SnsToken;
+import com.jeesite.API.weixin.bean.token.Token;
 import com.jeesite.API.weixin.bean.user.Phone;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
@@ -50,6 +54,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
 
 
@@ -68,6 +75,15 @@ public class ApiKhxxController {
     private String wxAppId;
     @Value("${weixin.appsecret}")
     private String wxAppSecret;
+
+    //买方
+    @Value("${weixin.appidA}")
+    private String wxAppIdBuyer;
+    @Value("${weixin.appsecretA}")
+    private String wxAppSecretBuyer;
+
+    @Value("${file.limitDir}")
+    private String limitDir;
 
     @Autowired
     private KhXxService khXxService;
@@ -530,5 +546,50 @@ public class ApiKhxxController {
             khXxService.update(khXx);
         }
         return new Response(Code.SUCCESS);
+    }
+
+
+    //获取小程序二维码
+    @RequestMapping(value = "/getUnlimited",method = RequestMethod.GET)
+    public Response getUnlimited(HttpServletRequest request){
+        KhXx khXx = (KhXx)request.getAttribute("khXx");
+        Token token = TokenAPI.token(wxAppIdBuyer, wxAppSecretBuyer);
+        if (!token.isSuccess()) {
+            log.info("getUnlimited is fail.");
+            return new Response(Code.API_USER_AUTH_ERROR);
+        }
+        String qrName = khXx.getOpenId();
+        //String qrName = "123";
+        String filePath = limitDir  + "/" + qrName + ".png";
+        String tokenStr = token.getAccess_token();
+        //你的json数据 ,格式不要错
+        JSONObject jsonObject = new JSONObject();
+        /*JSONObject jsonObjectInner = new JSONObject();
+        jsonObjectInner.put("khid",khXx.getId());
+        jsonObjectInner.put("code",khXx.getCode());*/
+        jsonObject.put("scene","code=" + khXx.getCode());
+        jsonObject.put("width",300);
+        //String json = "{\"scene\":\"name=jerry\",\"width\":300}";
+        String json = JSON.toJSONString(jsonObject);
+        byte[] data = UnlimitAPI.myPost("/wxa/getwxacodeunlimit?access_token="+tokenStr,json);
+        //new一个文件对象用来保存图片
+        File imageFile = new File(filePath);
+        //创建输出流
+        FileOutputStream outStream = null;
+        try {
+            outStream = new FileOutputStream(imageFile);
+            //写入数据
+            outStream.write(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                //关闭输出流
+                outStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new Response(filePath);
     }
 }
