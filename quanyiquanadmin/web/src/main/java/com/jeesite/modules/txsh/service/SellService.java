@@ -170,8 +170,8 @@ public class SellService extends CrudService<SellDao, Sell> {
 	 * @param
 	 * @return
 	 */
-	public Double findYdz(String khid,String zt) {
-		Double ydz = dao.findYdz(khid,zt);
+	public Double findMyMoney(String khid,String zt,String todayStr) {
+		Double ydz = dao.findMyMoney(khid,zt,todayStr);
 		return ydz;
 	}
 	

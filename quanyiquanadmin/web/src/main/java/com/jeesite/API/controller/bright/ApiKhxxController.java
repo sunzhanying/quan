@@ -36,7 +36,9 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.txsh.entity.Sell;
 import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.SellService;
 import com.jeesite.modules.txsh.service.TxshService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -115,6 +117,8 @@ public class ApiKhxxController {
     private QyhsMxDao qyhsMxDao;
     @Autowired
     private KhXxDao khXxDao;
+    @Autowired
+    private SellService sellService;
 
      /**
      * 微信用户登录
@@ -646,10 +650,20 @@ public class ApiKhxxController {
             }
         }
 
+        //我的收益
+        String todayStr = getTodayStr();
+        Double myMoney = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+
         map.put("childOneSize", childOneSize);
         map.put("childTwoSize", childTwoSize);
         map.put("childTodaySize", childTodaySize);
+        map.put("myMoney", myMoney);
         return new Response(map);
+    }
+
+    private String getTodayStr() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(new Date());
     }
 
     private boolean checkToday(Date date) {

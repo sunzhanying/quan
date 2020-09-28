@@ -64,8 +64,11 @@ public interface SellDao extends CrudDao<Sell> {
             "<if test='zt != null and zt != &quot;&quot;'> " +
             "  AND  zt = #{zt} " +
             "  </if> " +
+            "<if test='todayStr != null and todayStr != &quot;&quot;'> " +
+            "  AND  update_date &lt; #{todayStr} " +
+            "  </if> " +
             "</script>")
-    Double findYdz(@Param("khid") String khid, @Param("zt") String zt);
+    Double findMyMoney(@Param("khid") String khid, @Param("zt") String zt,@Param("todayStr") String todayStr);
 
 
 	
