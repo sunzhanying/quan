@@ -312,10 +312,12 @@ public class ApiSpController {
     })
     @RequestMapping(value = "/addQy",method = RequestMethod.POST)
     public Response isKyYhq(HttpServletRequest request, @RequestBody Qyhs qyhs) {
+        log.info("进入 addQy 方法");
         if(qyhs == null || qyhs.getQyhsMxes() == null || qyhs.getQyhsMxes().isEmpty()){
             return new Response(Code.API_CHECK_NULL);
         }
         String qyqIdTemp = qyhs.getQyqId();
+        log.info("qyqIdTemp：" + qyqIdTemp);
         //新增逻辑，卖家券上传时候确定收益
         Qyjg qyjg = new Qyjg();
         qyjg.setQyqId(qyqIdTemp);
