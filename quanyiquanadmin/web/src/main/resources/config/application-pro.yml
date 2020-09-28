@@ -65,7 +65,7 @@ jdbc:
   driver: com.mysql.jdbc.Driver
   url: jdbc:mysql://47.103.27.154/qybrandhub?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
   username: root
-  password:
+  password: 1
 
 #  url: jdbc:mysql://127.0.0.1/qybrandhub20200831?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
 #  username: root
@@ -80,8 +80,7 @@ file:
   #baseDir: /pic/${server.servlet.context-path}
   baseDir: /root/jeesite
   #baseDir: D:/jeesite
-  limitDir: /root/qr
-  #limitDir: D:/qr
+
 #
 #  # 上传文件的相对路径（支持：yyyy, MM, dd, HH, mm, ss, E）
   uploadPath: '{yyyy}{MM}/'
