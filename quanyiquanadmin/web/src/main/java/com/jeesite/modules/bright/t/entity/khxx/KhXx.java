@@ -57,6 +57,7 @@ import java.util.List;
 		@Column(name="code", attrName="code", label="邀请码"),
 		@Column(name="parentid", attrName="parentid", label="上家邀请码"),
 		@Column(name="qr", attrName="qr", label="邀请码二维码"),
+		@Column(name="bind_date", attrName="bindDate", label="绑定上级时间"),
 		@Column(name="salesroom", attrName="salesroom", label="传播渠道/门店"),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=WxConfig.class, alias="o",
@@ -107,6 +108,7 @@ public class KhXx extends DataEntity<KhXx> {
 	private String code;		//邀请码
 	private String parentid;
 	private String qr;
+	private Date bindDate;		// 绑定上级的时间
 
 	public String getWxConfigId() {
 		return wxConfigId;
@@ -422,5 +424,14 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setQr(String qr) {
 		this.qr = qr;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getBindDate() {
+		return bindDate;
+	}
+
+	public void setBindDate(Date bindDate) {
+		this.bindDate = bindDate;
 	}
 }

@@ -21,7 +21,6 @@ import com.jeesite.modules.bright.t.dao.propagate.KhPropagateDao;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.bright.t.entity.khxx.XsXx;
 import com.jeesite.modules.file.utils.FileUploadUtils;
-import com.jeesite.modules.sale.entity.Sale;
 import com.jeesite.modules.sale.service.SaleService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -305,6 +304,7 @@ public class KhXxService extends CrudService<KhXxDao, KhXx> {
 
 		//如果找到父1级，将父1级邀请码更新到当前用户
 		khXx.setParentid(khidParentOne);
+		khXx.setBindDate(new Date());//同时设置绑定时间
 		khXxService.update(khXx);
 		return new Response(Code.API_SUCCESS_REGISTER);
 	}

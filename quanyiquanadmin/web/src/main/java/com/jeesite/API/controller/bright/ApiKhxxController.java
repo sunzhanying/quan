@@ -57,6 +57,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -618,14 +619,28 @@ public class ApiKhxxController {
         int childOneSize = 0;
         //二级粉丝个数
         int childTwoSize = 0;
+        //今日粉丝个数
+        int childTodaySize = 0;
         if(oneList != null && !oneList.isEmpty()){
             childOneSize = oneList.size();
             for(KhXx khXx2 : oneList){
+                //判断该条1级粉丝的绑定时间是否是当天
+                boolean boo = checkToday(khXx2.getBindDate());
+                if(boo){
+                    childTodaySize = childTodaySize + 1;
+                }
                 KhXx khXxTemp = new KhXx();
-                khXxTemp.setParentid(khXxTemp.getId());
+                khXxTemp.setParentid(khXx2.getId());
                 List<KhXx> twoListTemp = khXxService.findList(khXxTemp);
                 if(twoListTemp == null || twoListTemp.isEmpty()){
                     continue;
+                }else{
+                    for(KhXx khXx3 : twoListTemp){//遍历二级粉丝，检查是否是当天粉丝
+                        boolean boo2 = checkToday(khXx3.getBindDate());
+                        if(boo2){
+                            childTodaySize = childTodaySize + 1;
+                        }
+                    }
                 }
                 childTwoSize = childTwoSize + twoListTemp.size();
             }
@@ -633,6 +648,21 @@ public class ApiKhxxController {
 
         map.put("childOneSize", childOneSize);
         map.put("childTwoSize", childTwoSize);
+        map.put("childTodaySize", childTodaySize);
         return new Response(map);
+    }
+
+    private boolean checkToday(Date date) {
+        boolean boo = false;
+        if(date == null){
+            return boo;
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dbDate = format.format(date);
+        String nowDate = format.format(new Date());
+        if(nowDate.equals(dbDate)){
+            return true;
+        }
+        return boo;
     }
 }
