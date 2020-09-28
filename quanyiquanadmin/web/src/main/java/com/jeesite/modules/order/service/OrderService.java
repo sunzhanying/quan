@@ -72,6 +72,7 @@ public class OrderService extends CrudService<OrderDao, Order> {
 				//qyhsMx.setOrderBy("a.create_date ASC");
 				//快到期的先卖
 				qyhsMx.setOrderBy("a.yxq_date ASC");
+				qyhsMx.setPageSize(order.getSl().intValue());
 				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
 				for(QyhsMx item :qyhsMxList){
 					item.setOrderId(order.getId());
