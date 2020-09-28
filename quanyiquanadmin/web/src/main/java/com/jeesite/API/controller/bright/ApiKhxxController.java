@@ -82,8 +82,8 @@ public class ApiKhxxController {
     @Value("${weixin.appsecretA}")
     private String wxAppSecretBuyer;
 
-    @Value("${file.limitDir}")
-    private String limitDir;
+    @Value("${file.baseDir}")
+    private String baseDir;
 
     @Autowired
     private KhXxService khXxService;
@@ -567,7 +567,8 @@ public class ApiKhxxController {
         }
         String qrName = khXx.getOpenId();
         //String qrName = "123";
-        String filePath = limitDir  + "/" + qrName + ".png";
+        String innerPath = "/userfiles/fileupload/qr/" + qrName + ".png";
+        String filePath = baseDir  + innerPath;
         String tokenStr = token.getAccess_token();
         //你的json数据 ,格式不要错
         JSONObject jsonObject = new JSONObject();
@@ -598,9 +599,9 @@ public class ApiKhxxController {
             }
         }
         //更新到个人信息中
-        khXx.setQr(filePath);
+        khXx.setQr(innerPath);
         khXxService.update(khXx);
-        return new Response(filePath);
+        return new Response(innerPath);
     }
 
     @RequestMapping(value = "/getMyExtend",method = RequestMethod.POST)
