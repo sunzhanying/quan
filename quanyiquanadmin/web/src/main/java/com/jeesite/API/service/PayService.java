@@ -203,6 +203,10 @@ public class PayService {
                         item.setZt(QyhsMx.STATUS_YFK);
                         item.setJszt(QyhsMx.STATUS_JS_WJS);
                         //item.setSy(order.getHsj());//回收价以用户上传时的价格为准
+                        //做个兼容，兼容功能上之后，原来上传时没有赋值收益的，仍然使用最新的卖家收益
+                        if(item.getSy() == null){
+                            item.setSy(order.getHsj());
+                        }
                         item.setSellPrice(order.getScj());//售出价以下单时的价格为准，赋值给具体的卖券,方便后期计算收益
                         qyhsMxService.update(item);
                     });
