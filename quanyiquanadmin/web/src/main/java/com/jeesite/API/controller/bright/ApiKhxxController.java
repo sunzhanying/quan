@@ -654,7 +654,11 @@ public class ApiKhxxController {
 
         //我的收益
         String todayStr = getTodayStr();
-        Double myMoney = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+        Double myMoney = 0.0;
+        Double myMoneyDb = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+        if(myMoneyDb != null){
+            myMoney = myMoneyDb;
+        }
 
         map.put("childOneSize", childOneSize);
         map.put("childTwoSize", childTwoSize);
