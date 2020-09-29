@@ -317,7 +317,7 @@ public class ApiSpController {
             return new Response(Code.API_CHECK_NULL);
         }
         String qyqIdTemp = qyhs.getQyqId();
-        log.info("qyqIdTemp：" + qyqIdTemp);
+        log.info("商品id，qyqIdTemp：" + qyqIdTemp + "上传券个数：" + qyhs.getQyhsMxes().size());
         //新增逻辑，卖家券上传时候确定收益
         Qyjg qyjg = new Qyjg();
         qyjg.setQyqId(qyqIdTemp);
@@ -326,6 +326,7 @@ public class ApiSpController {
         //先从mx明细表中 校验卡密不能重复;校验回收最大数量
         for(QyhsMx mxForSave : qyhs.getQyhsMxes()){
             //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
+            log.info("券循环、卡号：" + mxForSave.getKh() + "; 卡密：" + mxForSave.getKm());
             QyhsMx mxForCheck = new QyhsMx();
             if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
                 mxForCheck.setKm(mxForSave.getKm());
@@ -335,6 +336,7 @@ public class ApiSpController {
             }
             long count = qyhsMxService.findCount(mxForCheck);
             if(count > 0){
+                log.error("重复卡密或者卡号！");
                 return new Response(Code.API_CHECK_KM);
             }
             mxForSave.setSy(qyjg1.getHsj());
@@ -345,8 +347,10 @@ public class ApiSpController {
         Long maxCount = spXx.getMaxCount();
         //根据权益券
         int count = qyhsService.countByQyqAndZt(qyqIdTemp);
+        log.info("商品中设置的最大数量：" + maxCount + " 该类商品待审核和出售中商品总和：" + count);
         count = count + qyhs.getQyhsMxes().size();
         if(maxCount != null && maxCount > 0 && count > maxCount){
+            log.error("回收券已达到最大回收量!");
             return new Response(Code.API_CHECK_COUNT);
         }
 
