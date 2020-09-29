@@ -580,8 +580,9 @@ public class ApiKhxxController {
         /*JSONObject jsonObjectInner = new JSONObject();
         jsonObjectInner.put("khid",khXx.getId());
         jsonObjectInner.put("code",khXx.getCode());*/
-        jsonObject.put("scene","code=" + khXx.getCode());
-        jsonObject.put("width",300);
+        //jsonObject.put("scene","code=" + khXx.getCode());
+        jsonObject.put("scene",khXx.getCode());
+        jsonObject.put("width",400);
         //String json = "{\"scene\":\"name=jerry\",\"width\":300}";
         String json = JSON.toJSONString(jsonObject);
         byte[] data = UnlimitAPI.myPost("/wxa/getwxacodeunlimit?access_token="+tokenStr,json);
