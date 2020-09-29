@@ -107,6 +107,7 @@ public class KhXx extends DataEntity<KhXx> {
 	private Source source;		//
 	private String code;		//邀请码
 	private String parentid;
+	private KhXx parentInfo;
 	private String qr;
 	private Date bindDate;		// 绑定上级的时间
 
@@ -416,6 +417,14 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setParentid(String parentid) {
 		this.parentid = parentid;
+	}
+
+	public KhXx getParentInfo() {
+		return parentInfo;
+	}
+
+	public void setParentInfo(KhXx parentInfo) {
+		this.parentInfo = parentInfo;
 	}
 
 	public String getQr() {

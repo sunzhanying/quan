@@ -40,6 +40,7 @@ import com.jeesite.modules.txsh.entity.Sell;
 import com.jeesite.modules.txsh.entity.Txsh;
 import com.jeesite.modules.txsh.service.SellService;
 import com.jeesite.modules.txsh.service.TxshService;
+import com.jeesite.utils.Paper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -679,5 +680,68 @@ public class ApiKhxxController {
             return true;
         }
         return boo;
+    }
+
+    @RequestMapping(value = "/getMyChildOneList",method = RequestMethod.POST)
+    public Page<KhXx> getMyChildOneList(HttpServletRequest request,
+                                      @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                      @RequestParam(required = false, value = "size", defaultValue = "10") Integer size){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        Page<KhXx> khXxPage = new Page<>();
+        khXxPage.setPageNo(page);
+        khXxPage.setPageSize(size);
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return khXxPage;
+        }
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        khXx1.setPage(khXxPage);
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        khXxPage.setList(oneList);
+        return khXxPage;
+    }
+
+    @RequestMapping(value = "/getMyChildTwoList",method = RequestMethod.POST)
+    public Page<KhXx> getMyChildTwoList(HttpServletRequest request,
+                                      @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                      @RequestParam(required = false, value = "size", defaultValue = "10") Integer size,
+                                      @RequestParam(required = false, value = "childOneId", defaultValue = "") String childOneId){
+        Page<KhXx> pageResult = new Page<KhXx>();
+        pageResult.setPageNo(page);
+        pageResult.setPageSize(size);
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return pageResult;
+        }
+        List<KhXx> twoList = new ArrayList<>();
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        if(oneList != null && !oneList.isEmpty()){
+            for(KhXx khXx2 : oneList){
+                //如果传递1级粉丝，则获取对应1级粉丝下面的二级粉丝
+                if(!StringUtils.isEmpty(childOneId) && !childOneId.equals(khXx2.getId())){
+                    continue;
+                }
+                KhXx khXxTemp = new KhXx();
+                khXxTemp.setParentid(khXx2.getId());
+                List<KhXx> twoListTemp = khXxService.findList(khXxTemp);
+                if(twoListTemp == null || twoListTemp.isEmpty()){
+                    continue;
+                }else{
+                    for(KhXx khXx3 : twoListTemp){//遍历二级粉丝，设置对应的一级粉丝
+                        khXx3.setParentInfo(khXx2);
+                    }
+                    twoList.addAll(twoListTemp);
+                }
+            }
+        }else{
+            log.info("当前用户没有一级粉丝，没有二级粉丝！");
+            return pageResult;
+        }
+        Paper<KhXx> paper = new Paper<KhXx>(page,size,twoList);//paper.getDataList()就是子数组数据
+        pageResult.setCount(twoList.size());
+        pageResult.setList(paper.getDataList());
+        return pageResult;
     }
 }
