@@ -744,4 +744,22 @@ public class ApiKhxxController {
         pageResult.setList(paper.getDataList());
         return pageResult;
     }
+
+    @RequestMapping(value = "/getMyMoney",method = RequestMethod.POST)
+    public Page<Sell> getMyMoney(HttpServletRequest request,
+                                        @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                        @RequestParam(required = false, value = "size", defaultValue = "10") Integer size){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        String todayStr = getTodayStr();
+        Double myMoney = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+        Page<Sell> pageResult = new Page<>();
+        pageResult.setPageNo(page);
+        pageResult.setPageSize(size);
+        Sell sell = new Sell();
+        sell.setPage(pageResult);
+        sell.setKhid(khXx.getId());
+        List<Sell> list = sellService.findList(sell);
+        pageResult.setList(list);
+        return pageResult;
+    }
 }
