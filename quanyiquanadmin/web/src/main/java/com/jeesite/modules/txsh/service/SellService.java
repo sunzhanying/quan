@@ -39,10 +39,10 @@ public class SellService extends CrudService<SellDao, Sell> {
 	@Value("${weixin.Mch_key}")
 	private String key;
 
-	@Value("${weixin.Mch_pay_id}")
+	/*@Value("${weixin.Mch_pay_id}")
 	private String Mch_pay_id;
 	@Value("${weixin.Mch_pay_key}")
-	private String payKey;
+	private String payKey;*/
 
 	@Autowired
 	private KhXxDao khXxDao;

@@ -35,7 +35,8 @@ public class TwoLocalHttpClient {
     }
 
     static {
-        initMchKeyStore( Global.getConfig("weixin.Mch_pay_id"),Global.getConfig("weixin.mch_cet_pay_dir"));
+        //initMchKeyStore( Global.getConfig("weixin.Mch_pay_id"),Global.getConfig("weixin.mch_cet_pay_dir"));
+        initMchKeyStore( Global.getConfig("weixin.Mch_id"),Global.getConfig("weixin.mch_cet_dir"));
     }
 
     /**

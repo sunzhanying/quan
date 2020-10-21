@@ -49,10 +49,10 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Value("${weixin.Mch_key}")
 	private String key;
 
-	@Value("${weixin.Mch_pay_id}")
+	/*@Value("${weixin.Mch_pay_id}")
 	private String Mch_pay_id;
 	@Value("${weixin.Mch_pay_key}")
-	private String payKey;
+	private String payKey;*/
 
 	@Autowired
 	private QyhsMxDao qyhsMxDao;
@@ -70,7 +70,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		//企业付款
 		Transfers transfers = new Transfers();
 		transfers.setMch_appid(wxAppId);
-		transfers.setMchid(Mch_pay_id);
+		transfers.setMchid(Mch_id);
 		transfers.setNonce_str(IdGen.wxRandom(32));
 		transfers.setPartner_trade_no(txsh.getId());
 		transfers.setOpenid(khXx.getOpenId());
@@ -80,7 +80,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 		log.info(transfers);
 		TransfersResult transfersResult = null;
 		try {
-			transfersResult = TwoPayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, payKey);
+			transfersResult = TwoPayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, key);
 		}catch (Exception e){
 			e.printStackTrace();
 			//return new Response(10000, "向用户付款出现错误", null);
