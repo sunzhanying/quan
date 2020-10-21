@@ -257,27 +257,27 @@ public class TxshController extends BaseController {
 			return renderResult(Global.TRUE, text("批量中止操作成功！"));
 		}else if("2".equals(type)){//打款
 			boolean boo = true;
-			String failId = "";
+			String failIdAndInfo = "";
 			for (String string : strings) {
 				Txsh txsh = new Txsh();
 				txsh.setId(string);
 				Txsh txshDb = txshService.get(txsh);
 				if("2".equals(txshDb.getZt()) || "3".equals(txshDb.getZt()) || "4".equals(txshDb.getZt())){//结算中1、程序打款失败5、的可再次打款
 					boo = false;
-					failId = string;
+					failIdAndInfo = "id为：" + string + " 失败原因：当前状态不能打款";
 					break;
 				}
-				boolean booResult = txshService.txsh(txshDb);
-				if(!booResult){//如果有一个失败就中止打款
+				String booResult = txshService.txsh(txshDb);
+				if(!"ok".equals(booResult)){//如果有一个失败就中止打款
 					boo = false;
-					failId = string;
+					failIdAndInfo = "id为：" + string + " 失败原因：" + booResult;
 					break;
 				}
 			}
 			if(boo){
 				return renderResult(Global.TRUE, text("已调用商户付款成功！"));
 			}else{
-				return renderResult(Global.TRUE, text("打款失败！失败id：" + failId));
+				return renderResult(Global.TRUE, text("打款失败！：" + failIdAndInfo ));
 			}
 
 		}else{

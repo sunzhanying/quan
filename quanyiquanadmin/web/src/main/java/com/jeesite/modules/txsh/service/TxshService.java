@@ -64,8 +64,7 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	 * @param txsh
 	 */
 	@Transactional(readOnly=false)
-	public boolean txsh(Txsh txsh){
-		boolean boo = false;
+	public String txsh(Txsh txsh){
 		KhXx khXx = khXxDao.get(new KhXx(txsh.getKhid()));
 		//企业付款
 		Transfers transfers = new Transfers();
@@ -101,16 +100,16 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 			QyhsMx qyhsMx1 = new QyhsMx();
 			qyhsMx1.setSqdh(txsh.getId());
 			qyhsMxDao.updateByEntity(qyhsMx, qyhsMx1);
-			boo = true;
+			return "ok";
 			//return new Response(Code.SUCCESS);
 		} else {
 			///return new Response(10000,transfersResult.getReturn_msg(), null);
-			log.info("付款状态返回： " + transfersResult.getReturn_msg());
+			log.error("卖家企业付款失败： " + transfersResult.getReturn_msg());
 			//更新申请单状态为：程序提现失败
 			txsh.setZt(Txsh.TX_STATUS_FAIL);
 			dao.update(txsh);
+			return transfersResult.getReturn_msg() + " 详细描述：" + transfersResult.getErr_code_des();
 		}
-		return boo;
 	}
 
 	//生成提现单
