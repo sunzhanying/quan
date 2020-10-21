@@ -4,15 +4,23 @@
 apiPath: /api
 weixin:
   # 卖方
-  appid: 111
-  appsecret: 222
+  appid: wxdde027ad7d038933
+  appsecret: 312072c65f0e859ae4dd702403c43b6
   # 买方
-  appidA: 11111
-  appsecretA: 11111
-  Mch_id: 1569581121
-  Mch_key: 22222
-  mch_cet_dir: 1111
-  Notify_url: 2222
+  appidA: wx050aad108204f95f
+  appsecretA: 27dea42965050bb33a0c2b44f163216
+  #收钱商户
+  Mch_id: 1600487496
+  Mch_key: 1123sf3423lk4j2l34jl234jlkj234k
+  #mch_cet_dir: D:\data\apiclient_cert.p12
+  mch_cet_dir: /root/apiclient_cert.p12
+
+  Mch_pay_id: 1601962895
+  Mch_pay_key: 1123sf3423lk4j2l34jl234jlkj234k
+  #mch_cet_pay_dir: D:\data\pay\apiclient_cert.p12
+  mch_cet_pay_dir: /root/apiclient_cert_pay.p12
+
+  Notify_url: https://quan.whaleupgo.com/Equity/api/wx/notify
 
   token:
     header: X-Auth-Token
@@ -38,10 +46,11 @@ spring:
     goods_prefix: goods
     # host: 1111
     host: 127.0.0.1
+    #host: 47.103.27.154
     port: 6379
     ssl: false
     database: 1
-    #password: 1111
+    #password: 123654789
     timeout: 2000
     lettuce:
       pool:
@@ -54,10 +63,13 @@ jdbc:
   # Mysql 数据库配置
   type: mysql
   driver: com.mysql.jdbc.Driver
-  url: jdbc:mysql://127.0.0.1/qybrandhub?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
-  username: root
-  #password: 1111111
-  password: sun123
+  url: jdbc:mysql://47.103.27.154/qybrandhub?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+  username: Quanxj
+  password: Quanxj
+
+#  url: jdbc:mysql://127.0.0.1/qybrandhub20200831?useSSL=false&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull
+#  username: root
+#  password: sun123
   testSql: SELECT 1
 
 #文件配置
@@ -65,7 +77,10 @@ file:
   enabled: true
 #
 #  # 文件上传根路径，设置路径中不允许包含“userfiles”，在指定目录中系统会自动创建userfiles目录，如果不设置默认为contextPath路径
-  baseDir: /pic/${server.servlet.context-path}
+  #baseDir: /pic/${server.servlet.context-path}
+  baseDir: /root/jeesite
+  #baseDir: D:/jeesite
+
 #
 #  # 上传文件的相对路径（支持：yyyy, MM, dd, HH, mm, ss, E）
   uploadPath: '{yyyy}{MM}/'
