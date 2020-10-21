@@ -115,5 +115,13 @@ public class QyhsService extends CrudService<QyhsDao, Qyhs> {
 	public void delete(Qyhs qyhs) {
 		super.delete(qyhs);
 	}
+
+	/**
+	 * 获取数量
+	 * @return
+	 */
+	public int countByQyqAndZt(String qyqid) {
+		return qyhsMxDao.countByQyqAndZt(qyqid);
+	}
 	
 }

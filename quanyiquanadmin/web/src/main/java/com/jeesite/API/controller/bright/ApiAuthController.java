@@ -3,11 +3,15 @@ package com.jeesite.API.controller.bright;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.util.RedisTemplateUtils;
+import com.jeesite.API.util.TokenUtils;
 import com.jeesite.API.weixin.api.SnsAPI;
 import com.jeesite.API.weixin.bean.sns.SnsToken;
 import com.jeesite.modules.bright.banner.entity.Banner;
 import com.jeesite.modules.bright.banner.service.BannerService;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
+import com.jeesite.modules.order.service.ExpireService;
+import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.TxshService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -47,6 +51,22 @@ public class ApiAuthController {
     @Autowired
     private RedisTemplateUtils redisUtils;
 
+    @Autowired
+    private TokenUtils tokenUtils;
+
+    @Autowired
+    private ExpireService expireService;
+
+    @Autowired
+    private TxshService txshService;
+
+    /*@GetMapping(value = "setString")
+    public Response setString(){
+        redisUtils.set("")
+        return new Response(nameTemp);
+
+    }*/
+
     @GetMapping(value = "test1")
     public Response test1(){
         //用户sp
@@ -55,6 +75,37 @@ public class ApiAuthController {
         //System.out.println(redisUtils.hget("userId","SpXxId"));
         //用户获取所有spxx缓存
         return new Response("hello test");
+
+    }
+    @GetMapping(value = "expire")
+    public Response expire(){
+        return expireService.expireCard();
+
+    }
+
+    /**
+     *根据提现审核表a_txsh，主键 测试商户付款到零钱功能
+     * @param txshId
+     * @return
+     */
+    @PostMapping(value = "mchPay")
+    public Response mchPay(String txshId){
+        Txsh txsh = new Txsh();
+        txsh.setId(txshId);
+        Txsh txshDb = txshService.get(txsh);
+        if("1274251903867330560".equals(txshDb.getKhid())){
+            txshService.txsh(txshDb);
+        }
+        return new Response("finish");
+
+    }
+
+    @PostMapping(value = "test2")
+    public Response test2(String name){
+        String token = tokenUtils.generateToken(name,"");
+        //String nameTemp = tokenUtils.getUsernameFromToken(token);
+        //String role = tokenUtils.getRoles(token);
+        return new Response(token);
 
     }
 
@@ -73,7 +124,6 @@ public class ApiAuthController {
      * 微信用户登录
      *
      * @param code 微信授权后获取的code
-     * @param tjrid   推荐人id
      * @return 授权结果，返回包含JWT的字符串
      */
     @ApiOperation(value = "微信登录",httpMethod ="POST")

@@ -1,4 +1,4 @@
-<% layout('/layouts/default.html', {title: '权益券类型管理', libs: ['validate']}){ %>
+<% layout('/layouts/default.html', {title: '权益券类型管理', libs: ['validate','fileupload']}){ %>
 <div class="main-content">
 	<div class="box box-main">
 		<div class="box-header with-border">
@@ -25,6 +25,32 @@
 						</div>
 					</div>
 				</div>-->
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required ">一级:为一级类型</span> ${text('父级类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="parent" items="${spTypeList}" itemLabel="name" itemValue="id" class="form-control" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('二级图片')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:hidden path="img"/>
+								<#form:fileupload id="upload1"
+								uploadType="image" returnPath="true"
+								filePathInputId="img" imageMaxWidth="-1" imageMaxHeight="-1" class="" readonly="false" maxUploadNum="1"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="row">
 					<div class="col-xs-12">
 						<div class="form-group">

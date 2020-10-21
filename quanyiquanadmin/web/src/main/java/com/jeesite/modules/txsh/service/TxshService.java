@@ -6,6 +6,7 @@ package com.jeesite.modules.txsh.service;
 import com.jeesite.API.service.Code;
 import com.jeesite.API.service.Response;
 import com.jeesite.API.weixin.api.PayMchAPI;
+import com.jeesite.API.weixin.api.TwoPayMchAPI;
 import com.jeesite.API.weixin.bean.paymch.Transfers;
 import com.jeesite.API.weixin.bean.paymch.TransfersResult;
 import com.jeesite.API.weixin.util.IdGen;
@@ -28,6 +29,7 @@ import com.jeesite.modules.txsh.dao.TxshDao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 提现审核Service
@@ -47,6 +49,11 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Value("${weixin.Mch_key}")
 	private String key;
 
+	@Value("${weixin.Mch_pay_id}")
+	private String Mch_pay_id;
+	@Value("${weixin.Mch_pay_key}")
+	private String payKey;
+
 	@Autowired
 	private QyhsMxDao qyhsMxDao;
 	@Autowired
@@ -57,22 +64,23 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	 * @param txsh
 	 */
 	@Transactional(readOnly=false)
-	public void txsh(Txsh txsh){
+	public boolean txsh(Txsh txsh){
+		boolean boo = false;
 		KhXx khXx = khXxDao.get(new KhXx(txsh.getKhid()));
 		//企业付款
 		Transfers transfers = new Transfers();
 		transfers.setMch_appid(wxAppId);
-		transfers.setMchid(Mch_id);
+		transfers.setMchid(Mch_pay_id);
 		transfers.setNonce_str(IdGen.wxRandom(32));
 		transfers.setPartner_trade_no(txsh.getId());
 		transfers.setOpenid(khXx.getOpenId());
 		transfers.setCheck_name("NO_CHECK");
-		transfers.setAmount(String.valueOf((int)(txsh.getTxje() * 100)));
+		transfers.setAmount(String.valueOf((int)(txsh.getTxje() * 100)));//int 单位为分，需要乘以100
 		transfers.setDesc("提现申请");
 		log.info(transfers);
 		TransfersResult transfersResult = null;
 		try {
-			transfersResult = PayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, key);
+			transfersResult = TwoPayMchAPI.mmpaymkttransfersPromotionTransfers(transfers, payKey);
 		}catch (Exception e){
 			e.printStackTrace();
 			//return new Response(10000, "向用户付款出现错误", null);
@@ -93,11 +101,16 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 			QyhsMx qyhsMx1 = new QyhsMx();
 			qyhsMx1.setSqdh(txsh.getId());
 			qyhsMxDao.updateByEntity(qyhsMx, qyhsMx1);
+			boo = true;
 			//return new Response(Code.SUCCESS);
 		} else {
 			///return new Response(10000,transfersResult.getReturn_msg(), null);
 			log.info("付款状态返回： " + transfersResult.getReturn_msg());
+			//更新申请单状态为：程序提现失败
+			txsh.setZt(Txsh.TX_STATUS_FAIL);
+			dao.update(txsh);
 		}
+		return boo;
 	}
 
 	//生成提现单
@@ -136,7 +149,8 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	public Page<Txsh> findPage(Txsh txsh) {
 		return super.findPage(txsh);
 	}
-	
+
+
 	/**
 	 * 保存数据（插入或更新）
 	 * @param txsh
@@ -165,6 +179,42 @@ public class TxshService extends CrudService<TxshDao, Txsh> {
 	@Transactional(readOnly=false)
 	public void delete(Txsh txsh) {
 		super.delete(txsh);
+	}
+
+	/**
+	 * 更新状态
+	 * @param txsh
+	 */
+	@Override
+	@Transactional(readOnly=false)
+	public void update(Txsh txsh) {
+		super.update(txsh);
+	}
+
+	/**
+	 * 查询分页数据
+	 * @param
+	 * @return
+	 */
+	public List<Map<String,String>> findPayPage(Map<String,String> param) {
+		String orderId = param.get("orderId");
+		String id = param.get("id");
+		String wxnc = param.get("wxnc");
+		String zt = param.get("zt");
+		String startDate = param.get("startDate");
+		String endDate = param.get("endDate");
+		List<Map<String,String>> list = dao.findAllList(orderId,id,wxnc,zt,startDate,endDate);
+		return list;
+	}
+
+	/**
+	 * 查询已到账收益
+	 * @param
+	 * @return
+	 */
+	public Double findYdz(String khid,String zt) {
+		Double ydz = dao.findYdz(khid,zt);
+		return ydz;
 	}
 	
 }

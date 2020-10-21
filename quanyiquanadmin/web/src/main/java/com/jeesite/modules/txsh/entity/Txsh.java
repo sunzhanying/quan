@@ -21,7 +21,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 @Table(name="a_txsh", alias="a", columns={
 		@Column(name="id", attrName="id", label="id", isPK=true),
 		@Column(name="khid", attrName="khid", label="客户id"),
-		@Column(name="zt", attrName="zt", label="审核状态 1 审核中  2 审核通过 3 审核不通过"),
+		@Column(name="zt", attrName="zt", label="审核状态 1 结算中  2 已结算 3 批量审核不通过 4 已中止 5 程序打款失败"),
 		@Column(name="txje", attrName="txje", label="体现金额"),
 		@Column(name="order_id", attrName="orderId", label="相关订单"),
 		@Column(includeEntity=DataEntity.class),
@@ -37,15 +37,19 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 	}, orderBy="a.update_date DESC"
 )
 public class Txsh extends DataEntity<Txsh> {
-	public static final String TX_STATUS_SQZ = "1";   //申请中
-	public static final String TX_STATUS_TG = "2";   //审核通过
-	public static final String TX_STATUS_SB = "3";   //审核失败
+	public static final String TX_STATUS_SQZ = "1";   //结算中
+	public static final String TX_STATUS_TG = "2";   //已结算
+	public static final String TX_STATUS_SB = "3";   //批量审核不通过（收益扣除）卖方收益查询页面有操作
+	public static final String TX_STATUS_ZZ = "4";   //已中止（人为操作）
+	public static final String TX_STATUS_FAIL = "5";   //程序打款失败
 
 	private static final long serialVersionUID = 1L;
 	private String khid;		// 客户id
 	private String zt;		// 审核状态 1 审核中  2 审核通过 3 审核不通过
 	private Double txje;		// 体现金额
 	private String orderId;   //相关订单
+	private String startDate;   //开始时间
+	private String endDate;   //结束时间
 
 	private KhXx khXx;
 	
@@ -98,4 +102,21 @@ public class Txsh extends DataEntity<Txsh> {
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
+
+	public String getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(String startDate) {
+		this.startDate = startDate;
+	}
+
+	public String getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(String endDate) {
+		this.endDate = endDate;
+	}
+
 }

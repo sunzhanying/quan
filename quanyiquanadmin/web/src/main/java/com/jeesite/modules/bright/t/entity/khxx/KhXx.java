@@ -54,6 +54,10 @@ import java.util.List;
 		@Column(name="create_date", attrName="createDate", label="创建时间", isUpdate=false, isQuery=false),
 		@Column(name="update_date", attrName="updateDate", label="更新时间", isQuery=false),
 		@Column(name="remarks", attrName="remarks", label="备注信息", queryType=QueryType.LIKE),
+		@Column(name="code", attrName="code", label="邀请码"),
+		@Column(name="parentid", attrName="parentid", label="上家邀请码"),
+		@Column(name="qr", attrName="qr", label="邀请码二维码"),
+		@Column(name="bind_date", attrName="bindDate", label="绑定上级时间"),
 		@Column(name="salesroom", attrName="salesroom", label="传播渠道/门店"),
 	},joinTable={
 		@JoinTable(type= Type.LEFT_JOIN, entity=WxConfig.class, alias="o",
@@ -101,6 +105,11 @@ public class KhXx extends DataEntity<KhXx> {
 	private String checked;  //是否选中
 	private WxConfig wxConfig;		//
 	private Source source;		//
+	private String code;		//邀请码
+	private String parentid;
+	private KhXx parentInfo;
+	private String qr;
+	private Date bindDate;		// 绑定上级的时间
 
 	public String getWxConfigId() {
 		return wxConfigId;
@@ -353,8 +362,6 @@ public class KhXx extends DataEntity<KhXx> {
 	public void setQdrq(Date qdrq) {
 		this.qdrq = qdrq;
 	}
-	
-
 
 	public Integer getYhqsl() {
 		return yhqsl;
@@ -394,5 +401,46 @@ public class KhXx extends DataEntity<KhXx> {
 
 	public void setHyksl(Integer hyksl) {
 		this.hyksl = hyksl;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public String getParentid() {
+		return parentid;
+	}
+
+	public void setParentid(String parentid) {
+		this.parentid = parentid;
+	}
+
+	public KhXx getParentInfo() {
+		return parentInfo;
+	}
+
+	public void setParentInfo(KhXx parentInfo) {
+		this.parentInfo = parentInfo;
+	}
+
+	public String getQr() {
+		return qr;
+	}
+
+	public void setQr(String qr) {
+		this.qr = qr;
+	}
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	public Date getBindDate() {
+		return bindDate;
+	}
+
+	public void setBindDate(Date bindDate) {
+		this.bindDate = bindDate;
 	}
 }

@@ -69,10 +69,12 @@ public class OrderService extends CrudService<OrderDao, Order> {
 				QyhsMx qyhsMx = new QyhsMx();
 				qyhsMx.setQyqId(order.getSpId());
 				qyhsMx.setZt(QyhsMx.STATUS_CSZ);
-				qyhsMx.setOrderBy("a.create_date ASC");
+				//qyhsMx.setOrderBy("a.create_date ASC");
+				//快到期的先卖
+				qyhsMx.setOrderBy("a.yxq_date ASC");
 				qyhsMx.setPageSize(order.getSl().intValue());
 				List<QyhsMx> qyhsMxList = qyhsMxDao.findList(qyhsMx);
-				qyhsMxList.forEach(item ->{
+				for(QyhsMx item :qyhsMxList){
 					item.setOrderId(order.getId());
 					item.setZt(QyhsMx.STATUS_DFK);
 					qyhsMxDao.update(item);
@@ -82,7 +84,7 @@ public class OrderService extends CrudService<OrderDao, Order> {
 					orderMx.setQymxId(item.getId());
 					orderMx.preInsert();
 					orderMxDao.insert(orderMx);
-				});
+				}
 			}
 		}catch (Exception e){
 			return new Response(Code.API_ORDER_ERROR);
@@ -103,7 +105,6 @@ public class OrderService extends CrudService<OrderDao, Order> {
 	/**
 	 * 查询分页数据
 	 * @param order 查询条件
-	 * @param order.page 分页对象
 	 * @return
 	 */
 	@Override

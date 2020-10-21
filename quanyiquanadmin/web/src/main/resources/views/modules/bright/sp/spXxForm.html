@@ -26,21 +26,31 @@
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required ">*</span> ${text('权益券分类')}：<i class="fa icon-question hide"></i></label>
+								<span class="required ">*</span> ${text('权益券主标题')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:select path="splx" items="${spTypeList}" itemLabel="name" itemValue="id" class="form-control required" />
+								<#form:input path="spmc" maxlength="50" class="form-control required"/>
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div class="row">
+					<!--<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('权益券一级分类')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="splxOne" items="${spTypeList}" itemLabel="name" itemValue="id" class="form-control required" id="oneSelect" />
+							</div>
+						</div>
+					</div>-->
+
 					<div class="col-xs-6">
 						<div class="form-group">
 							<label class="control-label col-sm-4" title="">
-								<span class="required ">*</span> ${text('权益券主标题')}：<i class="fa icon-question hide"></i></label>
+								<span class="required ">*</span> ${text('权益券二级分类')}：<i class="fa icon-question hide"></i></label>
 							<div class="col-sm-8">
-								<#form:input path="spmc" maxlength="50" class="form-control required"/>
+								<#form:select path="splx" items="${spTypeListTwo}" itemLabel="name" itemValue="id" class="form-control required" id="twoSelect" />
 							</div>
 						</div>
 					</div>
@@ -210,6 +220,93 @@
 				</div>
 
 
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<!--<span class="required ">*</span>--> ${text('最大回收数量')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="maxCount" maxlength="50" class="form-control "/>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<!--<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('长度')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="inLength" maxlength="50" class="form-control "/>
+							</div>
+						</div>-->
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('输入类型')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="inCheck" items="${typeCheck}" itemLabel="name" itemValue="val" class="form-control required" />
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('长度')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="inLength" maxlength="50" class="form-control "/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('一级粉丝分润设置')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="incomeTypeOne" items="${incomeTypeSelect}" itemLabel="name" itemValue="val" class="form-control number" />
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('一级固定金额(元)')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="moneyOne" maxlength="50" class="form-control number"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required ">*</span> ${text('二级粉丝分润设置')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:select path="incomeTypeTwo" items="${incomeTypeSelect}" itemLabel="name" itemValue="val" class="form-control number" />
+							</div>
+						</div>
+					</div>
+
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title="">
+								<span class="required hide">*</span> ${text('二级固定金额(元)')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:input path="moneyTwo" maxlength="50" class="form-control  number"/>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<!--<div class="row">
 					<div class="col-xs-6">
 						<div class="form-group">
@@ -359,5 +456,15 @@ $('#spSxlx input').on('ifCreated ifChecked', function(){
     }
 });
 
+$('#oneSelect').change(function(){
+
+	var valTemp = $('#oneSelect').val();
+	alert(valTemp);
+	/*$("#twoSelect").remove();//清空select列表数据
+
+	$("#twoSelect").append("<option>a</option>");
+	$("#twoSelect").append("<option>b</option>");*/
+
+});
 
 </script>

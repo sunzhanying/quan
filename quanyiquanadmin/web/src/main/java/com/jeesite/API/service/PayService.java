@@ -11,39 +11,30 @@ import com.jeesite.API.weixin.bean.paymch.UnifiedorderResult;
 import com.jeesite.API.weixin.support.ExpireKey;
 import com.jeesite.API.weixin.support.expirekey.DefaultExpireKey;
 import com.jeesite.API.weixin.util.*;
-import com.jeesite.API.zyapi.ZyAPI;
-import com.jeesite.modules.bright.formid.entity.FormId;
-import com.jeesite.modules.bright.formid.service.FormIdService;
-import com.jeesite.modules.bright.hykjl.entity.VipcardJl;
-import com.jeesite.modules.bright.hykjl.service.VipcardJlService;
-import com.jeesite.modules.bright.khvipcard.entity.KhVipcard;
-import com.jeesite.modules.bright.khvipcard.service.KhVipcardService;
-import com.jeesite.modules.bright.khyhq.entity.KhYhq;
-import com.jeesite.modules.bright.khyhq.service.KhYhqService;
-import com.jeesite.modules.bright.points.entity.pointsconfig.PointsConfig;
-import com.jeesite.modules.bright.points.service.pointsconfig.PointsConfigService;
-import com.jeesite.modules.bright.points.service.pointslog.PointsLogService;
+import com.jeesite.modules.bright.sp.entity.SpXx;
 import com.jeesite.modules.bright.sp.service.SpXxService;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.bright.util.KhXwUtil;
 import com.jeesite.modules.bright.util.OrderManager;
 import com.jeesite.modules.order.entity.Order;
-import com.jeesite.modules.order.entity.OrderMx;
 import com.jeesite.modules.order.service.OrderService;
-import com.jeesite.modules.qyhsmx.dao.QyhsMxDao;
 import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.sale.entity.Sale;
+import com.jeesite.modules.sale.service.SaleService;
+import com.jeesite.modules.txsh.entity.Sell;
 import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.SellService;
 import com.jeesite.modules.txsh.service.TxshService;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,7 +42,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 支付Service
@@ -88,6 +82,12 @@ public class PayService {
     private QyhsMxService qyhsMxService;
     @Autowired
     private TxshService txshService;
+    @Autowired
+    private SaleService saleService;
+    @Autowired
+    private SellService sellService;
+    @Autowired
+    private KhXxService khXxService;
 
     String product_id = "";
     String body = "";
@@ -118,7 +118,7 @@ public class PayService {
             order.setActualPayment(qyjg1.getCsj()*order.getSl());
             order.setPayment(qyjg1.getCsj()*order.getSl());
             order.setJgid(qyjg1.getId());
-            order.setHsj(qyjg1.getHsj());
+            order.setHsj(qyjg1.getHsj());//该回收价为最新回收价，不准确，改为根据上传时的回收价，在卖券中
             order.setScj(qyjg1.getCsj());
             order.setZt(Order.PAY_STATUS_DZF);
             order.preInsert();
@@ -183,7 +183,7 @@ public class PayService {
             if (SignatureUtil.validateSign(mapData, key)) {
                 expireKey.add(payNotify.getTransaction_id());
 
-                Order order = orderService.get(payNotify.getOut_trade_no());
+                Order order = orderService.get(payNotify.getOut_trade_no());//付款完回调时传递订单id
                 System.out.println("回调数据："+payNotify.toString());
 
                 //未支付成功时走业务
@@ -202,7 +202,12 @@ public class PayService {
                     qyhsMxList.forEach(item ->{
                         item.setZt(QyhsMx.STATUS_YFK);
                         item.setJszt(QyhsMx.STATUS_JS_WJS);
-                        item.setSy(order.getHsj());
+                        //item.setSy(order.getHsj());//回收价以用户上传时的价格为准
+                        //做个兼容，兼容功能上之后，原来上传时没有赋值收益的，仍然使用最新的卖家收益
+                        if(item.getSy() == null){
+                            item.setSy(order.getHsj());
+                        }
+                        item.setSellPrice(order.getScj());//售出价以下单时的价格为准，赋值给具体的卖券,方便后期计算收益
                         qyhsMxService.update(item);
                     });
                     //分单，向提现表中添加数据
@@ -223,6 +228,8 @@ public class PayService {
                         txsh.setOrderId(order.getId());
                         txshService.saveTxd(txsh);
                     });
+                    //二级分销分利润,根据券类型表a_qyhs_mx 中获取固定收益，或者百分比，百分比的话需要查询出关联的卖券
+                    doSaleInfo(order);
                 }
 
                 MchBaseResult baseResult = new MchBaseResult();
@@ -237,6 +244,133 @@ public class PayService {
             }
         }
     }
+
+    //处理二级分销分利润
+    private void doSaleInfo(Order order) {
+        try{
+            Long sl = order.getSl();//单个固定收益要乘以数量才行
+            SpXx spXx = spXxService.get(order.getSpId());
+            //根据买家id，获取父1级khid
+            Double txjeOne = spXx.getMoneyOne();
+            if(txjeOne == null || txjeOne <= 0){
+                return;//如果没有设置分润则直接返回
+            }
+            String parentTemp = doWithIncomeOne(order, txjeOne * sl);//处理父1级
+            if(StringUtils.isEmpty(parentTemp)){//如果父1级不存在，直接返回
+                return;
+            }
+            Double txjeTwo = spXx.getMoneyTwo();
+            if(txjeTwo == null || txjeTwo <= 0){
+                return;//如果没有设置分润则直接返回
+            }
+            doWithIncomeTwo(order,parentTemp, txjeTwo * sl);//处理父2级
+        }catch (Exception e){
+            log.error("下单后封装分销收益报错,order id =" + order.getId(),e);
+        }
+    }
+
+    //处理上一级收益
+    /*private String doWithIncomeOne(Order order, String buyerId, Double txje) {
+        String parentTemp = "";//上一级khid
+        List<Sale> list = saleService.getSaleListByKhid(buyerId);
+        if(list != null && !list.isEmpty()){
+            for(Sale saleEntity :list){
+                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
+                    parentTemp = saleEntity.getParentOne();
+                    break;//上家只能有一个
+                }
+            }
+        }else{
+            return parentTemp;//没有父1级直接返回
+        }
+        //将父1级收益保存到提现表中，提现记录
+        if(StringUtils.isEmpty(parentTemp)){
+            return parentTemp;//没有父1级直接返回
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        sell.setType(Sell.SELL_TYPE_ONE);
+        sell.setBuyid(buyerId);//设置买家
+        sellService.save(sell);
+        return parentTemp;
+    }*/
+
+    //处理上一级收益
+    private String doWithIncomeOne(Order order, Double txje) {
+        String buyerId = order.getUserId();
+        KhXx khXx = khXxService.get(buyerId);
+        String parentTemp = khXx.getParentid();//上一级khid
+        if(StringUtils.isEmpty(parentTemp)){//如果父级为空，直接返回
+            return "";
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        sell.setType(Sell.SELL_TYPE_ONE);
+        sell.setBuyid(buyerId);//设置买家
+        sellService.save(sell);
+        return parentTemp;
+    }
+
+    //处理2级收益
+    private String doWithIncomeTwo(Order order,String parentId , Double txje) {
+        KhXx khXxTwo = khXxService.get(parentId);//根据父1级找父2级
+        String parentTemp = khXxTwo.getParentid();//上一级khid
+        if(StringUtils.isEmpty(parentTemp)){//如果父级为空，直接返回
+            return "";
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        //表示当前处理的是二级上家收益，需要保存一级上家信息
+        sell.setKhidShowOne(parentId);
+        sell.setType(Sell.SELL_TYPE_TWO);
+        sell.setBuyid(order.getUserId());
+        sellService.save(sell);
+        return parentTemp;
+    }
+
+    //处理上一级收益
+    /*private String doWithIncomeTwo(Order order, String buyerId, Double txje,String parentId) {
+        String parentTemp = "";//上一级khid
+        List<Sale> list = saleService.getSaleListByKhid(buyerId);
+        if(list != null && !list.isEmpty()){
+            for(Sale saleEntity :list){
+                if(!StringUtils.isEmpty(saleEntity.getParentOne())){
+                    parentTemp = saleEntity.getParentOne();
+                    break;//上家只能有一个
+                }
+            }
+        }else{
+            return parentTemp;//没有父1级直接返回
+        }
+        //将父1级收益保存到提现表中，提现记录
+        if(StringUtils.isEmpty(parentTemp)){
+            return parentTemp;//没有父1级直接返回
+        }
+        //生成父1级提现申请单
+        Sell sell = new Sell();
+        sell.setKhid(parentTemp);
+        sell.setTxje(txje);
+        sell.setZt(Txsh.TX_STATUS_SQZ);
+        sell.setOrderId(order.getId());
+        //表示当前处理的是二级上家收益，需要保存一级上家信息
+        sell.setKhidShowOne(parentId);
+        sell.setType(Sell.SELL_TYPE_TWO);
+        sell.setBuyid(order.getUserId());
+        sellService.save(sell);
+        return parentTemp;
+    }*/
 
     //支付成功调用
    /* public void paySuccess(Order order){

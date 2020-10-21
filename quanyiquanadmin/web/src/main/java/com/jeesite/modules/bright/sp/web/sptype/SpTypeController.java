@@ -22,6 +22,9 @@ import com.jeesite.common.web.BaseController;
 import com.jeesite.modules.bright.sp.entity.sptype.SpType;
 import com.jeesite.modules.bright.sp.service.sptype.SpTypeService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 商品类型Controller
  * @author 马晓亮
@@ -75,7 +78,28 @@ public class SpTypeController extends BaseController {
 			spType.setDeliveryWay("1");
 		}
 		model.addAttribute("spType", spType);
+		List<SpType> list = getSpTypeList();
+		model.addAttribute("spTypeList", list);
 		return "modules/bright/sp/sptype/spTypeForm";
+	}
+
+	private List<SpType> getSpTypeList() {
+		List<SpType> list = spTypeService.findList(new SpType());
+		List<SpType> listForReturn = new ArrayList<>();
+		SpType spTypeOne = new SpType();
+		spTypeOne.setName("一级");
+		listForReturn.add(spTypeOne);
+		//遍历出1级
+		for(SpType spTypeTemp:list){
+			if(spTypeTemp == null){
+				continue;
+			}
+			if(spTypeTemp.getParent() != null && !"".equals(spTypeTemp.getParent())){//必须二级parent为空
+				continue;
+			}
+			listForReturn.add(spTypeTemp);
+		}
+		return listForReturn;
 	}
 
 	/**
@@ -85,6 +109,9 @@ public class SpTypeController extends BaseController {
 	@PostMapping(value = "save")
 	@ResponseBody
 	public String save(@Validated SpType spType) {
+		if(spType != null && spType.getId() != null && !"".equals(spType.getId()) && spType.getId().equals(spType.getParent())){
+			return renderResult(Global.TRUE, text("不能选择即为一级目录又是二级目录！"));
+		}
 		spTypeService.save(spType);
 		return renderResult(Global.TRUE, text("保存商品类型成功！"));
 	}

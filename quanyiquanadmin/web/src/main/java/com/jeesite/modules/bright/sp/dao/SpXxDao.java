@@ -6,6 +6,7 @@ package com.jeesite.modules.bright.sp.dao;
 import com.jeesite.common.dao.CrudDao;
 import com.jeesite.common.mybatis.annotation.MyBatisDao;
 import com.jeesite.modules.bright.sp.entity.SpXx;
+import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
@@ -49,5 +50,16 @@ public interface SpXxDao extends CrudDao<SpXx> {
     //根据商品类型id更新商品的类型
     @Update("update t_sp_xx set splx = '0' where splx = #{0}")
     int updateBySpTypeId(String typeid);
+
+    //显示商品列表
+    @Select("<script>" +
+            "select id, qyhs_id, qyq_id, khid, type, kh, km, img, yxq_date, zt, status, create_by, create_date, " +
+            "    update_by, update_date, remarks, order_id, jszt, sy, sqdh from a_qyhs_mx " +
+            "where " +
+            "<if test='str != null and str != &quot;&quot;'>" +
+            " id in ( #{str} )" +
+            "</if>" +
+            "</script>")
+    List<QyhsMx> findListForDownload(@Param("str") String str);
 
 }

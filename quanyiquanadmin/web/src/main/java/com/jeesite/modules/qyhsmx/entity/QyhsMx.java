@@ -33,13 +33,14 @@ import java.util.Date;
 		@Column(name="qyq_id", attrName="qyqId", label="权益券id"),
 		@Column(name="khid", attrName="khid", label="客户id"),
 		@Column(name="type", attrName="type", label="卡类型"),
-		@Column(name="kh", attrName="kh", label="卡号"),
-		@Column(name="km", attrName="km", label="卡密"),
+		@Column(name="kh", attrName="kh", label="卡号", queryType=QueryType.LIKE),
+		@Column(name="km", attrName="km", label="卡密", queryType=QueryType.LIKE),
 		@Column(name="img", attrName="img", label="卡图"),
 		@Column(name="yxq_date", attrName="yxqDate", label="有效期"),
 		@Column(name="order_id", attrName="orderId", label="订单id"),
 		@Column(name="jszt", attrName="jszt", label="结算状态 1 未结算 2 已结算"),
 		@Column(name="sy", attrName="sy", label="sy"),
+		@Column(name="sell_price", attrName="sellPrice", label="sy"),
 		@Column(name="sqdh", attrName="sqdh", label="申请单号"),
 		@Column(name="zt", attrName="zt", label="状态 1 待审核 2 审核失败 3 出售中 4 待付款 5 已出售"),
 		@Column(includeEntity=DataEntity.class),
@@ -56,8 +57,9 @@ import java.util.Date;
 )
 public class QyhsMx extends DataEntity<QyhsMx> {
 
+	//卖家权益券状态
 	public static final String STATUS_DSH = "1";   //待审核
-	public static final String STATUS_TH = "2";   //退回
+	public static final String STATUS_TH = "2";   //退回，对应无效券
 	public static final String STATUS_CSZ = "3";   //出售中
 	public static final String STATUS_DFK = "4";   //待付款
 	public static final String STATUS_YFK = "5";   //已付款
@@ -65,6 +67,7 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 	public static final String STATUS_JS_WJS = "1";   //未结算
 	public static final String STATUS_JS_JSZ = "2";   //结算中
 	public static final String STATUS_JS_YJS = "3";   //已结算
+	public static final String STATUS_JS_SHBTG = "4";   //审核不通过，对应表提现审核表a_txsh，zt=3，审核不通过，页面也可操作
 
 	private static final long serialVersionUID = 1L;
 	private String qyhsId;		// 权益回收id
@@ -82,6 +85,8 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 	private String orderId;  //订单id
 	private String jszt;   //结算状态 1 未结算 2 已结算
 	private Double sy;   //收益
+	private Double sellPrice;   //售出价
+
 	private String sqdh;   //申请单号
 	private Double sum;    //收益
 
@@ -265,6 +270,14 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 
 	public void setSy(Double sy) {
 		this.sy = sy;
+	}
+
+	public Double getSellPrice() {
+		return sellPrice;
+	}
+
+	public void setSellPrice(Double sellPrice) {
+		this.sellPrice = sellPrice;
 	}
 
 	public String getSqdh() {

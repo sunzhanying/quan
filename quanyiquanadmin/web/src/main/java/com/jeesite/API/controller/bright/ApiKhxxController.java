@@ -1,6 +1,7 @@
 package com.jeesite.API.controller.bright;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import com.jeesite.API.service.Code;
@@ -9,16 +10,19 @@ import com.jeesite.API.util.RandomUtils;
 import com.jeesite.API.util.RedisTemplateUtils;
 import com.jeesite.API.util.aliyun.SmsUtil;
 import com.jeesite.API.weixin.api.SnsAPI;
+import com.jeesite.API.weixin.api.TokenAPI;
+import com.jeesite.API.weixin.api.UnlimitAPI;
 import com.jeesite.API.weixin.bean.sns.SnsToken;
+import com.jeesite.API.weixin.bean.token.Token;
 import com.jeesite.API.weixin.bean.user.Phone;
 import com.jeesite.common.entity.Page;
 import com.jeesite.common.mybatis.mapper.query.QueryType;
 import com.jeesite.modules.bright.khvipcard.dao.KhVipcardDao;
-import com.jeesite.modules.bright.khvipcard.entity.KhVipcard;
 import com.jeesite.modules.bright.khyhq.dao.KhYhqDao;
 import com.jeesite.modules.bright.sms.dao.SmsRecordDao;
 import com.jeesite.modules.bright.sms.entity.SmsRecord;
 import com.jeesite.modules.bright.sms.service.SmsRecordService;
+import com.jeesite.modules.bright.t.dao.khxx.KhXxDao;
 import com.jeesite.modules.bright.t.entity.khxx.KhXx;
 import com.jeesite.modules.bright.t.service.khxx.KhXxService;
 import com.jeesite.modules.bright.util.AES;
@@ -32,20 +36,31 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.modules.txsh.entity.Sell;
 import com.jeesite.modules.txsh.entity.Txsh;
+import com.jeesite.modules.txsh.service.SellService;
 import com.jeesite.modules.txsh.service.TxshService;
+import com.jeesite.utils.Paper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -64,6 +79,15 @@ public class ApiKhxxController {
     private String wxAppId;
     @Value("${weixin.appsecret}")
     private String wxAppSecret;
+
+    //买方
+    @Value("${weixin.appidA}")
+    private String wxAppIdBuyer;
+    @Value("${weixin.appsecretA}")
+    private String wxAppSecretBuyer;
+
+    @Value("${file.baseDir}")
+    private String baseDir;
 
     @Autowired
     private KhXxService khXxService;
@@ -92,6 +116,10 @@ public class ApiKhxxController {
     private TxshService txshService;
     @Autowired
     private QyhsMxDao qyhsMxDao;
+    @Autowired
+    private KhXxDao khXxDao;
+    @Autowired
+    private SellService sellService;
 
      /**
      * 微信用户登录
@@ -209,7 +237,7 @@ public class ApiKhxxController {
         qyhsMx.setZt(QyhsMx.STATUS_TH);
         map.put("wxq", qyhsMxService.findCount(qyhsMx));
         //已到账收益
-        qyhsMx.setJszt(QyhsMx.STATUS_JS_YJS);
+        /*qyhsMx.setJszt(QyhsMx.STATUS_JS_YJS);
         String extColumn = "SUM(a.sy) AS \"sum\"";
         qyhsMx.getSqlMap().add("extColumn", extColumn);
         QyhsMx qyhsMx2 = qyhsMxDao.getByEntity(qyhsMx);
@@ -217,11 +245,22 @@ public class ApiKhxxController {
             map.put("ydz", qyhsMx2.getSum());
         }else {
             map.put("ydz", 0.0);
+        }*/
+
+        //已到账新方法
+        Double ydzMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_TG);
+        if (ydzMoney != null){
+            /*String s1 = String.format("%.2f", ydzMoney);
+            map.put("ydz", s1);*/
+            map.put("ydz", ydzMoney);
+        }else {
+            map.put("ydz", 0.0);
         }
+
         //可提现收益
-        QyhsMx qyhsMx1 = new QyhsMx();
+        /*QyhsMx qyhsMx1 = new QyhsMx();
         qyhsMx1.setKhid(khXx.getId());
-        qyhsMx1.getSqlMap().getWhere().and("jszt", QueryType.LT, QyhsMx.STATUS_JS_YJS);
+        qyhsMx1.getSqlMap().getWhere().and("jszt", QueryType.LT, QyhsMx.STATUS_JS_YJS);// LT 小于的意思
         String extColumn1 = "SUM(a.sy) AS \"sum\"";
         qyhsMx1.getSqlMap().add("extColumn", extColumn1);
         QyhsMx qyhsMx3 = qyhsMxDao.getByEntity(qyhsMx1);
@@ -229,7 +268,15 @@ public class ApiKhxxController {
             map.put("ktx", qyhsMx3.getSum());
         }else {
             map.put("ktx", 0.0);
+        }*/
+        //已到账新方法
+        Double ktxMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_SQZ);
+        if (ydzMoney != null){
+            map.put("ktx", ktxMoney);
+        }else {
+            map.put("ktx", 0.0);
         }
+
         return new Response(map);
     }
 
@@ -307,10 +354,14 @@ public class ApiKhxxController {
             @ApiImplicitParam(name="name",value = "姓名",required = true),
             @ApiImplicitParam(name="phone",value = "手机号",required = true),
             @ApiImplicitParam(name="code",value = "验证码",required = true),
+            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = true),
     })
     @RequestMapping(value = "/saveNamePhone",method = RequestMethod.POST)
     public Response saveNamePhone(HttpServletRequest request, @RequestParam String name, @RequestParam String phone
-                                  ,@RequestParam String code) {
+                                  ,@RequestParam String code,
+                                  /*@RequestParam String inviteCode*/
+                                  @RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode
+                                  ) {
         //验证手机号
         SmsRecord record = new SmsRecord();
         record.setPhone(phone);
@@ -331,18 +382,42 @@ public class ApiKhxxController {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
         khXx.setSj(phone);
         khXx.setXm(name);
-        khXxService.update(khXx);
+        //通过短信验证后，就将当前用户的邀请码生成，然后保存、返回给前端
+        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，才生成
+            String codeOnly = getOnlyCode();
+            khXx.setCode(codeOnly);
+            khXxService.update(khXx);
+        }
+        if(!StringUtils.isEmpty(inviteCode)){
+            //如果邀请码不为空 则关联上级分销信息
+            Response response = khXxService.checkInviteCode(inviteCode,khXx,"");
+            return response;
+        }
         return new Response(Code.SUCCESS);
     }
 
+    /**
+     * 获取唯一6位邀请码
+     * @return
+     */
+    private String getOnlyCode() {
+        String temp = RandomUtils.getRandomString(6);
+        String khidParentOne = khXxDao.getUserIdByCode(temp);
+        if(StringUtils.isEmpty(khidParentOne)){
+            return temp;//如果不存在，直接返回
+        }else{
+            return getOnlyCode();
+        }
+    }
 
-    //发送验证码
+    //发送验证码 2买家 1卖家
     @ApiOperation(value = "send-register-sms",notes = "发送验证码",httpMethod ="POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name="phone",value = "手机号",required = true)
     })
     @RequestMapping(value = "/send-register-sms",method = RequestMethod.POST)
-    public Response<String> sendRegisterSms(@RequestParam String phone) throws ClientException {
+    public Response<String> sendRegisterSms(@RequestParam String phone,
+                                            @RequestParam(defaultValue = "1") String source) throws ClientException {
         SmsRecord smsRecord = new SmsRecord();
         smsRecord.setPhone(phone);
         smsRecord.setZt(SmsRecord.PHONE_ZT_DYZ);
@@ -360,6 +435,7 @@ public class ApiKhxxController {
         String verifyCode = RandomUtils.generateSmsVerifyCode();
         Map map=new HashMap();
         map.put("code",verifyCode);
+        map.put("source",source);
         //阿里
         SendSmsResponse result = SmsUtil.sendSms(SmsUtil.SMS_CODE_PHONE, phone, map);
 
@@ -445,4 +521,249 @@ public class ApiKhxxController {
 
         return new Response(Code.SUCCESS);
     }*/
+
+    @ApiOperation(value = "绑定邀请码",httpMethod ="POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="inviteCode",value = "邀请码",required = true),
+    })
+    @RequestMapping(value = "/saveInviteCode",method = RequestMethod.POST)
+    public Response saveInviteCode(HttpServletRequest request,
+                                  @RequestParam(required = true, value = "inviteCode", defaultValue = "") String inviteCode){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return new Response(Code.API_NULL_AUTH);
+        }
+        //如果邀请码不为空 则关联上级分销信息
+        return khXxService.checkInviteCode(inviteCode,khXx,"onlyCode");
+    }
+
+    //初始化所有已有用户邀请码 todo 生成之后立马注释掉
+    @RequestMapping(value = "/initCode",method = RequestMethod.POST)
+    public Response initCode(HttpServletRequest request){
+        KhXx khXxTemp = new KhXx();
+        khXxTemp.setType("2");
+        List<KhXx> list = khXxService.findList(khXxTemp);
+        for (KhXx khXx:list) {
+            if(!StringUtils.isEmpty(khXx.getCode())){
+                continue;
+            }
+            String codeOnly = getOnlyCode();
+            khXx.setCode(codeOnly);
+            khXxService.update(khXx);
+        }
+        return new Response(Code.SUCCESS);
+    }
+
+
+    //获取小程序二维码
+    @RequestMapping(value = "/getUnlimited",method = RequestMethod.POST)
+    public Response getUnlimited(HttpServletRequest request){
+        KhXx khXx = (KhXx)request.getAttribute("khXx");
+        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，不能生成二维码
+            return new Response("需要注册后生成自己的邀请码，才能获取邀请二维码！");
+        }
+        if(!StringUtils.isEmpty(khXx.getQr())){
+            return new Response("已经获取过邀请二维码！");
+        }
+
+        Token token = TokenAPI.token(wxAppIdBuyer, wxAppSecretBuyer);
+        if (!token.isSuccess()) {
+            log.info("getUnlimited is fail.");
+            return new Response(Code.API_USER_AUTH_ERROR);
+        }
+        String qrName = khXx.getOpenId();
+        //String qrName = "123";
+        String innerPath = "/userfiles/fileupload/qr/" + qrName + ".png";
+        String filePath = baseDir  + innerPath;
+        String tokenStr = token.getAccess_token();
+        //你的json数据 ,格式不要错
+        JSONObject jsonObject = new JSONObject();
+        /*JSONObject jsonObjectInner = new JSONObject();
+        jsonObjectInner.put("khid",khXx.getId());
+        jsonObjectInner.put("code",khXx.getCode());*/
+        //jsonObject.put("scene","code=" + khXx.getCode());
+        jsonObject.put("scene",khXx.getCode());
+        jsonObject.put("width",400);
+        //String json = "{\"scene\":\"name=jerry\",\"width\":300}";
+        String json = JSON.toJSONString(jsonObject);
+        byte[] data = UnlimitAPI.myPost("/wxa/getwxacodeunlimit?access_token="+tokenStr,json);
+        //new一个文件对象用来保存图片
+        File imageFile = new File(filePath);
+        //创建输出流
+        FileOutputStream outStream = null;
+        try {
+            outStream = new FileOutputStream(imageFile);
+            //写入数据
+            outStream.write(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                //关闭输出流
+                outStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        //更新到个人信息中
+        khXx.setQr(innerPath);
+        khXxService.update(khXx);
+        return new Response(innerPath);
+    }
+
+    @RequestMapping(value = "/getMyExtend",method = RequestMethod.POST)
+    public Response getMyExtend(HttpServletRequest request){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return new Response(Code.API_NULL_AUTH);
+        }
+        Map<String,Object> map = new HashMap<>();
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        //一级粉丝个数
+        int childOneSize = 0;
+        //二级粉丝个数
+        int childTwoSize = 0;
+        //今日粉丝个数
+        int childTodaySize = 0;
+        if(oneList != null && !oneList.isEmpty()){
+            childOneSize = oneList.size();
+            for(KhXx khXx2 : oneList){
+                //判断该条1级粉丝的绑定时间是否是当天
+                boolean boo = checkToday(khXx2.getBindDate());
+                if(boo){
+                    childTodaySize = childTodaySize + 1;
+                }
+                KhXx khXxTemp = new KhXx();
+                khXxTemp.setParentid(khXx2.getId());
+                List<KhXx> twoListTemp = khXxService.findList(khXxTemp);
+                if(twoListTemp == null || twoListTemp.isEmpty()){
+                    continue;
+                }else{
+                    for(KhXx khXx3 : twoListTemp){//遍历二级粉丝，检查是否是当天粉丝
+                        boolean boo2 = checkToday(khXx3.getBindDate());
+                        if(boo2){
+                            childTodaySize = childTodaySize + 1;
+                        }
+                    }
+                }
+                childTwoSize = childTwoSize + twoListTemp.size();
+            }
+        }
+
+        //我的收益
+        String todayStr = getTodayStr();
+        Double myMoney = 0.0;
+        Double myMoneyDb = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+        if(myMoneyDb != null){
+            myMoney = myMoneyDb;
+        }
+
+        map.put("childOneSize", childOneSize);
+        map.put("childTwoSize", childTwoSize);
+        map.put("childTodaySize", childTodaySize);
+        map.put("myMoney", myMoney);
+        return new Response(map);
+    }
+
+    private String getTodayStr() {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        return format.format(new Date());
+    }
+
+    private boolean checkToday(Date date) {
+        boolean boo = false;
+        if(date == null){
+            return boo;
+        }
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dbDate = format.format(date);
+        String nowDate = format.format(new Date());
+        if(nowDate.equals(dbDate)){
+            return true;
+        }
+        return boo;
+    }
+
+    @RequestMapping(value = "/getMyChildOneList",method = RequestMethod.POST)
+    public Page<KhXx> getMyChildOneList(HttpServletRequest request,
+                                      @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                      @RequestParam(required = false, value = "size", defaultValue = "10") Integer size){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        Page<KhXx> khXxPage = new Page<>();
+        khXxPage.setPageNo(page);
+        khXxPage.setPageSize(size);
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return khXxPage;
+        }
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        khXx1.setPage(khXxPage);
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        khXxPage.setList(oneList);
+        return khXxPage;
+    }
+
+    @RequestMapping(value = "/getMyChildTwoList",method = RequestMethod.POST)
+    public Page<KhXx> getMyChildTwoList(HttpServletRequest request,
+                                      @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                      @RequestParam(required = false, value = "size", defaultValue = "10") Integer size,
+                                      @RequestParam(required = false, value = "childOneId", defaultValue = "") String childOneId){
+        Page<KhXx> pageResult = new Page<KhXx>();
+        pageResult.setPageNo(page);
+        pageResult.setPageSize(size);
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        if(khXx == null || StringUtils.isEmpty(khXx.getId())){
+            return pageResult;
+        }
+        List<KhXx> twoList = new ArrayList<>();
+        KhXx khXx1 = new KhXx();
+        khXx1.setParentid(khXx.getId());
+        List<KhXx> oneList = khXxService.findList(khXx1);
+        if(oneList != null && !oneList.isEmpty()){
+            for(KhXx khXx2 : oneList){
+                //如果传递1级粉丝，则获取对应1级粉丝下面的二级粉丝
+                if(!StringUtils.isEmpty(childOneId) && !childOneId.equals(khXx2.getId())){
+                    continue;
+                }
+                KhXx khXxTemp = new KhXx();
+                khXxTemp.setParentid(khXx2.getId());
+                List<KhXx> twoListTemp = khXxService.findList(khXxTemp);
+                if(twoListTemp == null || twoListTemp.isEmpty()){
+                    continue;
+                }else{
+                    for(KhXx khXx3 : twoListTemp){//遍历二级粉丝，设置对应的一级粉丝
+                        khXx3.setParentInfo(khXx2);
+                    }
+                    twoList.addAll(twoListTemp);
+                }
+            }
+        }else{
+            log.info("当前用户没有一级粉丝，没有二级粉丝！");
+            return pageResult;
+        }
+        Paper<KhXx> paper = new Paper<KhXx>(page,size,twoList);//paper.getDataList()就是子数组数据
+        pageResult.setCount(twoList.size());
+        pageResult.setList(paper.getDataList());
+        return pageResult;
+    }
+
+    @RequestMapping(value = "/getMyMoney",method = RequestMethod.POST)
+    public Page<Sell> getMyMoney(HttpServletRequest request,
+                                        @RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                        @RequestParam(required = false, value = "size", defaultValue = "10") Integer size){
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        String todayStr = getTodayStr();
+        Double myMoney = sellService.findMyMoney(khXx.getId(), Sell.SELL_STATUS_TG,todayStr);
+        Page<Sell> pageResult = new Page<>();
+        pageResult.setPageNo(page);
+        pageResult.setPageSize(size);
+        Sell sell = new Sell();
+        sell.setPage(pageResult);
+        sell.setKhid(khXx.getId());
+        List<Sell> list = sellService.findList(sell);
+        pageResult.setList(list);
+        return pageResult;
+    }
 }

@@ -29,6 +29,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 权益券信息Controller
@@ -98,8 +102,57 @@ public class SpXxController extends BaseController {
 		}
 		model.addAttribute("spXx", spXx);
 		model.addAttribute("spTypeList", spTypeService.findList(new SpType()));
+		List<Map<String,String>> spTypeList = spTypeService.findTwoSpList("");
+		model.addAttribute("spTypeListTwo", spTypeList);
 		model.addAttribute("yhqList", spYhqService.findList(new SpYhq()));
 		model.addAttribute("labelList", tagService.findList(new Tag()));
+
+		//新增 输入类型 校验
+		List<Map<String,String>> list = new ArrayList<>();
+		Map<String,String> map1 = new HashMap<>();
+		map1.put("name","英文");
+		map1.put("val","1");
+		list.add(map1);
+
+		Map<String,String> map2 = new HashMap<>();
+		map2.put("name","数字");
+		map2.put("val","2");
+		list.add(map2);
+
+		Map<String,String> map3 = new HashMap<>();
+		map3.put("name","英文+数字");
+		map3.put("val","3");
+		list.add(map3);
+
+		Map<String,String> map4 = new HashMap<>();
+		map4.put("name","全文本");
+		map4.put("val","4");
+		list.add(map4);
+
+		/*Map<String,String> map5 = new HashMap<>();
+		map5.put("name","英文小写+数字");
+		map5.put("val","5");
+		list.add(map5);
+
+		Map<String,String> map6 = new HashMap<>();
+		map6.put("name","纯文本");
+		map6.put("val","6");
+		list.add(map6);*/
+
+		model.addAttribute("typeCheck", list);
+
+
+		List<Map<String,String>> listIncome = new ArrayList<>();
+		Map<String,String> mapIncome1 = new HashMap<>();
+		mapIncome1.put("name","固定金额");
+		mapIncome1.put("val","1");
+		listIncome.add(mapIncome1);
+
+		/*Map<String,String> mapIncome2 = new HashMap<>();
+		mapIncome2.put("name","固定比例");
+		mapIncome2.put("val","2");
+		listIncome.add(mapIncome2);*/
+		model.addAttribute("incomeTypeSelect", listIncome);
 		return "modules/bright/sp/spXxForm";
 	}
 

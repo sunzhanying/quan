@@ -14,6 +14,9 @@ import com.jeesite.common.service.CrudService;
 import com.jeesite.modules.bright.sp.entity.sptype.SpType;
 import com.jeesite.modules.bright.sp.dao.sptype.SpTypeDao;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * 商品类型Service
  * @author 马晓亮
@@ -25,6 +28,9 @@ public class SpTypeService extends CrudService<SpTypeDao, SpType> {
 
 	@Autowired
 	private SpXxDao spXxDao;
+
+	@Autowired
+	private SpTypeDao spTypeDao;
 	
 	/**
 	 * 获取单条数据
@@ -39,7 +45,6 @@ public class SpTypeService extends CrudService<SpTypeDao, SpType> {
 	/**
 	 * 查询分页数据
 	 * @param spType 查询条件
-	 * @param spType.page 分页对象
 	 * @return
 	 */
 	@Override
@@ -77,5 +82,12 @@ public class SpTypeService extends CrudService<SpTypeDao, SpType> {
 		spXxDao.updateBySpTypeId(spType.getId());
 		super.delete(spType);
 	}
-	
+
+	public List<Map<String,String>> findTwoSpList(String parent) {
+		return spTypeDao.findTwoSpList(parent);
+	}
+
+	public List<String> findTwoIds(String parent) {
+		return spTypeDao.findTwoIds(parent);
+	}
 }

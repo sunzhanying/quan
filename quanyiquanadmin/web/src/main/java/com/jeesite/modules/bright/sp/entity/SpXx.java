@@ -55,6 +55,16 @@ import java.util.List;
 		@Column(name="bq", attrName="bq", label="标签"),
 		@Column(name="type", attrName="type", label="类型"),
 		@Column(name="source", attrName="source", label="来源"),
+		@Column(name="maxCount", attrName="maxCount", label="最大数量"),
+		/*@Column(name="maxCountFlag", attrName="maxCountFlag", label="最大数量"),*/
+		@Column(name="inCheck", attrName="inCheck", label="校验"),
+		@Column(name="inLength", attrName="inLength", label="输入长度"),
+		@Column(name="income_type_one", attrName="incomeTypeOne", label="一级收益方式"),
+		@Column(name="money_one", attrName="moneyOne", label="一级固定金额值"),
+		@Column(name="ratio_one", attrName="ratioOne", label="一级百分比"),
+		@Column(name="income_type_two", attrName="incomeTypeTwo", label="二级收益方式"),
+		@Column(name="money_two", attrName="moneyTwo", label="二级固定金额值"),
+		@Column(name="ratio_two", attrName="ratioTwo", label="二级百分比"),
 		@Column(name="sysm", attrName="sysm", label="使用说明"),
 		@Column(name = "status", attrName = "status", label = "状态", isUpdate = false,
 				comment = "（推荐状态：0：正常；1：删除；2：停用；3：冻结；4：审核、待审核；5：审核驳回；9：草稿）"
@@ -101,6 +111,16 @@ public class SpXx extends DataEntity<SpXx> {
 	private Long cjl;         //成交量
 	private Boolean issc;     //是否收藏
 	private String sysm;      //使用说明
+	private Long maxCount;      //最大回收数量
+	private Long maxCountFlag; //最大数量，1 不可继续上传
+	private String inCheck;      //校验
+	private Long inLength;      //长度
+	private String incomeTypeOne;
+	private Double moneyOne;		// 体现金额
+	private Double ratioOne;		// 比例
+	private String incomeTypeTwo;
+	private Double moneyTwo;		// 体现金额
+	private Double ratioTwo;		// 比例
 
 	private List<Tag> tagList = Lists.newArrayList(); //标签列表
 
@@ -382,5 +402,85 @@ public class SpXx extends DataEntity<SpXx> {
 
 	public void setSysm(String sysm) {
 		this.sysm = sysm;
+	}
+
+	public Long getMaxCount() {
+		return maxCount;
+	}
+
+	public void setMaxCount(Long maxCount) {
+		this.maxCount = maxCount;
+	}
+
+	public Long getMaxCountFlag() {
+		return maxCountFlag;
+	}
+
+	public void setMaxCountFlag(Long maxCountFlag) {
+		this.maxCountFlag = maxCountFlag;
+	}
+
+	public String getInCheck() {
+		return inCheck;
+	}
+
+	public void setInCheck(String inCheck) {
+		this.inCheck = inCheck;
+	}
+
+	public Long getInLength() {
+		return inLength;
+	}
+
+	public void setInLength(Long inLength) {
+		this.inLength = inLength;
+	}
+
+	public String getIncomeTypeOne() {
+		return incomeTypeOne;
+	}
+
+	public void setIncomeTypeOne(String incomeTypeOne) {
+		this.incomeTypeOne = incomeTypeOne;
+	}
+
+	public Double getMoneyOne() {
+		return moneyOne;
+	}
+
+	public void setMoneyOne(Double moneyOne) {
+		this.moneyOne = moneyOne;
+	}
+
+	public Double getRatioOne() {
+		return ratioOne;
+	}
+
+	public void setRatioOne(Double ratioOne) {
+		this.ratioOne = ratioOne;
+	}
+
+	public String getIncomeTypeTwo() {
+		return incomeTypeTwo;
+	}
+
+	public void setIncomeTypeTwo(String incomeTypeTwo) {
+		this.incomeTypeTwo = incomeTypeTwo;
+	}
+
+	public Double getMoneyTwo() {
+		return moneyTwo;
+	}
+
+	public void setMoneyTwo(Double moneyTwo) {
+		this.moneyTwo = moneyTwo;
+	}
+
+	public Double getRatioTwo() {
+		return ratioTwo;
+	}
+
+	public void setRatioTwo(Double ratioTwo) {
+		this.ratioTwo = ratioTwo;
 	}
 }

@@ -1,7 +1,4 @@
-
-#======================================#
 #========== Project settings ==========#
-#======================================#
 # 产品或项目名称、软件开发公司名称
 productName: 权益券
 companyName:
@@ -13,8 +10,6 @@ sys:
 productVersion:
 copyrightYear:
 
-
-
 spring:
   # 应用程序名称
   application:
@@ -22,30 +17,34 @@ spring:
   # 当前环境名称（注意：不可设置为 test 它是单元测试专用的名称）
   profiles:
     active: pro
-
   # 打印横幅
   main:
     bannerMode: "off"
 
-
 #是否演示模式
 demoMode: false
 
-#======================================#
-#========== Server settings ===========#
-#======================================#
-
+#========== https ===========#
+http:
+  port: 80
 server:
-
-  port: 8986
+  port: 443
+  ssl:
+    key-store: classpath:4076405_quan.whaleupgo.com.pfx
+    key-store-password: 7gCMbw76
+    keyStoreType: PKCS12
   servlet:
     context-path: /Equity
   tomcat:
     uri-encoding: UTF-8
-    
-#======================================#
-#========== Database sttings ==========#
-#======================================#
+
+#========== http ===========#
+#server:
+#  port: 80
+#  servlet:
+#    context-path: /Equity
+#  tomcat:
+#    uri-encoding: UTF-8
 
 
 

@@ -10,6 +10,7 @@ import com.jeesite.common.mybatis.mapper.query.QueryType;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 
 /**
  * 商品类型Entity
@@ -24,6 +25,8 @@ import javax.validation.constraints.NotBlank;
 		@Column(name="px", attrName="px", label="排序", isQuery=false),
 		@Column(name="create_date", attrName="createDate", label="创建时间", isUpdate=false, isQuery=false),
 		@Column(name="sxj", attrName="sxj", label=" 1是0否"),
+		@Column(name="parent", attrName="parent", label="父id"),
+		@Column(name="img", attrName="img", label=" 图片地址"),
 		@Column(name="delivery_way", attrName="deliveryWay", label="配送方式  1 全部 2 自提 3 自取"),
 	}, orderBy="a.px ASC"
 )
@@ -41,6 +44,10 @@ public class SpType extends DataEntity<SpType> {
 	private Integer px;          //排序
 	private Long sxj;        //  1是0否
 	private String deliveryWay;  //配送方式  1 全部 2 自提 3 自取
+
+	private String parent;
+	private String img;
+	private List<SpType> innerList;
 	
 	public SpType() {
 		this(null);
@@ -99,5 +106,29 @@ public class SpType extends DataEntity<SpType> {
 
 	public void setDeliveryWay(String deliveryWay) {
 		this.deliveryWay = deliveryWay;
+	}
+
+	public String getParent() {
+		return parent;
+	}
+
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
+
+	public String getImg() {
+		return img;
+	}
+
+	public void setImg(String img) {
+		this.img = img;
+	}
+
+	public List<SpType> getInnerList() {
+		return innerList;
+	}
+
+	public void setInnerList(List<SpType> innerList) {
+		this.innerList = innerList;
 	}
 }
