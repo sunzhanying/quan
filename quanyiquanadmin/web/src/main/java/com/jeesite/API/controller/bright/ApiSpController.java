@@ -324,14 +324,28 @@ public class ApiSpController {
         qyjg.setPageSize(1);
         Qyjg qyjg1 = qyjgService.findList(qyjg).get(0);//从后台取，以防止前端模拟数据来提高卖家的收益
         //先从mx明细表中 校验卡密不能重复;校验回收最大数量
+        Set<String> khSet = new HashSet<>();
+        Set<String> kmSet = new HashSet<>();
         for(QyhsMx mxForSave : qyhs.getQyhsMxes()){
             //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
             log.info("券循环、卡号：" + mxForSave.getKh() + "; 卡密：" + mxForSave.getKm());
             QyhsMx mxForCheck = new QyhsMx();
             if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
+                if(kmSet.contains(mxForSave.getKm())){
+                    log.error("重复卡密！");
+                    return new Response("卡密重复");
+                }else {
+                    kmSet.add(mxForSave.getKm());
+                }
                 mxForCheck.setKm(mxForSave.getKm());
             }
             if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
+                if(khSet.contains(mxForSave.getKh())){
+                    log.error("重复卡号！");
+                    return new Response("卡号重复");
+                }else {
+                    khSet.add(mxForSave.getKh());
+                }
                 mxForCheck.setKh(mxForSave.getKh());
             }
             long count = qyhsMxService.findCount(mxForCheck);
