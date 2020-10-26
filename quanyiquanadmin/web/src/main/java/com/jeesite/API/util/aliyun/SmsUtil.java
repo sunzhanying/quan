@@ -44,8 +44,8 @@ public class SmsUtil {
     // TODO 此处需要替换成开发者自己的AK(在阿里云访问控制台寻找)
     //static final String accessKeyId = "LTAIqFoA433V0PIQ";
     //static final String accessKeySecret = "iWI1aCnwUwxciFz9p4DT0ZOCA9Ij5t";
-    static final String accessKeyId = "LTAI4Fgoag7Em6aJifgtVW5C";
-    static final String accessKeySecret = "aMHrv7RO81qBysH4UDCUxuSz59caG2";// last number er
+    static final String accessKeyId = "LTAI4Fgoag7Em6aJifgtVW5";
+    static final String accessKeySecret = "aMHrv7RO81qBysH4UDCUxuSz59caG";// last number er
 
     public static SendSmsResponse sendSms(String smsCode, String phone,Map map) throws ClientException {
         //可自助调整超时时间
