@@ -63,6 +63,7 @@ public class QyhsMx extends DataEntity<QyhsMx> {
 	public static final String STATUS_CSZ = "3";   //出售中
 	public static final String STATUS_DFK = "4";   //待付款
 	public static final String STATUS_YFK = "5";   //已付款
+	public static final String STATUS_XJ = "6";   //卖家主动下架
 
 	public static final String STATUS_JS_WJS = "1";   //未结算
 	public static final String STATUS_JS_JSZ = "2";   //结算中

@@ -330,6 +330,12 @@ public class ApiSpController {
             //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
             log.info("券循环、卡号：" + mxForSave.getKh() + "; 卡密：" + mxForSave.getKm());
             QyhsMx mxForCheck = new QyhsMx();
+            //退回，主动下架，不用验重
+            mxForCheck.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_DSH)
+                    .or("zt", QueryType.EQ, QyhsMx.STATUS_CSZ)
+                    .or("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
+                    .or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
+                    .endBracket();
             if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
                 if(kmSet.contains(mxForSave.getKm())){
                     log.error("重复卡密！");
