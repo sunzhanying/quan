@@ -276,8 +276,9 @@ public class ApiSpController {
             qyhsMx.setQyqId(item.getId());
             item.setKc((int) qyhsMxService.findCount(qyhsMx));
             //成交量
-            qyhsMx.setZt("");
-            qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            //qyhsMx.setZt("");
+            //qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            qyhsMx.setZt(QyhsMx.STATUS_YFK);
             item.setCjl(qyhsMxService.findCount(qyhsMx));
 
             //是否允许上传，1 不允许
@@ -427,7 +428,8 @@ public class ApiSpController {
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
         }
         if ("3".equals(type)){//查询已售出
-            qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            //qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            qyhsMx.setZt(QyhsMx.STATUS_YFK);
             String extColumn = "count(a.id) AS \"count\"";
             qyhsMx.getSqlMap().add("extColumn", extColumn);
             qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id,a.order_id");
@@ -560,8 +562,9 @@ public class ApiSpController {
             qyhsMx.setQyqId(item.getId());
             item.setKc((int) qyhsMxService.findCount(qyhsMx));
             //成交量
-            qyhsMx.setZt("");
-            qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+            /*qyhsMx.setZt("");
+            qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);*/
+            qyhsMx.setZt(QyhsMx.STATUS_YFK);
             item.setCjl(qyhsMxService.findCount(qyhsMx));
             //是否收藏
             collect.setSpId(item.getId());

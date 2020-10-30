@@ -73,8 +73,9 @@ public class SpXxService extends CrudService<SpXxDao, SpXx> {
 		qyhsMx.setQyqId(id);
 		spXx.setKc((int)qyhsMxDao.findCount(qyhsMx));
 		//成交量
-		qyhsMx.setZt("");
-		qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);
+		/*qyhsMx.setZt("");
+		qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_DFK);*/
+		qyhsMx.setZt(QyhsMx.STATUS_YFK);
 		spXx.setCjl(qyhsMxDao.findCount(qyhsMx));
 		return spXx;
 	}

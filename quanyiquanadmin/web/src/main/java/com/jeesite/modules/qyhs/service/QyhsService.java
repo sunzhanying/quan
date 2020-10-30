@@ -50,7 +50,6 @@ public class QyhsService extends CrudService<QyhsDao, Qyhs> {
 	/**
 	 * 查询分页数据
 	 * @param qyhs 查询条件
-	 * @param qyhs.page 分页对象
 	 * @return
 	 */
 	@Override
@@ -71,7 +70,11 @@ public class QyhsService extends CrudService<QyhsDao, Qyhs> {
 			item.setTh((int)qyhsMxDao.findCount(qyhsMx));
 			//通过
 			qyhsMx.setZt("");
-			qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_TH);
+			/*qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_TH);*/
+			qyhsMx.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_CSZ)
+					.or("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
+					.or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
+					.endBracket();
 			item.setTg((int)qyhsMxDao.findCount(qyhsMx));
 		});
 		return qyhsPage;

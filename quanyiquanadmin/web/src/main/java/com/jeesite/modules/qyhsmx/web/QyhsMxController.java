@@ -110,7 +110,11 @@ public class QyhsMxController extends BaseController {
 	public Page<QyhsMx> kclistData(QyhsMx qyhsMx, HttpServletRequest request, HttpServletResponse response) {
 		String extColumn = "count(a.khid) AS \"count\"";
 		qyhsMx.getSqlMap().add("extColumn", extColumn);
-		qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_TH);
+		//qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_TH);
+		qyhsMx.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_CSZ)
+				.or("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
+				.or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
+				.endBracket();
 		qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.khid");
 		qyhsMx.setPage(new Page<>(request, response));
 		Page<QyhsMx> page = qyhsMxService.findPage(qyhsMx);
@@ -122,8 +126,11 @@ public class QyhsMxController extends BaseController {
 			qyhsMx1.setZt(QyhsMx.STATUS_CSZ);
 			item.setSykc(qyhsMxService.findCount(qyhsMx1));
 			//已出售数
-			qyhsMx1.setZt("");
-			qyhsMx1.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_CSZ);
+			/*qyhsMx1.setZt("");
+			qyhsMx1.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_CSZ);*/
+			qyhsMx.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
+					.or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
+					.endBracket();
 			item.setYcs(qyhsMxService.findCount(qyhsMx1));
 		});
 		return page;
