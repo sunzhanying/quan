@@ -768,44 +768,20 @@ public class ApiKhxxController {
         return pageResult;
     }
 
-    /*@ApiOperation(value = "卖方端取消券",httpMethod ="POST")
+    @ApiOperation(value = "卖方端取消券",httpMethod ="POST")
     @RequestMapping(value = "/cancelCard",method = RequestMethod.POST)
-    public Response cancelCard(HttpServletRequest request) {
+    public Response cancelCard(HttpServletRequest request,String id) {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
-        Map<String,Object> map = new HashMap<>();
         QyhsMx qyhsMx = new QyhsMx();
         qyhsMx.setKhid(khXx.getId());
+        qyhsMx.setId(id);
+        List<QyhsMx> list = qyhsMxService.findList(qyhsMx);
+        if(list == null || list.size() < 1){
+            return new Response(Code.API_NOT_FOUND);
+        }
         //待审核
-        qyhsMx.setZt(QyhsMx.STATUS_DSH);
-        map.put("dsh", qyhsMxService.findCount(qyhsMx));
-        //出售中
-        qyhsMx.setZt(QyhsMx.STATUS_CSZ);
-        map.put("csz", qyhsMxService.findCount(qyhsMx));
-        //已售出
-        qyhsMx.setZt(QyhsMx.STATUS_YFK);
-        map.put("ysc", qyhsMxService.findCount(qyhsMx));
-        //无效券
-        qyhsMx.setZt(QyhsMx.STATUS_TH);
-        map.put("wxq", qyhsMxService.findCount(qyhsMx));
-
-        //已到账新方法
-        Double ydzMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_TG);
-        if (ydzMoney != null){
-            *//*String s1 = String.format("%.2f", ydzMoney);
-            map.put("ydz", s1);*//*
-            map.put("ydz", ydzMoney);
-        }else {
-            map.put("ydz", 0.0);
-        }
-
-        //已到账新方法
-        Double ktxMoney = txshService.findYdz(khXx.getId(),Txsh.TX_STATUS_SQZ);
-        if (ydzMoney != null){
-            map.put("ktx", ktxMoney);
-        }else {
-            map.put("ktx", 0.0);
-        }
-
-        return new Response(map);
-    }*/
+        qyhsMx.setZt(QyhsMx.STATUS_XJ);
+        qyhsMxService.update(qyhsMx);
+        return new Response(Code.SUCCESS);
+    }
 }

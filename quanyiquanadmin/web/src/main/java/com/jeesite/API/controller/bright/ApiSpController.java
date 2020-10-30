@@ -432,7 +432,8 @@ public class ApiSpController {
             qyhsMx.setZt(QyhsMx.STATUS_YFK);
             String extColumn = "count(a.id) AS \"count\"";
             qyhsMx.getSqlMap().add("extColumn", extColumn);
-            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id,a.order_id");
+            //qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.qyq_id,a.order_id");
+            qyhsMx.getSqlMap().add("extWhere", "GROUP BY a.id");
         }
         if ("4".equals(type)){//无效券
             qyhsMx.setZt(QyhsMx.STATUS_TH);

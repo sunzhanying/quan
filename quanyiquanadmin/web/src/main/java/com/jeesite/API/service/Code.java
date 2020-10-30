@@ -32,6 +32,7 @@ public enum Code {
     API_CHECK_COUNT(80003, "回收券已达到最大回收量"),
     API_PARENT_ONE(200, "邀请码无效，请前往[我的推广-绑定邀请]重新绑定"),
     API_SUCCESS_REGISTER(200, "注册成功"),
+    API_NOT_FOUND(80004, "操作数据不存在")
     ;
 
     private long code;
