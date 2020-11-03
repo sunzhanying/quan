@@ -15,7 +15,9 @@ import org.apache.ibatis.annotations.Select;
  */
 @MyBatisDao
 public interface QyhsMxDao extends CrudDao<QyhsMx> {
-    //根据手机号查询
     @Select("select count(*) from a_qyhs_mx where qyq_id = #{0} and zt in ('1','3')")
     int countByQyqAndZt(String qyqid);
+
+    @Select("select count(*) from a_qyhs_mx where qyhs_id = #{0} and zt in ('3','4','5')")
+    int countByQyqAndZt2(String qyqid);
 }

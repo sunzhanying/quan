@@ -65,17 +65,11 @@ public class QyhsService extends CrudService<QyhsDao, Qyhs> {
 			qyhsMx.setZt(QyhsMx.STATUS_DSH);
 			item.setDsh((int)qyhsMxDao.findCount(qyhsMx));
 			//退回
-			qyhsMx.setZt("");
 			qyhsMx.setZt(QyhsMx.STATUS_TH);
 			item.setTh((int)qyhsMxDao.findCount(qyhsMx));
 			//通过
-			qyhsMx.setZt("");
-			/*qyhsMx.getSqlMap().getWhere().and("zt", QueryType.GT, QyhsMx.STATUS_TH);*/
-			qyhsMx.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_CSZ)
-					.or("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
-					.or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
-					.endBracket();
-			item.setTg((int)qyhsMxDao.findCount(qyhsMx));
+			int tgTemp = qyhsMxDao.countByQyqAndZt2(item.getId());
+			item.setTg(tgTemp);
 		});
 		return qyhsPage;
 	}
@@ -126,5 +120,5 @@ public class QyhsService extends CrudService<QyhsDao, Qyhs> {
 	public int countByQyqAndZt(String qyqid) {
 		return qyhsMxDao.countByQyqAndZt(qyqid);
 	}
-	
+
 }
