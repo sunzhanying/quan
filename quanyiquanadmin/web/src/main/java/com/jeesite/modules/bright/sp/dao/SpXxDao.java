@@ -62,4 +62,19 @@ public interface SpXxDao extends CrudDao<SpXx> {
             "</script>")
     List<QyhsMx> findListForDownload(@Param("str") String str);
 
+
+    @Select("<script>" +
+            "select count(1) " +
+            " from a_qyhs_mx " +
+            "where " +
+            " zt in ( '1','3','4','5' ) " +
+            "<if test='kh != null and kh != &quot;&quot;'>" +
+            "and kh = #{kh} " +
+            "</if>" +
+            "<if test='km != null and km != &quot;&quot;'>" +
+            "and km = #{km} " +
+            "</if>" +
+            "</script>")
+    long getQyCount(@Param("kh") String kh,@Param("km") String km);
+
 }

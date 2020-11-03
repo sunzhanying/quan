@@ -59,6 +59,7 @@ import java.util.List;
 		/*@Column(name="maxCountFlag", attrName="maxCountFlag", label="最大数量"),*/
 		@Column(name="inCheck", attrName="inCheck", label="校验"),
 		@Column(name="inLength", attrName="inLength", label="输入长度"),
+		@Column(name="inExpire", attrName="inExpire", label="限制有效期"),
 		@Column(name="income_type_one", attrName="incomeTypeOne", label="一级收益方式"),
 		@Column(name="money_one", attrName="moneyOne", label="一级固定金额值"),
 		@Column(name="ratio_one", attrName="ratioOne", label="一级百分比"),
@@ -115,6 +116,7 @@ public class SpXx extends DataEntity<SpXx> {
 	private Long maxCountFlag; //最大数量，1 不可继续上传
 	private String inCheck;      //校验
 	private Long inLength;      //长度
+	private Long inExpire; //限制有效期天数
 	private String incomeTypeOne;
 	private Double moneyOne;		// 体现金额
 	private Double ratioOne;		// 比例
@@ -434,6 +436,14 @@ public class SpXx extends DataEntity<SpXx> {
 
 	public void setInLength(Long inLength) {
 		this.inLength = inLength;
+	}
+
+	public Long getInExpire() {
+		return inExpire;
+	}
+
+	public void setInExpire(Long inExpire) {
+		this.inExpire = inExpire;
 	}
 
 	public String getIncomeTypeOne() {

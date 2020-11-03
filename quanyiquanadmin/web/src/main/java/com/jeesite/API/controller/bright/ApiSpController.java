@@ -324,19 +324,18 @@ public class ApiSpController {
         qyjg.setQyqId(qyqIdTemp);
         qyjg.setPageSize(1);
         Qyjg qyjg1 = qyjgService.findList(qyjg).get(0);//从后台取，以防止前端模拟数据来提高卖家的收益
+        //用于校验数量和有效期天数
+        SpXx spXx = spXxService.get(qyqIdTemp);
+        Long inExpire = spXx.getInExpire();
         //先从mx明细表中 校验卡密不能重复;校验回收最大数量
         Set<String> khSet = new HashSet<>();
         Set<String> kmSet = new HashSet<>();
         for(QyhsMx mxForSave : qyhs.getQyhsMxes()){
             //QyhsMx mxForSave = qyhs.getQyhsMxes().get(0);//目前前端只允许上次一个卖券
             log.info("券循环、卡号：" + mxForSave.getKh() + "; 卡密：" + mxForSave.getKm());
-            QyhsMx mxForCheck = new QyhsMx();
             //退回，主动下架，不用验重
-            mxForCheck.getSqlMap().getWhere().andBracket("zt", QueryType.EQ, QyhsMx.STATUS_DSH)
-                    .or("zt", QueryType.EQ, QyhsMx.STATUS_CSZ)
-                    .or("zt", QueryType.EQ, QyhsMx.STATUS_DFK)
-                    .or("zt", QueryType.EQ, QyhsMx.STATUS_YFK)
-                    .endBracket();
+            String khTemp = "";
+            String kmTemp = "";
             if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
                 if(kmSet.contains(mxForSave.getKm())){
                     log.error("重复卡密！");
@@ -344,7 +343,7 @@ public class ApiSpController {
                 }else {
                     kmSet.add(mxForSave.getKm());
                 }
-                mxForCheck.setKm(mxForSave.getKm());
+                kmTemp = mxForSave.getKm();
             }
             if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
                 if(khSet.contains(mxForSave.getKh())){
@@ -353,18 +352,24 @@ public class ApiSpController {
                 }else {
                     khSet.add(mxForSave.getKh());
                 }
-                mxForCheck.setKh(mxForSave.getKh());
+                khTemp = mxForSave.getKh();
             }
-            long count = qyhsMxService.findCount(mxForCheck);
+            long count = qyhsMxService.getQyCount(khTemp,kmTemp);//状态 1 3 4 5
             if(count > 0){
                 log.error("重复卡密或者卡号！");
                 return new Response(Code.API_CHECK_KM);
             }
             mxForSave.setSy(qyjg1.getHsj());
+            //校验有效期天数
+            boolean boo = checkYxqAndExpire(inExpire,mxForSave.getYxqDate());
+            if(boo){
+                String errorInfo = "抱歉，有效期在" + inExpire + "天之内，暂不回收";
+                log.error("checkYxqAndExpire:" + errorInfo);
+                return new Response(errorInfo);
+            }
         }
 
         //校验上传最大数量，根据qyq_id，也就是商品id,获取到商品对应的设置数量
-        SpXx spXx = spXxService.get(qyqIdTemp);
         Long maxCount = spXx.getMaxCount();
         //根据权益券
         int count = qyhsService.countByQyqAndZt(qyqIdTemp);
@@ -380,6 +385,30 @@ public class ApiSpController {
         qyhs.setZt(Qyhs.STATUS_DSH);
         qyhsService.save(qyhs);
         return new Response(Code.SUCCESS);
+    }
+
+    /**
+     * 校验失效时间，不能在设置的inExpire天数内
+     * @param inExpire
+     * @param yxqDate
+     * @return
+     */
+    private boolean checkYxqAndExpire(Long inExpire, Date yxqDate) {
+        if(inExpire == null || inExpire < 1 || yxqDate == null){
+            return false;
+        }
+        Date dateNow = new Date();
+        if(yxqDate.before(dateNow)){//有效期需要大于当前时间
+            return true;
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(dateNow);
+        calendar.add(Calendar.DATE, inExpire.intValue());
+        Date expireDate = calendar.getTime();
+        if(yxqDate.before(expireDate)){
+            return true;
+        }
+        return false;
     }
 
     @ApiOperation(value = "getSpDetails", notes = "获取权益券详情", httpMethod = "GET")

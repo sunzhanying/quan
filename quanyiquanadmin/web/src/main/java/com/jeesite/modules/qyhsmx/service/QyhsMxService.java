@@ -133,5 +133,14 @@ public class QyhsMxService extends CrudService<QyhsMxDao, QyhsMx> {
 		List<QyhsMx> list = spXxDao.findListForDownload(str);
 		return list;
 	}
+
+	/**
+	 * 获取数量
+	 */
+	@Transactional(readOnly=false)
+	public long getQyCount(String kh,String km) {
+		long count = spXxDao.getQyCount(kh,km);
+		return count;
+	}
 	
 }
