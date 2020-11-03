@@ -651,4 +651,61 @@ public class ApiSpController {
         List<SpLog> list = spLogService.getLogs(khXx.getId());
         return new Response(list);
     }
+
+    /**
+     * 买家，不需要权限验证
+     * @param page
+     * @param size
+     * @param typeid
+     * @param name
+     * @return
+     */
+    @ApiOperation(value = "getSpAllBuyer", notes = "获取所有权益券", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页", required = false),
+            @ApiImplicitParam(name = "size", value = "每页多少条", required = false),
+            @ApiImplicitParam(name = "typeid", value = "权益券类型id", required = false),
+            @ApiImplicitParam(name = "name", value = "搜索", required = false),
+    })
+    @RequestMapping(value = "/getSpAllBuyer", method = RequestMethod.GET)
+    public Page<SpXx> getSpAllBuyer(@RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                               @RequestParam(required = false, value = "size", defaultValue = "10") Integer size,
+                               String typeid, String name) {
+        Page<SpXx> spXxPage = new Page<>();
+        spXxPage.setPageSize(size);
+        spXxPage.setPageNo(page);
+        SpXx spXx = new SpXx();
+        spXx.setPage(spXxPage);
+        if(typeid == null || "".equals(typeid)){//如果不传商品id，则获取全部
+            spXx.getSqlMap().getWhere().andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }else{
+            List<String> stringList = getSplxListByParent(typeid);
+            stringList.add(typeid);//将1级id也加入，兼容买家
+            spXx.getSqlMap().getWhere().and("splx", QueryType.IN, stringList.toArray()).andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }
+        List<SpXx> spXxes = spXxService.findList(spXx);
+        Qyjg qyjg = new Qyjg();
+
+        spXxes.forEach(item ->{
+            //价格
+            qyjg.setQyqId(item.getId());
+            qyjg.setPageSize(1);
+            item.setQyjg(qyjgService.findList(qyjg).get(0));
+            QyhsMx qyhsMx = new QyhsMx();
+            qyhsMx.setZt(QyhsMx.STATUS_CSZ);
+            //库存
+            qyhsMx.setQyqId(item.getId());
+            item.setKc((int) qyhsMxService.findCount(qyhsMx));
+            //成交量
+            qyhsMx.setZt(QyhsMx.STATUS_YFK);
+            item.setCjl(qyhsMxService.findCount(qyhsMx));
+            //是否允许上传，1 不允许，买家不需要
+             item.setMaxCountFlag(1L);
+            //是否收藏，买家不需要
+            item.setIssc(false);
+        });
+        return spXxPage.setList(spXxes);
+    }
 }
