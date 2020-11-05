@@ -339,7 +339,7 @@ public class ApiSpController {
             if(mxForSave.getKm() != null && !"".equals(mxForSave.getKm())){
                 if(kmSet.contains(mxForSave.getKm())){
                     log.error("重复卡密！");
-                    return new Response("卡密重复");
+                    return new Response(90001,"卡密重复",null);
                 }else {
                     kmSet.add(mxForSave.getKm());
                 }
@@ -348,7 +348,7 @@ public class ApiSpController {
             if(mxForSave.getKh() != null && !"".equals(mxForSave.getKh())){
                 if(khSet.contains(mxForSave.getKh())){
                     log.error("重复卡号！");
-                    return new Response("卡号重复");
+                    return new Response(90002,"卡号重复",null);
                 }else {
                     khSet.add(mxForSave.getKh());
                 }
@@ -365,7 +365,7 @@ public class ApiSpController {
             if(boo){
                 String errorInfo = "抱歉，有效期在" + inExpire + "天之内，暂不回收";
                 log.error("checkYxqAndExpire:" + errorInfo);
-                return new Response(errorInfo);
+                return new Response(90003,errorInfo,null);
             }
         }
 
