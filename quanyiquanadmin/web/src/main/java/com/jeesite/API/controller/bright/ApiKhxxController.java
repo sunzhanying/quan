@@ -138,6 +138,11 @@ public class ApiKhxxController {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
         khXx.setWxtx(avatar);
         khXx.setWxnc(nickname);
+        //生成自己的邀请码
+        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，才生成
+            String codeOnly = getOnlyCode();
+            khXx.setCode(codeOnly);
+        }
         khXxService.save(khXx);
         if(!StringUtils.isEmpty(inviteCode)){
             //如果邀请码不为空 则关联上级分销信息
