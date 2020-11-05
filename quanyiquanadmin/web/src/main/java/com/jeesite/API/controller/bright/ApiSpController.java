@@ -474,7 +474,7 @@ public class ApiSpController {
         List<QyhsMx> qyhsMxList = qyhsMxService.findList(qyhsMx);
         Qyjg qyjg = new Qyjg();
         for(QyhsMx item :qyhsMxList){
-            if ("1".equals(type) || "2".equals(type)){
+            if ("1".equals(type) || "2".equals(type)|| "4".equals(type)){
                 //价格
                 qyjg.setQyqId(item.getQyqId());
                 qyjg.setPageSize(1);
