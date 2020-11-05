@@ -133,11 +133,17 @@ public class ApiKhxxController {
     })
     @RequestMapping(value = "/saveAvatarAndNickname",method = RequestMethod.POST)
     public Response login(@RequestParam String avatar,
-                          @RequestParam String nickname, HttpServletRequest request) {
+                          @RequestParam String nickname, HttpServletRequest request,
+                          @RequestParam(required = false, value = "inviteCode", defaultValue = "") String inviteCode) {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
         khXx.setWxtx(avatar);
         khXx.setWxnc(nickname);
         khXxService.save(khXx);
+        if(!StringUtils.isEmpty(inviteCode)){
+            //如果邀请码不为空 则关联上级分销信息
+            Response response = khXxService.checkInviteCode(inviteCode,khXx,"");
+            //return response; 如果邀请码有误，也不做提示
+        }
         return new Response(Code.SUCCESS);
     }
 

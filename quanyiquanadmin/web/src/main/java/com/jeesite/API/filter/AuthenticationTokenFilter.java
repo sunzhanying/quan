@@ -188,6 +188,9 @@ public class AuthenticationTokenFilter extends GenericFilterBean {
         if (uri.startsWith(site + apiPath + "/qyq/getSpAllBuyer")) {
             return true;
         }
+        if (uri.startsWith(site + apiPath + "/qyq/getSpTypeAll")) {
+            return true;
+        }
         return false;
 
     }
