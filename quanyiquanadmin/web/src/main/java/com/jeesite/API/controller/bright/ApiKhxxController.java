@@ -152,6 +152,26 @@ public class ApiKhxxController {
         return new Response(Code.SUCCESS);
     }
 
+    /**
+     * 微信用户登录，卖家
+     *
+     * @return 授权结果，返回包含JWT的字符串
+     */
+    @ApiOperation(value = "保存微信头像昵称",httpMethod ="POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="avatar",value = "头像",required = true),
+            @ApiImplicitParam(name="nickname",value = "昵称",required = true)
+    })
+    @RequestMapping(value = "/saveAvatarAndNickname2",method = RequestMethod.POST)
+    public Response saveAvatarAndNickname2(@RequestParam String avatar,
+                          @RequestParam String nickname, HttpServletRequest request) {
+        KhXx khXx=(KhXx)request.getAttribute("khXx");
+        khXx.setWxtx(avatar);
+        khXx.setWxnc(nickname);
+        khXxService.save(khXx);
+        return new Response(Code.SUCCESS);
+    }
+
 
     /**
      * 微信用户获取手机号
@@ -361,6 +381,7 @@ public class ApiKhxxController {
         return collectPage.setList(collectList);
     }
 
+    //只用于卖家
     @ApiOperation(value = "保存用户姓名，手机号",httpMethod ="POST")
     @ApiImplicitParams({
             @ApiImplicitParam(name="name",value = "姓名",required = true),
@@ -394,8 +415,9 @@ public class ApiKhxxController {
         KhXx khXx=(KhXx)request.getAttribute("khXx");
         khXx.setSj(phone);
         khXx.setXm(name);
+        khXxService.update(khXx);
         //通过短信验证后，就将当前用户的邀请码生成，然后保存、返回给前端
-        if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，才生成
+        /*if(StringUtils.isEmpty(khXx.getCode())){//如果当前用户没有生成过自己的邀请码，才生成
             String codeOnly = getOnlyCode();
             khXx.setCode(codeOnly);
             khXxService.update(khXx);
@@ -404,7 +426,7 @@ public class ApiKhxxController {
             //如果邀请码不为空 则关联上级分销信息
             Response response = khXxService.checkInviteCode(inviteCode,khXx,"");
             return response;
-        }
+        }*/
         return new Response(Code.SUCCESS);
     }
 
