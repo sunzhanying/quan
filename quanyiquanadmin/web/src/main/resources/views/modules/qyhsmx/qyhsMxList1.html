@@ -92,8 +92,10 @@
 					return '待付款';
 				}else if(val == 5){
 					return '已付款';
+				}else if(val == 6){
+					return '卖家主动下架';
 				}else{
-					return '待审核';
+					return '状态异常';
 				}
             }},
             {header:'${text("类型")}', name:'type', index:'a.type', width:50, align:"center", formatter: function(val, obj, row, act){
