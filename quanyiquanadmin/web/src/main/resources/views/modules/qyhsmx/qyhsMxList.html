@@ -50,7 +50,7 @@
 					</div>
 				</div>
 				<div class="form-group">
-					<label class="control-label">${text('出售单号')}：</label>
+					<label class="control-label">${text('权益回收id')}：</label>
 					<div class="control-inline">
 						<#form:input path="qyhsId" class="form-control width-120"/>
 					</div>
@@ -109,7 +109,7 @@ $('#dataGrid').dataGrid({
         }},
         {header:'${text("出售人昵称")}', name:'khXx.wxnc', index:'', width:50, align:"left"},
         {header:'${text("手机号")}', name:'khXx.sj', index:'', width:50, align:"left"},
-        {header:'${text("出售单号")}', name:'qyhsId', index:'a.qyhs_id', width:80, align:"left"},
+        {header:'${text("权益回收id")}', name:'qyhsId', index:'a.qyhs_id', width:80, align:"left"},
         {header:'${text("出售时间")}', name:'createDate', index:'a.create_date', width:70, align:"left"},
 		{header:'${text("操作")}', name:'actions', width:80, sortable:false, title:false, formatter: function(val, obj, row, act){
 			var actions = [];
