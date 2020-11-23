@@ -12,13 +12,18 @@ weixin:
   #收钱商户
   Mch_id: 1600487496
   Mch_key: 1123sf3423lk4j2l34jl234jlkj234k
-  #mch_cet_dir: D:\data\apiclient_cert.p12
+  #mch_cet_dir: D:\data\p12\apiclient_cert.p12
   mch_cet_dir: /root/apiclient_cert.p12
 
   Mch_pay_id: 1601962895
   Mch_pay_key: 1123sf3423lk4j2l34jl234jlkj234k
-  #mch_cet_pay_dir: D:\data\pay\apiclient_cert.p12
+  #mch_cet_pay_dir: D:\data\p12\apiclient_cert_pay.p12
   mch_cet_pay_dir: /root/apiclient_cert_pay.p12
+
+  Mch_buy_id: 1602246738
+  Mch_buy_key: 1123sf3423lk4j2l34jl234jlkj234k
+  #mch_cet_buy_dir: D:\data\p12\apiclient_cert_buy.p12
+  mch_cet_buy_dir: /root/apiclient_cert_buy.p12
 
   Notify_url: https://quan.whaleupgo.com/Equity/api/wx/notify
 
