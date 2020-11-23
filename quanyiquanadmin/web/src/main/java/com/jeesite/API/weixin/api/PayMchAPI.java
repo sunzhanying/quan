@@ -3,6 +3,7 @@ package com.jeesite.API.weixin.api;
 
 import com.jeesite.API.weixin.bean.paymch.*;
 import com.jeesite.API.weixin.client.LocalHttpClient;
+import com.jeesite.API.weixin.client.ThreeLocalHttpClient;
 import com.jeesite.API.weixin.util.MapUtil;
 import com.jeesite.API.weixin.util.SignatureUtil;
 import com.jeesite.API.weixin.util.XMLConverUtil;
@@ -46,7 +47,8 @@ public class PayMchAPI extends BaseAPI {
                 .setUri(MCH_URI + "/pay/unifiedorder")
                 .setEntity(new StringEntity(unifiedorderXML, Charset.forName("utf-8")))
                 .build();
-        return LocalHttpClient.executeXmlResult(httpUriRequest, UnifiedorderResult.class);
+        //return LocalHttpClient.executeXmlResult(httpUriRequest, UnifiedorderResult.class);
+        return ThreeLocalHttpClient.executeXmlResult(httpUriRequest, UnifiedorderResult.class);
     }
 
     /**

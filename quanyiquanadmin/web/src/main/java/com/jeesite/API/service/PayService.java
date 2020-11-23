@@ -60,13 +60,13 @@ public class PayService {
     @Value("${weixin.appidA}")
     private String wxAppId;
 
-    @Value("${weixin.Mch_id}")
+    @Value("${weixin.Mch_buy_id}")
     private String Mch_id;
 
     @Value("${weixin.Notify_url}")
     private String Notify_url;
 
-    @Value("${weixin.Mch_key}")
+    @Value("${weixin.Mch_buy_key}")
     private String key;
 
     @Value("${admin_phone}")
