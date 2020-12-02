@@ -37,6 +37,7 @@ import com.jeesite.modules.qyhsmx.entity.QyhsMx;
 import com.jeesite.modules.qyhsmx.service.QyhsMxService;
 import com.jeesite.modules.qyjg.entity.Qyjg;
 import com.jeesite.modules.qyjg.service.QyjgService;
+import com.jeesite.utils.Paper;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -659,7 +660,7 @@ public class ApiSpController {
      * @param typeid
      * @param name
      * @return
-     */
+     *//*
     @ApiOperation(value = "getSpAllBuyer", notes = "获取所有权益券", httpMethod = "GET")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page", value = "当前页", required = false),
@@ -707,5 +708,111 @@ public class ApiSpController {
             item.setIssc(false);
         });
         return spXxPage.setList(spXxes);
+    }*/
+
+    /**
+     * 买家，不需要权限验证
+     * @param page
+     * @param size
+     * @param typeid
+     * @param name
+     * @return
+     */
+    @ApiOperation(value = "getSpAllBuyer", notes = "获取所有权益券", httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page", value = "当前页", required = false),
+            @ApiImplicitParam(name = "size", value = "每页多少条", required = false),
+            @ApiImplicitParam(name = "typeid", value = "权益券类型id", required = false),
+            @ApiImplicitParam(name = "name", value = "搜索", required = false),
+    })
+    @RequestMapping(value = "/getSpAllBuyer", method = RequestMethod.GET)
+    public Page<SpXx> getSpAllBuyer(@RequestParam(required = false, value = "page", defaultValue = "1") Integer page,
+                                    @RequestParam(required = false, value = "size", defaultValue = "10") Integer size,
+                                    String typeid, String name) {
+        Page<SpXx> spXxPage = new Page<>();
+        spXxPage.setPageSize(size);
+        spXxPage.setPageNo(page);
+        SpXx spXx = new SpXx();
+        if(typeid == null || "".equals(typeid)){//如果不传商品id，则获取全部
+            spXx.getSqlMap().getWhere().andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }else{
+            List<String> stringList = getSplxListByParent(typeid);
+            stringList.add(typeid);//将1级id也加入，兼容买家
+            spXx.getSqlMap().getWhere().and("splx", QueryType.IN, stringList.toArray()).andBracket("spmc", QueryType.LIKE, name)
+                    .or("spfmc", QueryType.LIKE, name).endBracket();
+        }
+        List<SpXx> spXxes = spXxService.findList(spXx);
+        if(spXxes == null || spXxes.isEmpty()){
+            spXxPage.setCount(0);
+            return spXxPage;
+        }
+        Qyjg qyjg = new Qyjg();
+        spXxes.forEach(item ->{
+            //价格
+            qyjg.setQyqId(item.getId());
+            qyjg.setPageSize(1);
+            item.setQyjg(qyjgService.findList(qyjg).get(0));
+            QyhsMx qyhsMx = new QyhsMx();
+            qyhsMx.setZt(QyhsMx.STATUS_CSZ);
+            //库存
+            qyhsMx.setQyqId(item.getId());
+            item.setKc((int) qyhsMxService.findCount(qyhsMx));
+            //成交量
+            qyhsMx.setZt(QyhsMx.STATUS_YFK);
+            item.setCjl(qyhsMxService.findCount(qyhsMx));
+            //是否允许上传，1 不允许，买家不需要
+            item.setMaxCountFlag(1L);
+            //是否收藏，买家不需要
+            item.setIssc(false);
+        });
+        //排序
+        List<SpXx> afterSort = sortSp(spXxes);
+        //分页截取
+        Paper<SpXx> paper = new Paper<SpXx>(page,size,afterSort);//paper.getDataList()就是子数组数据
+        spXxPage.setCount(afterSort.size());
+        spXxPage.setList(paper.getDataList());
+        return spXxPage;
+    }
+
+    //根据销量降序排，然后根据库存0售罄的排在后面
+    private List<SpXx> sortSp(List<SpXx> spXxes) {
+        List<SpXx> list1 = new ArrayList<>();//有库存
+        List<SpXx> list2 = new ArrayList<>();//无库存
+        try{
+            for(SpXx spXx : spXxes){
+                if(spXx.getKc() > 0){
+                    list1.add(spXx);
+                }else{
+                    list2.add(spXx);
+                }
+            }
+            sortListByCjl(list1);
+            sortListByCjl(list2);
+            list1.addAll(list2);
+            return list1;
+        }catch (Exception e){
+            logger.error("sortSp error:",e);
+        }
+        return list1;
+    }
+
+    private void sortListByCjl(List<SpXx> list1) {
+        try{
+            Collections.sort(list1, new Comparator<SpXx>() {
+                @Override
+                public int compare(SpXx o1, SpXx o2) {
+                    if(o1.getCjl() > o2.getCjl()){
+                        return -1;
+                    }else if(o1.getCjl().equals(o2.getCjl())){
+                        return 0;
+                    }else{
+                        return 1;
+                    }
+                }
+            });
+        }catch (Exception e){
+            logger.error("sortListByCjl error:",e);
+        }
     }
 }
