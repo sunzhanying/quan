@@ -760,7 +760,7 @@ public class ApiSpController {
             item.setKc((int) qyhsMxService.findCount(qyhsMx));
             //成交量
             qyhsMx.setZt(QyhsMx.STATUS_YFK);
-            item.setCjl(qyhsMxService.findCount(qyhsMx));
+            item.setCjl(qyhsMxService.findCount(qyhsMx) + 500L); //todo 特殊处理
             //是否允许上传，1 不允许，买家不需要
             item.setMaxCountFlag(1L);
             //是否收藏，买家不需要
